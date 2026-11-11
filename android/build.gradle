@@ -1,0 +1,44 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://download.flutter.io' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects { project ->
+    project.buildscript.configurations.classpath.resolutionStrategy {
+        force 'com.android.tools.build:gradle:8.11.1'
+        force 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.20'
+    }
+
+    project.plugins.withId('com.android.library') {
+        def android = project.extensions.findByName('android')
+        def manifest = project.file('src/main/AndroidManifest.xml')
+
+        if (android != null && android.namespace == null && manifest.exists()) {
+            def packageMatch = manifest.getText('UTF-8') =~ /package=["']([^"']+)["']/
+            if (packageMatch.find()) {
+                android.namespace = packageMatch.group(1)
+            }
+        }
+
+        def androidComponents = project.extensions.findByName('androidComponents')
+        androidComponents.finalizeDsl { androidDsl ->
+            androidDsl.compileSdk = 36
+        }
+    }
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
