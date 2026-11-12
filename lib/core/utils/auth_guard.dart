@@ -1,9 +1,9 @@
 // يوفر أدوات للتحقق من تسجيل الدخول وحماية العمليات والشاشات.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scarvs/app/theme/app_colors.dart';
-import 'package:scarvs/app/router/app_router.dart';
-import 'package:scarvs/features/auth/presentation/providers/auth_provider.dart';
+import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
+import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/core/supabase/supabase_client.dart';
 
 /// AuthGuard - الحارس الموحد للتحقق من تسجيل الدخول

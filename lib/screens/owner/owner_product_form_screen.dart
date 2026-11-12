@@ -1,0 +1,886 @@
+// يعرض نموذج إضافة منتج للمتجر أو تعديل بياناته مع إدارة الصور المتعددة.
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/models/product_model.dart';
+import 'package:scarvs/providers/catalog_provider.dart';
+import 'package:scarvs/providers/owner_provider.dart';
+import 'package:scarvs/providers/theme_provider.dart';
+import 'package:scarvs/core/widgets/app_back_button.dart';
+
+class _ProductImageEntry {
+  final File? file;
+  final String? url;
+
+  _ProductImageEntry({this.file, this.url});
+
+  bool get isFile => file != null;
+}
+
+class OwnerProductFormScreen extends StatefulWidget {
+  final ProductItem? product;
+
+  const OwnerProductFormScreen({Key? key, this.product}) : super(key: key);
+
+  @override
+  State<OwnerProductFormScreen> createState() => _OwnerProductFormScreenState();
+}
+
+class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _nameController;
+  late final TextEditingController _descController;
+  late final TextEditingController _priceController;
+  late final TextEditingController _oldPriceController;
+
+  String? _selectedCategoryId;
+  bool _isActive = true;
+  bool _isFeatured = false;
+
+  // قائمة صور المنتج المتعددة (ملفات أو روابط)
+  final List<_ProductImageEntry> _images = [];
+
+  // قائمة المقاسات والمخزون
+  final List<Map<String, dynamic>> _variants = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final p = widget.product;
+
+    _nameController = TextEditingController(text: p?.name ?? '');
+    _descController = TextEditingController(text: p?.description ?? '');
+    _priceController = TextEditingController(text: p != null ? p.price.toStringAsFixed(0) : '');
+    _oldPriceController = TextEditingController(
+      text: p?.oldPrice != null ? p!.oldPrice!.toStringAsFixed(0) : '',
+    );
+    _selectedCategoryId = p?.categoryId;
+    _isActive = p?.isActive ?? true;
+    _isFeatured = p?.isFeatured ?? false;
+
+    // استيراد صور المنتج الحالية
+    if (p != null) {
+      if (p.images.isNotEmpty) {
+        for (final u in p.images) {
+          if (u.trim().isNotEmpty) {
+            _images.add(_ProductImageEntry(url: u.trim()));
+          }
+        }
+      } else if (p.mainImageUrl.isNotEmpty) {
+        _images.add(_ProductImageEntry(url: p.mainImageUrl));
+      }
+    }
+
+    if (p != null && p.variants.isNotEmpty) {
+      for (var v in p.variants) {
+        _variants.add({
+          'size': v.size,
+          'stock_quantity': v.stock,
+        });
+      }
+    } else {
+      // مقاسات افتراضية للحذاء الجديد
+      _variants.addAll([
+        {'size': '40', 'stock_quantity': 5},
+        {'size': '41', 'stock_quantity': 5},
+        {'size': '42', 'stock_quantity': 5},
+        {'size': '43', 'stock_quantity': 5},
+        {'size': '44', 'stock_quantity': 5},
+      ]);
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<OwnerNotifier>(context, listen: false).fetchCategories(context: context);
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    _priceController.dispose();
+    _oldPriceController.dispose();
+    super.dispose();
+  }
+
+  /// فتح نافذة اختيار مصدر الصور
+  void _showImageSourcePicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return SafeArea(
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF222831) : Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'إضافة صور للمنتج 📸',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'يمكنك اختيار أكثر من صورة معاً لعرض تفاصيل الحذاء للعميل',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  ListTile(
+                    dense: true,
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xFFE8F5E9),
+                      child: Icon(Icons.photo_library, color: Colors.green),
+                    ),
+                    title: const Text('معرض الصور (عدة صور دفعة واحدة)'),
+                    subtitle: const Text('حدد أكثر من صورة من ألبوم الهاتف'),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      _pickMultipleImages();
+                    },
+                  ),
+                  ListTile(
+                    dense: true,
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xFFE3F2FD),
+                      child: Icon(Icons.camera_alt, color: Colors.blue),
+                    ),
+                    title: const Text('التقاط بالكاميرا'),
+                    subtitle: const Text('تصوير الحذاء مباشرة الآن'),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      _pickCameraImage();
+                    },
+                  ),
+                  ListTile(
+                    dense: true,
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xFFFFF3E0),
+                      child: Icon(Icons.link, color: AppColors.rawSienna),
+                    ),
+                    title: const Text('إضافة رابط صورة مباشر (URL)'),
+                    subtitle: const Text('لصق رابط صورة على الإنترنت'),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      _addViaUrlDialog();
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickMultipleImages() async {
+    try {
+      final picker = ImagePicker();
+      final pickedList = await picker.pickMultiImage(imageQuality: 85);
+      if (pickedList.isNotEmpty) {
+        setState(() {
+          for (final item in pickedList) {
+            _images.add(_ProductImageEntry(file: File(item.path)));
+          }
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تعذر اختيار الصور: $e')),
+      );
+    }
+  }
+
+  Future<void> _pickCameraImage() async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+      if (picked != null) {
+        setState(() {
+          _images.add(_ProductImageEntry(file: File(picked.path)));
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تعذر التقاط الصورة: $e')),
+      );
+    }
+  }
+
+  void _addViaUrlDialog() {
+    final urlCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('إضافة رابط صورة', textAlign: TextAlign.right),
+        content: TextField(
+          controller: urlCtrl,
+          textAlign: TextAlign.left,
+          decoration: const InputDecoration(
+            hintText: 'https://example.com/shoe.jpg',
+            prefixIcon: Icon(Icons.link),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.rawSienna),
+            onPressed: () {
+              final u = urlCtrl.text.trim();
+              if (u.isNotEmpty && u.startsWith('http')) {
+                setState(() {
+                  _images.add(_ProductImageEntry(url: u));
+                });
+                Navigator.of(ctx).pop();
+              }
+            },
+            child: const Text('إضافة', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _makeMainImage(int index) {
+    if (index > 0 && index < _images.length) {
+      setState(() {
+        final item = _images.removeAt(index);
+        _images.insert(0, item);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم تعيين الصورة كغلاف رئيسي للمنتج ⭐'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _images.removeAt(index);
+    });
+  }
+
+  void _addVariantRow() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        final sizeCtrl = TextEditingController();
+        final stockCtrl = TextEditingController(text: '5');
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text('إضافة مقاس جديد', textAlign: TextAlign.right),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: sizeCtrl,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(labelText: 'رقم المقاس (مثال: 45)'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: stockCtrl,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(labelText: 'الكمية المتوفرة'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('إلغاء'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.rawSienna),
+              onPressed: () {
+                final s = sizeCtrl.text.trim();
+                final qty = int.tryParse(stockCtrl.text.trim()) ?? 0;
+                if (s.isNotEmpty) {
+                  setState(() {
+                    _variants.add({'size': s, 'stock_quantity': qty});
+                  });
+                  Navigator.of(ctx).pop();
+                }
+              },
+              child: const Text('إضافة', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_images.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('يرجى إضافة صورة واحدة على الأقل للمنتج')),
+      );
+      return;
+    }
+
+    if (_variants.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('يرجى إضافة مقاس واحد على الأقل للمنتج')),
+      );
+      return;
+    }
+
+    final newFiles = _images.where((i) => i.isFile).map((i) => i.file!).toList();
+    final existingUrls =
+        _images.where((i) => !i.isFile && i.url != null).map((i) => i.url!).toList();
+
+    final ownerNotifier = Provider.of<OwnerNotifier>(context, listen: false);
+
+    final success = await ownerNotifier.saveProduct(
+      id: widget.product?.id,
+      name: _nameController.text.trim(),
+      description: _descController.text.trim(),
+      price: double.parse(_priceController.text.trim()),
+      oldPrice: _oldPriceController.text.trim().isNotEmpty
+          ? double.tryParse(_oldPriceController.text.trim())
+          : null,
+      categoryId: _selectedCategoryId,
+      newImageFiles: newFiles,
+      existingImageUrls: existingUrls,
+      isActive: _isActive,
+      isFeatured: _isFeatured,
+      variants: _variants,
+      context: context,
+    );
+
+    if (success && mounted) {
+      Provider.of<CatalogProvider>(context, listen: false)
+          .refreshAll(silent: true);
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeFlag = themeNotifier.darkTheme;
+    final ownerNotifier = Provider.of<OwnerNotifier>(context);
+    final isEditing = widget.product != null;
+
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
+        body: Column(
+          children: [
+            // الهيدر
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+              child: Row(
+                children: [
+                  AppBackPop(themeFlag: themeFlag),
+                  const SizedBox(width: 8),
+                  Text(
+                    isEditing ? 'تعديل المنتج ✏️' : 'إضافة منتج جديد ➕',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // النموذج
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    // ==========================================
+                    // قسم إدارة صور المنتج المتعددة
+                    // ==========================================
+                    _buildMultiImagesSection(themeFlag),
+                    const SizedBox(height: 20),
+
+                    // اسم المنتج
+                    TextFormField(
+                      controller: _nameController,
+                      validator: (val) =>
+                          val == null || val.trim().isEmpty ? 'يرجى كتابة اسم المنتج' : null,
+                      decoration: _inputDecoration(
+                        label: 'اسم الحذاء / المنتج *',
+                        icon: Icons.shopping_bag_outlined,
+                        themeFlag: themeFlag,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // الوصف
+                    TextFormField(
+                      controller: _descController,
+                      maxLines: 3,
+                      validator: (val) =>
+                          val == null || val.trim().isEmpty ? 'يرجى كتابة وصف المنتج' : null,
+                      decoration: _inputDecoration(
+                        label: 'وصف المنتج وتفاصيله *',
+                        icon: Icons.description_outlined,
+                        themeFlag: themeFlag,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // السعر والسعر القديم
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _priceController,
+                            keyboardType: TextInputType.number,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) return 'مطلوب';
+                              if (double.tryParse(val.trim()) == null) return 'غير صالح';
+                              return null;
+                            },
+                            decoration: _inputDecoration(
+                              label: 'السعر الحالي (ر.س) *',
+                              icon: Icons.attach_money,
+                              themeFlag: themeFlag,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _oldPriceController,
+                            keyboardType: TextInputType.number,
+                            decoration: _inputDecoration(
+                              label: 'السعر قبل الخصم',
+                              icon: Icons.money_off,
+                              themeFlag: themeFlag,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // التصنيف (الماركة)
+                    DropdownButtonFormField<String>(
+                      value: _selectedCategoryId,
+                      dropdownColor: themeFlag ? AppColors.mirage : Colors.white,
+                      decoration: _inputDecoration(
+                        label: 'التصنيف / الماركة',
+                        icon: Icons.category_outlined,
+                        themeFlag: themeFlag,
+                      ),
+                      items: ownerNotifier.categories.map((c) {
+                        return DropdownMenuItem(
+                          value: c.id,
+                          child: Text(
+                            c.name,
+                            style: TextStyle(
+                              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (val) => setState(() => _selectedCategoryId = val),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // خيارات التفعيل والظهور
+                    SwitchListTile(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      tileColor: themeFlag ? Colors.white10 : Colors.white,
+                      title: const Text('المنتج نشط ومتاح للبيع'),
+                      value: _isActive,
+                      activeColor: Colors.green,
+                      onChanged: (val) => setState(() => _isActive = val),
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      tileColor: themeFlag ? Colors.white10 : Colors.white,
+                      title: const Text('منتج مميز (يظهر في الرئيسية) ⭐'),
+                      value: _isFeatured,
+                      activeColor: AppColors.rawSienna,
+                      onChanged: (val) => setState(() => _isFeatured = val),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // قسم إدارة المقاسات والمخزون
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'المقاسات والمخزون (${_variants.length})',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                          ),
+                        ),
+                        TextButton.icon(
+                          icon: const Icon(Icons.add, size: 18),
+                          label: const Text('إضافة مقاس'),
+                          onPressed: _addVariantRow,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    // جدول المقاسات
+                    Container(
+                      decoration: BoxDecoration(
+                        color: themeFlag ? Colors.white10 : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                              .withOpacity(0.1),
+                        ),
+                      ),
+                      child: Column(
+                        children: _variants.asMap().entries.map((entry) {
+                          final idx = entry.key;
+                          final item = entry.value;
+
+                          return ListTile(
+                            dense: true,
+                            leading: CircleAvatar(
+                              backgroundColor: AppColors.rawSienna.withOpacity(0.2),
+                              radius: 16,
+                              child: Text(
+                                '${item['size']}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.rawSienna,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            title: Text('المقاس: ${item['size']}'),
+                            subtitle: Text('الكمية: ${item['stock_quantity']} قطعة'),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _variants.removeAt(idx);
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // زر الحفظ
+                    SizedBox(
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.rawSienna,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 3,
+                        ),
+                        onPressed: ownerNotifier.isSaving ? null : _submitForm,
+                        child: ownerNotifier.isSaving
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                isEditing ? 'حفظ التعديلات ✅' : 'إضافة المنتج للمتجر 🚀',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// قسم عرض وإدارة صور المنتج المتعددة
+  Widget _buildMultiImagesSection(bool themeFlag) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: themeFlag ? Colors.white.withOpacity(0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.photo_library_outlined, color: AppColors.rawSienna, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'صور المنتج (${_images.length})',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.rawSienna,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: const Icon(Icons.add_a_photo, size: 16),
+                label: const Text('إضافة صور', style: TextStyle(fontSize: 13)),
+                onPressed: _showImageSourcePicker,
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'الصورة الأولى ستكون هي الغلاف الرئيسي للمنتج، ويمكنك تعيين أي صورة كغلاف بالنقر عليها',
+            style: TextStyle(
+              fontSize: 11,
+              color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.6),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          if (_images.isEmpty)
+            InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: _showImageSourcePicker,
+              child: Container(
+                width: double.infinity,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.rawSienna.withOpacity(0.4),
+                    style: BorderStyle.solid,
+                    width: 1.5,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.add_photo_alternate_outlined, size: 40, color: AppColors.rawSienna),
+                    SizedBox(height: 8),
+                    Text(
+                      'انقر هنا لإضافة صور للمنتج 📸 (يمكنك اختيار عدة صور)',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else ...[
+            // شريط أفقي لعرض كل الصور المضافة
+            SizedBox(
+              height: 155,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _images.length + 1,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  // بطاقة إضافة صورة جديدة في نهاية القائمة
+                  if (index == _images.length) {
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: _showImageSourcePicker,
+                      child: Container(
+                        width: 110,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.rawSienna.withOpacity(0.3)),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CircleAvatar(
+                              backgroundColor: AppColors.rawSienna,
+                              radius: 18,
+                              child: Icon(Icons.add, color: Colors.white, size: 20),
+                            ),
+                            SizedBox(height: 8),
+                            Text('إضافة المزيد', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  final item = _images[index];
+                  final isMain = index == 0;
+
+                  return Container(
+                    width: 125,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isMain ? AppColors.rawSienna : Colors.grey.withOpacity(0.3),
+                        width: isMain ? 2.5 : 1,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: SizedBox(
+                            width: 125,
+                            height: 155,
+                            child: item.isFile
+                                ? Image.file(item.file!, fit: BoxFit.cover)
+                                : Image.network(
+                                    item.url!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                                  ),
+                          ),
+                        ),
+
+                        // شارة الصورة الرئيسية
+                        if (isMain)
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: AppColors.rawSienna,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                'الغلاف ⭐',
+                                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          )
+                        else
+                          Positioned(
+                            bottom: 6,
+                            left: 6,
+                            right: 6,
+                            child: InkWell(
+                              onTap: () => _makeMainImage(index),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.75),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'تعيين كغلاف',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        // زر الحذف
+                        Positioned(
+                          top: 6,
+                          left: 6,
+                          child: InkWell(
+                            onTap: () => _removeImage(index),
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.redAccent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.close, size: 14, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String label,
+    required IconData icon,
+    required bool themeFlag,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, size: 20),
+      filled: true,
+      fillColor: themeFlag ? Colors.white10 : Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.15),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.15),
+        ),
+      ),
+    );
+  }
+}

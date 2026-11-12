@@ -1,7 +1,7 @@
 // يختبر نماذج متغيرات المنتج وإعدادات المتجر.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:scarvs/features/catalog/data/models/product_variant_model.dart';
-import 'package:scarvs/features/owner/settings/data/models/store_settings_model.dart';
+import 'package:scarvs/models/product_variant_model.dart';
+import 'package:scarvs/models/store_settings_model.dart';
 
 void main() {
   test('ProductVariant model test', () {

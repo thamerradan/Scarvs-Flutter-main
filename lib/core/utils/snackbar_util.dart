@@ -1,7 +1,7 @@
 // يوفر دوال موحدة لعرض رسائل التنبيه المؤقتة.
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scarvs/app/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_colors.dart';
 
 class SnackUtil {
   static SnackBar stylishSnackBar({
