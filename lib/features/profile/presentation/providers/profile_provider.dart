@@ -82,7 +82,7 @@ class UserNotifier with ChangeNotifier {
   Future<bool> updateUserDetails({
     String? userEmail,
     required String userAddress,
-    required String userPhoneNo,
+    String? userPhoneNo,
     String? fullName,
     String? city,
     required BuildContext context,
@@ -90,9 +90,10 @@ class UserNotifier with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      final phone = userPhoneNo ?? _profile?.phone;
       _profile = await _profileService.updateProfile(
         fullName: fullName,
-        phone: userPhoneNo,
+        phone: phone,
         email: userEmail,
         address: userAddress,
         city: city,

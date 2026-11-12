@@ -76,87 +76,59 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
 
     if (res != null && res['success'] == true && mounted) {
-      // تفريغ السلة في التطبيق
-      await cartNotifier.loadCart();
+      // تفريغ السلة في التطبيق وتحديثها
+      await cartNotifier.loadCart(silent: true);
+      if (!mounted) return;
 
       final orderNumber = res['order_number']?.toString() ?? '';
-      final orderId = res['order_id']?.toString() ?? '';
 
-      _showSuccessDialog(orderNumber, orderId);
-    }
-  }
+      // العودة تلقائياً ومباشرة إلى الصفحة الرئيسية
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRouter.homeRoute,
+        (route) => false,
+      );
 
-  void _showSuccessDialog(String orderNumber, String orderId) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.12),
-                shape: BoxShape.circle,
+      // إظهار إشعار فوري أنيق بنجاح استلام الطلب ورقم الطلب
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xff1E232A),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'تم استلام طلبك بنجاح! 🎉',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (orderNumber.isNotEmpty)
+                      Text(
+                        'رقم الطلب: #$orderNumber',
+                        style: const TextStyle(
+                          color: AppColors.rawSienna,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              child: const Icon(Icons.check_circle, color: Colors.green, size: 56),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'تم استلام طلبك بنجاح! 🎉',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'رقم الطلب:\n$orderNumber',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: AppColors.rawSienna,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'سيتم تجهيز وشحن طلبك في أقرب وقت. يمكنك متابعة حالة الطلب من صفحة طلباتي.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Colors.grey),
-            ),
-          ],
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                AppRouter.homeRoute,
-                (route) => false,
-              );
-            },
-            child: const Text('الرئيسية'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.rawSienna,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pushReplacementNamed(
-                AppRouter.ordersRoute,
-              );
-            },
-            child: const Text('عرض طلباتي 📦', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
+      );
+    }
   }
 
   @override

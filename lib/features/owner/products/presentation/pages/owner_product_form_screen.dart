@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/theme/app_colors.dart';
 import 'package:scarvs/features/catalog/data/models/product_model.dart';
+import 'package:scarvs/features/catalog/presentation/providers/product_provider.dart';
 import 'package:scarvs/features/owner/presentation/providers/owner_provider.dart';
 import 'package:scarvs/app/providers/theme_provider.dart';
 import 'package:scarvs/shared/widgets/custom_back_button.dart';
@@ -380,6 +381,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     );
 
     if (success && mounted) {
+      Provider.of<ProductNotifier>(context, listen: false)
+          .refreshAll(silent: true);
       Navigator.of(context).pop();
     }
   }

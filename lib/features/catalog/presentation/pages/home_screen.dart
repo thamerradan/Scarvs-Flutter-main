@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:scarvs/app/theme/app_colors.dart';
 import 'package:scarvs/app/router/app_router.dart';
+import 'package:scarvs/features/catalog/presentation/providers/product_provider.dart';
 import 'package:scarvs/features/notifications/presentation/providers/notification_provider.dart';
 import 'package:scarvs/app/providers/theme_provider.dart';
 import 'package:scarvs/features/profile/presentation/providers/profile_provider.dart';
@@ -70,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProductNotifier>(context, listen: false).initRealtime();
       if (AuthGuard.isLoggedIn) {
         Provider.of<UserNotifier>(context, listen: false)
             .getUserData(context: context);

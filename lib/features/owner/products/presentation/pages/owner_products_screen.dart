@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/app/theme/app_colors.dart';
 import 'package:scarvs/app/router/app_router.dart';
 import 'package:scarvs/features/catalog/data/models/product_model.dart';
+import 'package:scarvs/features/catalog/presentation/providers/product_provider.dart';
 import 'package:scarvs/features/owner/presentation/providers/owner_provider.dart';
 import 'package:scarvs/app/providers/theme_provider.dart';
 import 'package:scarvs/shared/widgets/custom_back_button.dart';
@@ -56,7 +57,11 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               Navigator.of(ctx).pop();
-              await ownerNotifier.deleteProduct(product.id, context: context);
+              final ok = await ownerNotifier.deleteProduct(product.id, context: context);
+              if (ok && context.mounted) {
+                Provider.of<ProductNotifier>(context, listen: false)
+                    .refreshProducts(silent: true);
+              }
             },
             child: const Text('حذف نهائي', style: TextStyle(color: Colors.white)),
           ),
@@ -277,12 +282,16 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       child: Switch(
                         value: product.isActive,
                         activeColor: Colors.green,
-                        onChanged: (val) {
-                          ownerNotifier.toggleProductStatus(
+                        onChanged: (val) async {
+                          await ownerNotifier.toggleProductStatus(
                             product.id,
                             val,
                             context: context,
                           );
+                          if (context.mounted) {
+                            Provider.of<ProductNotifier>(context, listen: false)
+                                .refreshProducts(silent: true);
+                          }
                         },
                       ),
                     ),

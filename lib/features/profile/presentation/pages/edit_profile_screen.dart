@@ -19,7 +19,6 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController nameController;
   late final TextEditingController emailController;
-  late final TextEditingController phoneController;
   late final TextEditingController addressController;
   late final TextEditingController cityController;
   final _formKey = GlobalKey<FormState>();
@@ -32,10 +31,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         TextEditingController(text: userNotifier.getUserName ?? '');
     emailController =
         TextEditingController(text: userNotifier.getUserEmail ?? '');
-    phoneController = TextEditingController(
-        text: userNotifier.getuserPhoneNumber != 'غير متوفر'
-            ? userNotifier.getuserPhoneNumber
-            : '');
     addressController = TextEditingController(
         text: userNotifier.getuserAddress != 'لم يتم تحديد العنوان'
             ? userNotifier.getuserAddress
@@ -47,7 +42,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     nameController.dispose();
     emailController.dispose();
-    phoneController.dispose();
     addressController.dispose();
     cityController.dispose();
     super.dispose();
@@ -116,19 +110,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       vSizedBox2,
                       CustomTextField.customTextField(
-                        textEditingController: phoneController,
-                        hintText: 'رقم الهاتف',
-                        keyboardType: TextInputType.phone,
-                        prefixIcon: const Icon(Icons.phone_outlined),
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return 'يرجى إدخال رقم الهاتف';
-                          }
-                          return null;
-                        },
-                      ),
-                      vSizedBox2,
-                      CustomTextField.customTextField(
                         textEditingController: cityController,
                         hintText: 'المدينة',
                         prefixIcon: const Icon(Icons.location_city_outlined),
@@ -161,7 +142,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         await userNotifier.updateUserDetails(
                                       fullName: nameController.text.trim(),
                                       userEmail: emailController.text.trim(),
-                                      userPhoneNo: phoneController.text.trim(),
                                       city: cityController.text.trim(),
                                       userAddress:
                                           addressController.text.trim(),

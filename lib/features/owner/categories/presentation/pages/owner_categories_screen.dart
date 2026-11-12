@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/theme/app_colors.dart';
 import 'package:scarvs/features/catalog/data/models/category_model.dart';
+import 'package:scarvs/features/catalog/presentation/providers/product_provider.dart';
 import 'package:scarvs/features/owner/presentation/providers/owner_provider.dart';
 import 'package:scarvs/app/providers/theme_provider.dart';
 import 'package:scarvs/shared/widgets/custom_back_button.dart';
@@ -180,6 +181,10 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       context: context,
                     );
                   }
+                  if (context.mounted) {
+                    Provider.of<ProductNotifier>(context, listen: false)
+                        .refreshCategories(silent: true);
+                  }
                 },
                 child: Text(
                   isEditing ? 'حفظ التعديلات ✅' : 'إضافة التصنيف ➕',
@@ -214,7 +219,11 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               Navigator.of(ctx).pop();
-              await ownerNotifier.deleteCategory(category.id, context: context);
+              final ok = await ownerNotifier.deleteCategory(category.id, context: context);
+              if (ok && context.mounted) {
+                Provider.of<ProductNotifier>(context, listen: false)
+                    .refreshCategories(silent: true);
+              }
             },
             child: const Text('حذف', style: TextStyle(color: Colors.white)),
           ),

@@ -37,16 +37,21 @@ class CartNotifier with ChangeNotifier {
   bool get isEmpty => _cartItems.isEmpty;
 
   /// تحميل عناصر السلة وإعدادات التوصيل
-  Future<List<CartItemModel>> loadCart({BuildContext? context}) async {
-    _isLoading = true;
-    notifyListeners();
+  Future<List<CartItemModel>> loadCart({
+    BuildContext? context,
+    bool silent = false,
+  }) async {
+    if (!silent) {
+      _isLoading = true;
+      notifyListeners();
+    }
     try {
       final shippingConfig = await _cartService.fetchShippingConfig();
       _shippingFee = shippingConfig['shipping_fee'] ?? 25.0;
       _freeShippingLimit = shippingConfig['free_shipping_limit'] ?? 300.0;
 
-      _cartItems = await _cartService.fetchCartItems();
-      notifyListeners();
+      final items = await _cartService.fetchCartItems();
+      _cartItems = items;
       return _cartItems;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {
@@ -61,7 +66,9 @@ class CartNotifier with ChangeNotifier {
     } catch (_) {
       return [];
     } finally {
-      _isLoading = false;
+      if (!silent) {
+        _isLoading = false;
+      }
       notifyListeners();
     }
   }
@@ -75,7 +82,7 @@ class CartNotifier with ChangeNotifier {
     return list.isEmpty ? null : list;
   }
 
-  /// إضافة منتج إلى السلة
+  /// إضافة منتج إلى السلة مع تحديث فوري للواجهة ومزامنة في الخلفية (Optimistic Update)
   Future<bool> addToCart({
     String? useremail,
     required String productPrice,
@@ -87,18 +94,62 @@ class CartNotifier with ChangeNotifier {
     String? productId,
     String? variantId,
   }) async {
+    final pid = productId ?? '';
+    final parsedPrice = double.tryParse(productPrice) ?? 0.0;
+    final previousItems = List<CartItemModel>.from(_cartItems);
+
+    // 1. التحديث الفوري للواجهة (Optimistic UI Update)
+    final existingIndex = _cartItems.indexWhere(
+      (c) =>
+          (pid.isNotEmpty && c.productId == pid) &&
+          (variantId == null || c.variantId == variantId),
+    );
+
+    if (existingIndex != -1) {
+      final currentItem = _cartItems[existingIndex];
+      _cartItems[existingIndex] = currentItem.copyWith(
+        quantity: currentItem.quantity + 1,
+      );
+    } else {
+      final tempItem = CartItemModel(
+        id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+        userId: '',
+        productId: pid.isNotEmpty ? pid : productName,
+        variantId: variantId,
+        quantity: 1,
+        productName: productName,
+        productPrice: parsedPrice,
+        productImage: productImage,
+        productSize: productSize,
+        stockQuantity: 99,
+        isAvailable: true,
+      );
+      _cartItems.add(tempItem);
+    }
+    // إشعار مستمعي الحالة بتحديث السلة والعداد فوراً
+    notifyListeners();
+
+    // 2. المزامنة بالخلفية مع قاعدة البيانات
     try {
-      final pid = productId ?? '';
       final success = await _cartService.addToCart(
         productId: pid.isNotEmpty ? pid : productName,
         variantId: variantId,
         quantity: 1,
       );
+
       if (success) {
-        await loadCart(context: context);
+        // مزامنة البيانات بصمت في الخلفية
+        await loadCart(silent: true);
+        return true;
+      } else {
+        // التراجع في حال فشل الإضافة
+        _cartItems = previousItems;
+        notifyListeners();
+        return false;
       }
-      return success;
     } on SocketException catch (_) {
+      _cartItems = previousItems;
+      notifyListeners();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(
@@ -109,6 +160,8 @@ class CartNotifier with ChangeNotifier {
       }
       return false;
     } catch (e) {
+      _cartItems = previousItems;
+      notifyListeners();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(
@@ -121,7 +174,7 @@ class CartNotifier with ChangeNotifier {
     }
   }
 
-  /// زيادة كمية عنصر في السلة مع التحقق من المخزون
+  /// زيادة كمية عنصر في السلة مع تحديث فوري ومزامنة بالخلفية
   Future<void> incrementQuantity(
     CartItemModel item, {
     BuildContext? context,
@@ -139,7 +192,6 @@ class CartNotifier with ChangeNotifier {
     }
 
     final newQty = item.quantity + 1;
-    // تحديث تفاؤلي سريع في الواجهة
     final index = _cartItems.indexWhere((c) => c.id == item.id);
     if (index != -1) {
       _cartItems[index] = item.copyWith(quantity: newQty);
@@ -151,12 +203,13 @@ class CartNotifier with ChangeNotifier {
         cartItemId: item.id,
         newQuantity: newQty,
       );
+      await loadCart(silent: true);
     } catch (_) {
-      await loadCart();
+      await loadCart(silent: true);
     }
   }
 
-  /// تقليل كمية عنصر في السلة
+  /// تقليل كمية عنصر في السلة مع تحديث فوري ومزامنة بالخلفية
   Future<void> decrementQuantity(
     CartItemModel item, {
     BuildContext? context,
@@ -178,16 +231,18 @@ class CartNotifier with ChangeNotifier {
         cartItemId: item.id,
         newQuantity: newQty,
       );
+      await loadCart(silent: true);
     } catch (_) {
-      await loadCart();
+      await loadCart(silent: true);
     }
   }
 
-  /// حذف عنصر من السلة
+  /// حذف عنصر من السلة مع تحديث فوري ومزامنة بالخلفية
   Future<bool> deleteCartItem(
     String cartItemId, {
     BuildContext? context,
   }) async {
+    final previousItems = List<CartItemModel>.from(_cartItems);
     _cartItems.removeWhere((c) => c.id == cartItemId);
     notifyListeners();
 
@@ -201,9 +256,11 @@ class CartNotifier with ChangeNotifier {
           ),
         );
       }
+      await loadCart(silent: true);
       return success;
     } catch (e) {
-      await loadCart();
+      _cartItems = previousItems;
+      notifyListeners();
       return false;
     }
   }

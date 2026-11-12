@@ -1,6 +1,7 @@
 // يدير بيانات المنتجات والتصنيفات وعمليات تحميلها.
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:scarvs/features/catalog/data/models/category_model.dart';
 import 'package:scarvs/features/catalog/data/models/product_model.dart';
 import 'package:scarvs/features/catalog/data/product_service.dart';
@@ -24,6 +25,7 @@ class ProductNotifier with ChangeNotifier {
   ProductItem? _currentProduct;
   ProductItem? get currentProduct => _currentProduct;
 
+  RealtimeChannel? _realtimeChannel;
 
   String? _selectedCategory;
   String? get selectedCategory => _selectedCategory;
@@ -33,12 +35,31 @@ class ProductNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  /// بدء الاستماع اللحظي (Supabase Realtime) للتحديثات على المنتجات والأصناف
+  void initRealtime() {
+    if (_realtimeChannel != null) return;
+    try {
+      _realtimeChannel = _productService.subscribeToCatalogChanges(
+        onProductsChanged: () {
+          refreshProducts(silent: true);
+        },
+        onCategoriesChanged: () {
+          refreshCategories(silent: true);
+        },
+      );
+    } catch (e) {
+      debugPrint('Error subscribing to catalog realtime: $e');
+    }
+  }
+
   /// تحميل البيانات الأولية للرئيسية (التصنيفات والمنتجات) مرة واحدة مع التخزين المؤقت
   Future<void> loadInitialData({bool refresh = false, BuildContext? context}) async {
+    // تفعيل التحديث اللحظي تلقائياً
+    initRealtime();
+
     if (_hasLoaded && !refresh && _products.isNotEmpty && _categories.isNotEmpty) {
       return;
     }
-
 
     _isLoading = true;
     notifyListeners();
@@ -67,6 +88,56 @@ class ProductNotifier with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// تحديث قائمة المنتجات تلقائياً (صامتاً أو مع مؤشر)
+  Future<List<ProductItem>> refreshProducts({
+    bool silent = true,
+    BuildContext? context,
+  }) async {
+    if (!silent) {
+      _isLoading = true;
+      notifyListeners();
+    }
+    try {
+      final list = await _productService.fetchProducts();
+      _products = list;
+      _hasLoaded = true;
+      notifyListeners();
+      return list;
+    } catch (e) {
+      debugPrint('Error refreshing products: $e');
+      return _products;
+    } finally {
+      if (!silent) {
+        _isLoading = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  /// تحديث قائمة الأصناف تلقائياً (صامتاً أو مع مؤشر)
+  Future<List<CategoryModel>> refreshCategories({
+    bool silent = true,
+    BuildContext? context,
+  }) async {
+    try {
+      final list = await _productService.fetchCategories();
+      _categories = list;
+      notifyListeners();
+      return list;
+    } catch (e) {
+      debugPrint('Error refreshing categories: $e');
+      return _categories;
+    }
+  }
+
+  /// تحديث كامل للمنتجات والأصناف
+  Future<void> refreshAll({bool silent = true, BuildContext? context}) async {
+    await Future.wait([
+      refreshProducts(silent: silent, context: context),
+      refreshCategories(silent: silent, context: context),
+    ]);
   }
 
   /// جلب التصنيفات
@@ -180,5 +251,14 @@ class ProductNotifier with ChangeNotifier {
     } catch (e) {
       return [];
     }
+  }
+
+  @override
+  void dispose() {
+    if (_realtimeChannel != null) {
+      _productService.unsubscribeChannel(_realtimeChannel!);
+      _realtimeChannel = null;
+    }
+    super.dispose();
   }
 }
