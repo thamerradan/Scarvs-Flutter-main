@@ -330,7 +330,7 @@ class _GuestPlaceholder extends StatelessWidget {
                   );
                 },
                 child: const Text(
-                  'تسجيل الدخول برقم الهاتف',
+                  'تسجيل الدخول ',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),

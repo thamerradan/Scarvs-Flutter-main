@@ -72,14 +72,7 @@ class AuthenticationNotifier with ChangeNotifier {
       _lastGeneratedOtp = otp;
       notifyListeners();
 
-      if (context.mounted && otp != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'رمز التحقق هو: $otp 🔑',
-            context: context,
-          ),
-        );
-      }
+    
       return true;
     } on SocketException catch (_) {
       if (context.mounted) {

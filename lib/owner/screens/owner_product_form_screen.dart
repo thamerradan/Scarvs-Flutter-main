@@ -81,15 +81,6 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
           'stock_quantity': v.stock,
         });
       }
-    } else {
-      // مقاسات افتراضية للحذاء الجديد
-      _variants.addAll([
-        {'size': '40', 'stock_quantity': 5},
-        {'size': '41', 'stock_quantity': 5},
-        {'size': '42', 'stock_quantity': 5},
-        {'size': '43', 'stock_quantity': 5},
-        {'size': '44', 'stock_quantity': 5},
-      ]);
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -560,6 +551,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
 
                     // جدول المقاسات
                     Container(
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: themeFlag ? Colors.white10 : Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -568,38 +560,83 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                               .withOpacity(0.1),
                         ),
                       ),
-                      child: Column(
-                        children: _variants.asMap().entries.map((entry) {
-                          final idx = entry.key;
-                          final item = entry.value;
-
-                          return ListTile(
-                            dense: true,
-                            leading: CircleAvatar(
-                              backgroundColor: AppColors.rawSienna.withOpacity(0.2),
-                              radius: 16,
-                              child: Text(
-                                '${item['size']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.rawSienna,
-                                  fontSize: 12,
-                                ),
+                      child: _variants.isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 24, horizontal: 16),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.straighten_outlined,
+                                    size: 38,
+                                    color: (themeFlag
+                                            ? AppColors.creamColor
+                                            : AppColors.mirage)
+                                        .withOpacity(0.3),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'لم تتم إضافة أي مقاسات بعد',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: (themeFlag
+                                              ? AppColors.creamColor
+                                              : AppColors.mirage)
+                                          .withOpacity(0.7),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'اضغط على "إضافة مقاس" أعلاه لتحديد المقاسات المتوفرة والكميات',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: (themeFlag
+                                              ? AppColors.creamColor
+                                              : AppColors.mirage)
+                                          .withOpacity(0.45),
+                                    ),
+                                  ),
+                                ],
                               ),
+                            )
+                          : Column(
+                              children: _variants.asMap().entries.map((entry) {
+                                final idx = entry.key;
+                                final item = entry.value;
+
+                                return ListTile(
+                                  dense: true,
+                                  leading: CircleAvatar(
+                                    backgroundColor:
+                                        AppColors.rawSienna.withOpacity(0.2),
+                                    radius: 16,
+                                    child: Text(
+                                      '${item['size']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.rawSienna,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text('المقاس: ${item['size']}'),
+                                  subtitle: Text(
+                                      'الكمية: ${item['stock_quantity']} قطعة'),
+                                  trailing: IconButton(
+                                    icon: const Icon(
+                                        Icons.remove_circle_outline,
+                                        color: Colors.red),
+                                    onPressed: () {
+                                      setState(() {
+                                        _variants.removeAt(idx);
+                                      });
+                                    },
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                            title: Text('المقاس: ${item['size']}'),
-                            subtitle: Text('الكمية: ${item['stock_quantity']} قطعة'),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                              onPressed: () {
-                                setState(() {
-                                  _variants.removeAt(idx);
-                                });
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      ),
                     ),
                     const SizedBox(height: 30),
 

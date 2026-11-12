@@ -659,9 +659,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
         return null;
       },
       decoration: InputDecoration(
-        hintText: _selectedCountry == '+967'
-            ? '7xxxxxxxx (مثال: 771234567)'
-            : '5xxxxxxxx (مثال: 0512345678)',
+        hintText: "أدخل رقم الهاتف ",
         hintStyle: GoogleFonts.cairo(
           color: textColor.withValues(alpha: 0.4),
           fontSize: 13,

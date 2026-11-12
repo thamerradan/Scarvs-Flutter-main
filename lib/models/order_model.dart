@@ -58,11 +58,11 @@ class OrderModel {
       case 'preparing':
         return 'جاري التجهيز';
       case 'shipped':
-        return 'تم الشحن 🚚';
+        return 'تم الشحن';
       case 'delivered':
-        return 'تم التسليم بنجاح ✅';
+        return 'تم التسليم بنجاح';
       case 'cancelled':
-        return 'ملغي ❌';
+        return 'ملغي';
       default:
         return orderStatus;
     }

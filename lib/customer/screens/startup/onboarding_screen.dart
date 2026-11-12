@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
+import 'package:scarvs/core/theme/app_fonts.dart';
 import 'package:scarvs/customer/widgets/onboarding_widget.dart';
 import 'package:scarvs/customer/screens/startup/onboarding_model.dart';
 
@@ -38,21 +39,44 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
+  int _currentPage = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ConcentricPageView(
         colors: widget.colors,
-        radius: 30,
-        itemCount: 3,
+        radius: 42,
+        verticalPosition: 0.82,
+        itemCount: widget.cards.length,
         curve: Curves.ease,
         duration: const Duration(seconds: 2),
+        onChange: (page) {
+          setState(() {
+            _currentPage = page;
+          });
+        },
+        nextButtonBuilder: (_) {
+          return Container(
+            width: 60,
+            height: 60,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.arrow_back,
+              size: 28,
+            ),
+          );
+        },
         itemBuilder: (index) {
-          OnBoardingModel card = widget.cards[index % widget.cards.length];
+          final card = widget.cards[index % widget.cards.length];
           return PageCard(card: card);
         },
         onFinish: () {
-          Navigator.of(context).pushReplacementNamed(AppRouter.splashRoute);
+          Navigator.of(context).pushReplacementNamed(
+            AppRouter.splashRoute,
+          );
         },
       ),
     );
