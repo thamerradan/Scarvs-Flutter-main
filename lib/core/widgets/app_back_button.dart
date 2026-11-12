@@ -1,6 +1,8 @@
 // يوفر زري رجوع مخصصين للتنقل وإغلاق الشاشة.
 import 'package:flutter/material.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 
 /// زر رجوع ذكي متوافق تماماً مع اتجاه اللغة العربية (RTL).
 /// في الواجهة العربية، يشير السهم لليمين (اتجاه الرجوع الطبيعي) مع توسيط بصري دقيق وتأثير لمس ناعم.
@@ -104,8 +106,15 @@ class AppBackPop extends StatelessWidget {
           onTap: () {
             if (onPop != null) {
               onPop!();
-            } else {
+            } else if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
+            } else {
+              final isOwner = AuthGuard.isOwner;
+              Navigator.of(context).pushReplacementNamed(
+                isOwner
+                    ? AppRouter.ownerDashboardRoute
+                    : AppRouter.customerHomeRoute,
+              );
             }
           },
           child: Container(

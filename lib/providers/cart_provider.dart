@@ -255,20 +255,4 @@ class CartNotifier with ChangeNotifier {
       return false;
     }
   }
-
-  /// دعم التوافق مع الدوال القديمة
-  Future<bool> deleteFromCart({
-    required BuildContext context,
-    required dynamic productId,
-  }) async {
-    final item = _cartItems.firstWhere(
-      (c) => c.id == productId.toString() || c.productId == productId.toString(),
-      orElse: () => _cartItems.first,
-    );
-    return await deleteCartItem(item.id, context: context);
-  }
-
-  void refresh() {
-    loadCart();
-  }
 }

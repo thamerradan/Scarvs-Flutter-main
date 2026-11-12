@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/product_model.dart';
-import 'package:scarvs/screens/shop/product_detail_screen.dart';
+import 'package:scarvs/customer/screens/shop/product_detail_screen.dart';
 
 Widget showDataInGrid({
   required dynamic snapshot,

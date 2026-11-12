@@ -11,6 +11,7 @@ import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/supabase/supabase_client.dart';
 import 'package:scarvs/core/supabase/supabase_config.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -61,8 +62,18 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     if (!mounted) return;
-    // التوجه مباشرة للصفحة الرئيسية سواء كان المستخدم مسجلاً أو زائراً
-    Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute);
+    final userRole = AuthGuard.currentUserRole;
+    if (userRole == 'owner') {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRouter.ownerDashboardRoute,
+      );
+    } else {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRouter.customerHomeRoute,
+      );
+    }
   }
 
   @override

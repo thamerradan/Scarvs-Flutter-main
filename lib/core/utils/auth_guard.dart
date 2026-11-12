@@ -26,8 +26,32 @@ import 'package:scarvs/core/supabase/supabase_client.dart';
 class AuthGuard {
   AuthGuard._();
 
+  static String? _cachedRole;
+
+  /// تعيين الدور الحالي يدوياً عند تحديث الملف الشخصي
+  static void setRole(String? role) {
+    _cachedRole = role;
+  }
+
   /// هل المستخدم مسجل الدخول حالياً؟
   static bool get isLoggedIn => AppSupabase.isAuthenticated;
+
+  /// دور المستخدم الحالي ('owner', 'customer', 'guest')
+  static String get currentUserRole {
+    if (_cachedRole != null && _cachedRole!.isNotEmpty) {
+      return _cachedRole!;
+    }
+    final user = AppSupabase.client.auth.currentUser;
+    if (user == null) return 'guest';
+    final metadataRole = user.userMetadata?['role']?.toString();
+    if (metadataRole != null && metadataRole.isNotEmpty) {
+      return metadataRole;
+    }
+    return 'customer';
+  }
+
+  /// هل المستخدم الحالي هو مالك/مدير المتجر؟
+  static bool get isOwner => currentUserRole == 'owner';
 
   /// التحقق من تسجيل الدخول وتنفيذ العملية أو عرض Dialog التسجيل
   static void requireAuth({

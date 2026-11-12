@@ -6,7 +6,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/category_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/screens/shop/category_screen.dart';
+import 'package:scarvs/customer/screens/shop/category_screen.dart';
 import 'package:scarvs/core/widgets/custom_text_style.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
@@ -17,7 +17,6 @@ class BrandWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = themeNotifier.darkTheme;
-    final productNotifier = Provider.of<CatalogProvider>(context, listen: false);
 
     Widget buildCategoryCard(CategoryModel cat) {
       return GestureDetector(

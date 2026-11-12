@@ -6,7 +6,7 @@ import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/widgets/category_widget.dart';
+import 'package:scarvs/customer/widgets/category_widget.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/custom_text_style.dart';

@@ -138,102 +138,12 @@ class AuthService {
     }
   }
 
-  // ============================================================
-  // Email/Password Auth (المسار الكلاسيكي / المالك)
-  // ============================================================
-
-  /// تسجيل الدخول بالبريد وكلمة المرور
-  Future<AuthResponse> signIn({
-    required String email,
-    required String password,
-  }) async {
-    return signInWithPassword(email: email, password: password);
-  }
-
-  Future<AuthResponse> signInWithPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final response = await _client.auth.signInWithPassword(
-        email: email.trim(),
-        password: password,
-      );
-      return response;
-    } catch (e) {
-      throw 'فشل تسجيل الدخول: ${e.toString()}';
-    }
-  }
-
-  /// إنشاء حساب جديد بالبريد وكلمة المرور
-  Future<AuthResponse> signUp({
-    required String email,
-    required String password,
-    required String fullName,
-    String? phone,
-  }) async {
-    try {
-      final cleanPhone = phone?.trim();
-      final cleanEmail = email.trim();
-
-      // فحص عدم تكرار الهاتف إن وجد
-      if (cleanPhone != null && cleanPhone.isNotEmpty) {
-        final existing = await _client
-            .from(SupabaseTables.profiles)
-            .select('id')
-            .eq('phone', cleanPhone)
-            .maybeSingle();
-        if (existing != null) {
-          throw 'رقم الهاتف هذا مسجل مسبقاً، يرجى تسجيل الدخول بدلاً من إنشاء حساب جديد';
-        }
-      }
-
-      final response = await _client.auth.signUp(
-        email: cleanEmail,
-        password: password,
-        data: {
-          'full_name': fullName.trim(),
-          if (cleanPhone != null && cleanPhone.isNotEmpty) 'phone': cleanPhone,
-          'role': 'customer',
-        },
-      );
-      return response;
-    } catch (e) {
-      throw 'فشل إنشاء الحساب: ${e.toString()}';
-    }
-  }
-
   /// تسجيل الخروج
   Future<void> signOut() async {
     try {
       await _client.auth.signOut();
     } catch (e) {
       throw 'فشل تسجيل الخروج: ${e.toString()}';
-    }
-  }
-
-  /// إعادة تعيين كلمة المرور عبر البريد
-  Future<void> resetPassword({required String email}) async {
-    return resetPasswordForEmail(email);
-  }
-
-  Future<void> resetPasswordForEmail(String email) async {
-    try {
-      await _client.auth.resetPasswordForEmail(email.trim());
-    } catch (e) {
-      throw 'فشل إرسال رابط استعادة كلمة المرور: ${e.toString()}';
-    }
-  }
-
-  /// تحديث كلمة المرور للمستخدم المسجل حالياً
-  Future<UserResponse> updatePassword({required String newPassword}) async {
-    try {
-      final response = await _client.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-      return response;
-    } catch (e) {
-      throw 'فشل تحديث كلمة المرور: ${e.toString()}';
     }
   }
 

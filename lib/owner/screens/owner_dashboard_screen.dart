@@ -1,11 +1,13 @@
 // تعرض لوحة تحكم المالك ومؤشرات أداء المتجر.
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
+import 'package:scarvs/providers/auth_provider.dart';
+import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
@@ -22,7 +24,40 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<OwnerNotifier>(context, listen: false)
           .fetchDashboard(context: context);
+      final notifNotifier =
+          Provider.of<NotificationNotifier>(context, listen: false);
+      notifNotifier.fetchNotifications(context: context);
+      notifNotifier.initRealtime(context);
     });
+  }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تسجيل الخروج'),
+        content: const Text('هل أنت متأكد من تسجيل الخروج من لوحة التحكم؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text(
+              'تسجيل خروج',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await Provider.of<AuthenticationNotifier>(context, listen: false)
+          .signOut(context: context);
+    }
   }
 
   @override
@@ -32,24 +67,35 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     final ownerNotifier = Provider.of<OwnerNotifier>(context);
     final stats = ownerNotifier.stats;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        body: RefreshIndicator(
-          onRefresh: () => ownerNotifier.fetchDashboard(context: context),
-          child: Column(
-            children: [
-              // الهيدر
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    AppBackPop(themeFlag: themeFlag),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        SystemNavigator.pop();
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await ownerNotifier.fetchDashboard(context: context);
+              if (context.mounted) {
+                await Provider.of<NotificationNotifier>(context, listen: false)
+                    .fetchNotifications(context: context);
+              }
+            },
+            child: Column(
+              children: [
+                // الهيدر
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                           Row(
                             children: [
                               Flexible(
@@ -94,10 +140,67 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                         ],
                       ),
                     ),
+                    Consumer<NotificationNotifier>(
+                      builder: (context, notifNotifier, _) {
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.notifications_outlined),
+                              color: themeFlag
+                                  ? AppColors.creamColor
+                                  : AppColors.mirage,
+                              tooltip: 'إشعارات المتجر',
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                  AppRouter.ownerNotificationsRoute,
+                                );
+                              },
+                            ),
+                            if (notifNotifier.unreadCount > 0)
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeFlag
+                                          ? AppColors.mirage
+                                          : AppColors.creamColor,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 18,
+                                    minHeight: 18,
+                                  ),
+                                  child: Text(
+                                    notifNotifier.unreadCount > 99
+                                        ? '99+'
+                                        : '${notifNotifier.unreadCount}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
                     IconButton(
-                      icon: const Icon(Icons.refresh),
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      onPressed: () => ownerNotifier.fetchDashboard(context: context),
+                      icon: const Icon(Icons.logout, color: Colors.redAccent),
+                      tooltip: 'تسجيل الخروج',
+                      onPressed: () => _confirmSignOut(context),
                     ),
                   ],
                 ),
@@ -145,6 +248,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -394,6 +498,27 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           color: Colors.brown,
           themeFlag: themeFlag,
           onTap: () => Navigator.of(context).pushNamed(AppRouter.ownerSettingsRoute),
+        ),
+        const SizedBox(height: 12),
+        Consumer<NotificationNotifier>(
+          builder: (context, notifNotifier, _) {
+            return _buildMenuActionTile(
+              context: context,
+              title: 'إشعارات وتنبيهات المتجر',
+              subtitle: notifNotifier.unreadCount > 0
+                  ? '${notifNotifier.unreadCount} إشعار جديد بانتظار المتابعة'
+                  : 'تنبيهات الطلبات الجديدة وتحديثات الشحنات',
+              icon: Icons.notifications_active_outlined,
+              badgeCount: notifNotifier.unreadCount > 0
+                  ? notifNotifier.unreadCount
+                  : null,
+              color: Colors.amber.shade800,
+              themeFlag: themeFlag,
+              onTap: () => Navigator.of(context).pushNamed(
+                AppRouter.ownerNotificationsRoute,
+              ),
+            );
+          },
         ),
       ],
     );

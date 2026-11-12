@@ -1,7 +1,7 @@
 // يعرض بطاقة المحتوى والصورة لصفحة التعريف الأولي.
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:scarvs/screens/startup/onboarding_model.dart';
+import 'package:scarvs/customer/screens/startup/onboarding_model.dart';
 import 'package:scarvs/core/widgets/custom_text_style.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 

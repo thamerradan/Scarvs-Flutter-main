@@ -10,10 +10,10 @@ import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
-import 'package:scarvs/screens/cart/cart_screen.dart';
-import 'package:scarvs/screens/shop/product_screen.dart';
-import 'package:scarvs/screens/profile/profile_screen.dart';
-import 'package:scarvs/screens/shop/search_screen.dart';
+import 'package:scarvs/customer/screens/cart/cart_screen.dart';
+import 'package:scarvs/customer/screens/shop/product_screen.dart';
+import 'package:scarvs/customer/screens/profile/profile_screen.dart';
+import 'package:scarvs/customer/screens/shop/search_screen.dart';
 
 final List<SalomonBottomBarItem> bottomNavBarIcons = [
   SalomonBottomBarItem(

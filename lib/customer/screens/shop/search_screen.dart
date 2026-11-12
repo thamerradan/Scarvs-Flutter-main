@@ -5,7 +5,7 @@ import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/widgets/category_widget.dart';
+import 'package:scarvs/customer/widgets/category_widget.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';

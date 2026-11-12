@@ -1,5 +1,4 @@
 // ينفذ جلب إشعارات المستخدم وتحديثها.
-import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/core/supabase/supabase_client.dart';

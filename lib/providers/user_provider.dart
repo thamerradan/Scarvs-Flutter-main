@@ -5,6 +5,7 @@ import 'package:scarvs/models/profile_model.dart';
 import 'package:scarvs/services/auth_service.dart';
 import 'package:scarvs/services/user_service.dart';
 import 'package:scarvs/core/utils/snackbar_util.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 
 class UserProvider with ChangeNotifier {
   final ProfileService _profileService = ProfileService();
@@ -52,6 +53,7 @@ class UserProvider with ChangeNotifier {
     _isLoading = true;
     try {
       _profile = await _profileService.getProfile();
+      AuthGuard.setRole(_profile?.role);
       notifyListeners();
     } on SocketException catch (_) {
       if (context.mounted) {
@@ -115,42 +117,6 @@ class UserProvider with ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(
             text: 'فشل التحديث: $e',
-            context: context,
-          ),
-        );
-      }
-      return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  /// تغيير كلمة المرور
-  Future<bool> changePassword({
-    String? userEmail,
-    String? oluserpassword,
-    required String newuserpassword,
-    required BuildContext context,
-  }) async {
-    _isLoading = true;
-    notifyListeners();
-    try {
-      await _authService.updatePassword(newPassword: newuserpassword);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم تغيير كلمة المرور بنجاح',
-            context: context,
-          ),
-        );
-      }
-      return true;
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'فشل تغيير كلمة المرور: $e',
             context: context,
           ),
         );

@@ -9,7 +9,7 @@ import 'package:scarvs/providers/size_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/utils/snackbar_util.dart';
-import 'package:scarvs/widgets/select_size.dart';
+import 'package:scarvs/customer/widgets/select_size.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 Widget productUI({

@@ -5,6 +5,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/profile_model.dart';
 import 'package:scarvs/services/auth_service.dart';
 import 'package:scarvs/services/user_service.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/utils/snackbar_util.dart';
 
 class AuthenticationNotifier with ChangeNotifier {
@@ -25,52 +26,22 @@ class AuthenticationNotifier with ChangeNotifier {
   /// هل المستخدم مسجل الدخول حالياً؟
   bool get isAuthenticated => _authService.isAuthenticated;
 
-  // متغيرات قوة كلمة المرور (محتفظ بها للتوافق)
-  String _passwordLevel = "";
-  String get passwordLevel => _passwordLevel;
-  String _passwordEmoji = "";
-  String get passwordEmoji => _passwordEmoji;
-  String _passwordTextArabic = "";
-  String get passwordTextArabic => _passwordTextArabic;
-
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
-  }
-
-  /// فحص قوة كلمة المرور
-  void checkPasswordStrength({required String password}) {
-    String mediumPattern = r'^(?=.*?[!@#\$&*~]).{8,}';
-    String strongPattern =
-        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-
-    if (password.contains(RegExp(strongPattern))) {
-      _passwordEmoji = '🚀';
-      _passwordLevel = 'Strong';
-      _passwordTextArabic = 'قوية جداً';
-      notifyListeners();
-    } else if (password.contains(RegExp(mediumPattern))) {
-      _passwordEmoji = '🔥';
-      _passwordLevel = 'Medium';
-      _passwordTextArabic = 'متوسطة';
-      notifyListeners();
-    } else {
-      _passwordEmoji = '😢';
-      _passwordLevel = 'Weak';
-      _passwordTextArabic = 'ضعيفة';
-      notifyListeners();
-    }
   }
 
   /// جلب الملف الشخصي الحالي
   Future<UserProfile?> fetchCurrentUserProfile() async {
     if (!_authService.isAuthenticated) {
       _currentProfile = null;
+      AuthGuard.setRole(null);
       notifyListeners();
       return null;
     }
     try {
       _currentProfile = await _profileService.getProfile();
+      AuthGuard.setRole(_currentProfile?.role);
       notifyListeners();
       return _currentProfile;
     } catch (_) {
@@ -186,13 +157,16 @@ class AuthenticationNotifier with ChangeNotifier {
               context: context,
             ),
           );
-          // الرجوع إلى الشاشة المطلوبة أو الرئيسية
-          if (returnRoute != null) {
-            Navigator.of(context).pushReplacementNamed(returnRoute);
+          final userRole = _currentProfile?.role ?? 'customer';
+          if (userRole == 'owner') {
+            Navigator.pushReplacementNamed(
+              context,
+              AppRouter.ownerDashboardRoute,
+            );
           } else {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRouter.homeRoute,
-              (route) => false,
+            Navigator.pushReplacementNamed(
+              context,
+              AppRouter.customerHomeRoute,
             );
           }
         }
@@ -224,184 +198,17 @@ class AuthenticationNotifier with ChangeNotifier {
     }
   }
 
-  // ============================================================
-  // Email/Password Auth (محتفظ بها للتوافق وللمالك)
-  // ============================================================
-
-  /// إنشاء حساب جديد (بريد + كلمة مرور - للمالك فقط)
-  Future<void> createAccount({
-    required BuildContext context,
-    required String useremail,
-    required String username,
-    required String userpassword,
-    String? phone,
-  }) async {
-    _setLoading(true);
-    try {
-      final res = await _authService.signUp(
-        email: useremail,
-        password: userpassword,
-        fullName: username,
-        phone: phone,
-      );
-
-      if (res.user != null) {
-        await fetchCurrentUserProfile();
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(
-              text: 'تم إنشاء الحساب بنجاح! مرحباً بك',
-              context: context,
-            ),
-          );
-          Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute);
-        }
-      }
-    } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  /// تسجيل الدخول (بريد + كلمة مرور - للمالك فقط)
-  Future<void> userLogin({
-    required BuildContext context,
-    required String useremail,
-    required String userpassword,
-  }) async {
-    _setLoading(true);
-    try {
-      final res = await _authService.signIn(
-        email: useremail,
-        password: userpassword,
-      );
-
-      if (res.user != null) {
-        await fetchCurrentUserProfile();
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(
-              text: 'تم تسجيل الدخول بنجاح',
-              context: context,
-            ),
-          );
-          Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute);
-        }
-      }
-    } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  /// استعادة كلمة المرور
-  Future<bool> resetPassword({
-    required BuildContext context,
-    required String email,
-  }) async {
-    _setLoading(true);
-    try {
-      await _authService.resetPassword(email: email);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني',
-            context: context,
-          ),
-        );
-      }
-      return true;
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  /// تحديث كلمة المرور
-  Future<bool> updatePassword({
-    required BuildContext context,
-    required String newPassword,
-  }) async {
-    _setLoading(true);
-    try {
-      await _authService.updatePassword(newPassword: newPassword);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم تغيير كلمة المرور بنجاح',
-            context: context,
-          ),
-        );
-      }
-      return true;
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  /// تسجيل الخروج → يرجع للرئيسية لا لصفحة Login
+  /// تسجيل الخروج → يرجع للرئيسية
   Future<void> signOut({required BuildContext context}) async {
     _setLoading(true);
     try {
       await _authService.signOut();
       _currentProfile = null;
+      AuthGuard.setRole(null);
       notifyListeners();
       if (context.mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil(
-          AppRouter.homeRoute,
+          AppRouter.customerHomeRoute,
           (route) => false,
         );
       }

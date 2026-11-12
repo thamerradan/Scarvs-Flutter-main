@@ -7,7 +7,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
-import 'package:scarvs/widgets/show_cart_data.dart';
+import 'package:scarvs/customer/widgets/show_cart_data.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class CartScreen extends StatefulWidget {

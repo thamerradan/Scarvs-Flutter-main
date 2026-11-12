@@ -8,8 +8,8 @@ import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
-import 'package:scarvs/widgets/brands_widget.dart';
-import 'package:scarvs/widgets/recommended_widget.dart';
+import 'package:scarvs/customer/widgets/brands_widget.dart';
+import 'package:scarvs/customer/widgets/recommended_widget.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 

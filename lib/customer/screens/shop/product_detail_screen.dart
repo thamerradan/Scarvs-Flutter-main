@@ -7,7 +7,7 @@ import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/size_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/widgets/product_detail_ui.dart';
+import 'package:scarvs/customer/widgets/product_detail_ui.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 

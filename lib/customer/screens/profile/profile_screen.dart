@@ -76,79 +76,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       userNotifier: userNotifier,
                     ),
                     const Divider(height: 32),
-                    if (userNotifier.isOwner) ...[
-                      InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(AppRouter.ownerDashboardRoute);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                AppColors.rawSienna,
-                                Color(0xffE08244),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.rawSienna.withOpacity(0.3),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  Icons.admin_panel_settings,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: const [
-                                    Text(
-                                      'لوحة تحكم المتجر (الإدارة) 👑',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      'إدارة المبيعات والمنتجات والطلبات والمخزون',
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(Icons.chevron_left,
-                                  color: Colors.white),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
                     _buildMenuItem(
                       context: context,
                       title: 'طلباتي 📦',
@@ -178,17 +105,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             .then((_) => userNotifier.getUserData(context: context));
                       },
                     ),
-                    if (userNotifier.isOwner)
-                      _buildMenuItem(
-                        context: context,
-                        title: 'تغيير كلمة المرور',
-                        icon: Icons.lock_outline,
-                        themeFlag: themeFlag,
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(AppRouter.changePassRoute);
-                        },
-                      ),
                     _buildMenuItem(
                       context: context,
                       title: 'إعدادات التطبيق والمظهر',

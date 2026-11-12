@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
-import 'package:scarvs/widgets/onboarding_widget.dart';
-import 'package:scarvs/screens/startup/onboarding_model.dart';
+import 'package:scarvs/customer/widgets/onboarding_widget.dart';
+import 'package:scarvs/customer/screens/startup/onboarding_model.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   OnBoardingScreen({Key? key}) : super(key: key);
