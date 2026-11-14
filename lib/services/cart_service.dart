@@ -74,6 +74,8 @@ class CartService {
 
       if (targetVariantId != null) {
         existingQuery = existingQuery.eq('variant_id', targetVariantId);
+      } else {
+        existingQuery = existingQuery.filter('variant_id', 'is', null);
       }
 
       final existing = await existingQuery.maybeSingle();

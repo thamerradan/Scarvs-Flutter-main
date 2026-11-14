@@ -39,7 +39,7 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   void _initSizeForProduct(ProductItem prod) {
-    if (!_initializedSize && prod.variants.isNotEmpty) {
+    if (!_initializedSize) {
       _initializedSize = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -112,12 +112,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(
-                            child: customLoader(
-                              context: context,
-                              themeFlag: themeFlag,
-                              lottieAsset: AppAssets.onBoardingOne,
-                              text: 'جاري تحميل تفاصيل المنتج...',
-                            ),
+                            child: AppLoader(themeFlag: themeFlag, lottieAsset: AppAssets.onBoardingOne, text: 'جاري تحميل تفاصيل المنتج...'),
                           );
                         } else if (snapshot.hasError ||
                             !snapshot.hasData ||
@@ -128,12 +123,7 @@ class _ProductDetailState extends State<ProductDetail> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  customLoader(
-                                    context: context,
-                                    themeFlag: themeFlag,
-                                    text: 'تعذر تحميل بيانات المنتج',
-                                    lottieAsset: AppAssets.error,
-                                  ),
+                                  AppLoader(themeFlag: themeFlag, text: 'تعذر تحميل بيانات المنتج', lottieAsset: AppAssets.error),
                                   const SizedBox(height: 16),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(

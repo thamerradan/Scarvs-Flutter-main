@@ -159,7 +159,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
             // قائمة المنتجات
             Expanded(
               child: ownerNotifier.isLoading
-                  ? customLoader(isDark: themeFlag, themeFlag: themeFlag, context: context)
+                  ? AppLoader(themeFlag: themeFlag)
                   : filteredProducts.isEmpty
                       ? Center(
                           child: Column(
@@ -331,17 +331,21 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: totalStock > 0
+                        color: product.variants.isEmpty || totalStock > 0
                             ? Colors.green.withOpacity(0.12)
                             : Colors.red.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        totalStock > 0 ? '$totalStock قطعة' : 'نفذ المخزون',
+                        product.variants.isEmpty
+                            ? 'متاح'
+                            : (totalStock > 0 ? '$totalStock قطعة' : 'نفذ المخزون'),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: totalStock > 0 ? Colors.green : Colors.red,
+                          color: product.variants.isEmpty || totalStock > 0
+                              ? Colors.green
+                              : Colors.red,
                         ),
                       ),
                     ),

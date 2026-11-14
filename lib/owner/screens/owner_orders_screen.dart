@@ -202,7 +202,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
             // قائمة الطلبات
             Expanded(
               child: ownerNotifier.isLoading
-                  ? customLoader(isDark: themeFlag, themeFlag: themeFlag, context: context)
+                  ? AppLoader(themeFlag: themeFlag)
                   : ownerNotifier.orders.isEmpty
                       ? Center(
                           child: Column(

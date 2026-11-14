@@ -177,7 +177,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 vSizedBox1,
-                AppTextField.customTextField(
+                AppTextField(
                   textEditingController: phoneController,
                   hintText: 'رقم الهاتف للتواصل',
                   keyboardType: TextInputType.phone,
@@ -187,7 +187,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       : null,
                 ),
                 vSizedBox1,
-                AppTextField.customTextField(
+                AppTextField(
                   textEditingController: cityController,
                   hintText: 'المدينة',
                   prefixIcon: const Icon(Icons.location_city_outlined),
@@ -196,7 +196,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       : null,
                 ),
                 vSizedBox1,
-                AppTextField.customTextField(
+                AppTextField(
                   textEditingController: addressController,
                   hintText: 'العنوان بالتفصيل (الحي، الشارع، المبنى)',
                   prefixIcon: const Icon(Icons.home_outlined),
@@ -205,7 +205,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       : null,
                 ),
                 vSizedBox1,
-                AppTextField.customTextField(
+                AppTextField(
                   textEditingController: notesController,
                   hintText: 'ملاحظات إضافية للتوصيل (اختياري)',
                   prefixIcon: const Icon(Icons.note_alt_outlined),

@@ -13,43 +13,7 @@ Widget selectSize({
   final sizeNotifier = Provider.of<SizeNotifier>(context);
 
   if (variants.isEmpty) {
-    // إذا لم تكن هناك مقاسات مخصصة، إظهار مقاسات قياسية افتراضية
-    final defaultSizes = ['40', '41', '42', '43', '44'];
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: defaultSizes.length,
-      itemBuilder: (context, index) {
-        final s = defaultSizes[index];
-        final isSelected = sizeNotifier.size == s;
-        return GestureDetector(
-          onTap: () => sizeNotifier.selectSizeString(s),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.rawSienna
-                  : (themeFlag ? Colors.white10 : Colors.grey.shade100),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isSelected ? AppColors.rawSienna : Colors.grey.shade300,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                'EU $s',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isSelected
-                      ? Colors.white
-                      : (themeFlag ? AppColors.creamColor : AppColors.mirage),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    return const SizedBox.shrink();
   }
 
   return ListView.builder(

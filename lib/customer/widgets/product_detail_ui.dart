@@ -88,18 +88,18 @@ Widget productUI({
         ),
         vSizedBox2,
       ],
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'اختر المقاس',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+      if (snapshot.variants.isNotEmpty) ...[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'اختر المقاس',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
             ),
-          ),
-          if (snapshot.variants.isNotEmpty)
             Text(
               snapshot.inStock ? 'متوفر' : 'غير متوفر',
               style: TextStyle(
@@ -108,19 +108,20 @@ Widget productUI({
                 color: snapshot.inStock ? Colors.green : Colors.red,
               ),
             ),
-        ],
-      ),
-      const SizedBox(height: 10),
-      SizedBox(
-        height: 52,
-        width: MediaQuery.of(context).size.width,
-        child: selectSize(
-          context: context,
-          themeFlag: themeFlag,
-          variants: snapshot.variants,
+          ],
         ),
-      ),
-      vSizedBox3,
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 52,
+          width: MediaQuery.of(context).size.width,
+          child: selectSize(
+            context: context,
+            themeFlag: themeFlag,
+            variants: snapshot.variants,
+          ),
+        ),
+        vSizedBox3,
+      ],
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
@@ -197,14 +198,18 @@ Widget productUI({
                           cartNotifier
                               .addToCart(
                             productId: snapshot.id,
-                            variantId: sizeNotifier.selectedVariant?.id,
+                            variantId: snapshot.variants.isNotEmpty
+                                ? sizeNotifier.selectedVariant?.id
+                                : null,
                             useremail: userNotifier.getUserEmail ?? '',
                             productPrice: snapshot.price.toStringAsFixed(0),
                             productName: snapshot.name,
                             productCategory: snapshot.categoryName ?? '',
                             productImage: snapshot.mainImageUrl,
                             context: context,
-                            productSize: sizeNotifier.size,
+                            productSize: snapshot.variants.isNotEmpty
+                                ? sizeNotifier.size
+                                : '',
                           )
                               .then((value) {
                             if (value) {

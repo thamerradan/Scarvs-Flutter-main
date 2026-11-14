@@ -209,11 +209,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               // المحتوى الرئيسي
               Expanded(
                 child: ownerNotifier.isLoading
-                    ? customLoader(
-                        isDark: themeFlag,
-                        themeFlag: themeFlag,
-                        context: context,
-                      )
+                    ? AppLoader(themeFlag: themeFlag)
                     : SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

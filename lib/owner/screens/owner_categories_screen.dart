@@ -280,7 +280,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             // قائمة التصنيفات
             Expanded(
               child: ownerNotifier.isLoading
-                  ? customLoader(isDark: themeFlag, themeFlag: themeFlag, context: context)
+                  ? AppLoader(themeFlag: themeFlag)
                   : ownerNotifier.categories.isEmpty
                       ? Center(
                           child: Column(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:scarvs/models/product_variant_model.dart';
 
 class SizeNotifier with ChangeNotifier {
-  String _size = '41';
+  String _size = '';
   ProductVariant? _selectedVariant;
 
   String get size => _size;
@@ -30,7 +30,11 @@ class SizeNotifier with ChangeNotifier {
       );
       _selectedVariant = available;
       _size = available.size;
+    } else {
+      _selectedVariant = null;
+      _size = '';
     }
+    notifyListeners();
   }
 
 }

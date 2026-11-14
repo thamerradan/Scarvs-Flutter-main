@@ -40,14 +40,6 @@ class ProductItem {
   int get totalStock => variants.fold(0, (sum, v) => sum + v.stockQuantity);
   bool get inStock => variants.isEmpty ? true : totalStock > 0;
 
-  // توافق مع الكود السابق للحفاظ على سلامة التطبيق
-  String get productId => id;
-  String get productName => name;
-  String get productDescription => description;
-  String get productPrice => price.toStringAsFixed(0);
-  String get productCategory => categoryName ?? '';
-  String get productImage => mainImageUrl;
-
   factory ProductItem.fromJson(Map<String, dynamic> json) {
     // قراءة صور المنتج إن وجدت
     List<String> imgList = [];
@@ -120,32 +112,5 @@ class ProductItem {
       'is_active': isActive,
       'is_featured': isFeatured,
     };
-  }
-}
-
-// كلاسات التوافق مع الكود القديم لتفادي أي أخطاء أثناء الانتقال
-typedef ProductData = ProductItem;
-typedef SingleProductData = ProductItem;
-
-class ProductModel {
-  final bool filled;
-  final bool received;
-  final List<ProductItem>? data;
-
-  ProductModel({
-    required this.filled,
-    required this.received,
-    required this.data,
-  });
-
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-    return ProductModel(
-      filled: json['filled'] ?? true,
-      received: json['received'] ?? true,
-      data: json['data'] != null
-          ? List<ProductItem>.from(
-              (json['data'] as List).map((e) => ProductItem.fromJson(e)))
-          : [],
-    );
   }
 }

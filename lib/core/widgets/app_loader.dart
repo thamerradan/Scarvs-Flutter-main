@@ -87,20 +87,3 @@ class AppLoader extends StatelessWidget {
     );
   }
 }
-
-/// دالة مساعدة متوافقة 100% مع كافة الشاشات الحالية
-Widget customLoader({
-  required BuildContext context,
-  required bool themeFlag,
-  bool? isDark,
-  String? lottieAsset,
-  String? text,
-  double size = 32.0,
-}) {
-  return AppLoader(
-    themeFlag: isDark ?? themeFlag,
-    lottieAsset: lottieAsset,
-    text: text,
-    size: size,
-  );
-}

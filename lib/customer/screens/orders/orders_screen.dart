@@ -78,12 +78,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              customLoader(
-                                context: context,
-                                themeFlag: themeFlag,
-                                text: '',
-                                lottieAsset: AppAssets.nodata,
-                              ),
+                              AppLoader(themeFlag: themeFlag, text: '', lottieAsset: AppAssets.nodata),
                               const SizedBox(height: 12),
                               Text(
                                 'لا توجد لديك طلبات سابقة!',

@@ -102,12 +102,7 @@ class _CartScreenState extends State<CartScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                customLoader(
-                                  context: context,
-                                  themeFlag: themeFlag,
-                                  text: '',
-                                  lottieAsset: AppAssets.nodata,
-                                ),
+                                AppLoader(themeFlag: themeFlag, text: '', lottieAsset: AppAssets.nodata),
                                 const SizedBox(height: 12),
                                 Text(
                                   'سلة التسوق فارغة حالياً!',

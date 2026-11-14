@@ -39,7 +39,6 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +50,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         itemCount: widget.cards.length,
         curve: Curves.ease,
         duration: const Duration(seconds: 2),
-        onChange: (page) {
-          setState(() {
-            _currentPage = page;
-          });
-        },
         nextButtonBuilder: (_) {
           return Container(
             width: 60,

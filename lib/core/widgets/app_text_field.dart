@@ -50,51 +50,6 @@ class AppTextField extends StatelessWidget {
     this.enabled = true,
   });
 
-  /// دالة متوافقة 100% مع كافة شاشات المشروع
-  static Widget customTextField({
-    required TextEditingController textEditingController,
-    required String hintText,
-    String? labelText,
-    String? Function(String?)? validator,
-    void Function(String)? onChanged,
-    bool obscureText = false,
-    TextInputType keyboardType = TextInputType.text,
-    Widget? prefixIcon,
-    Widget? suffixIcon,
-    int maxLines = 1,
-    int? minLines,
-    bool readOnly = false,
-    VoidCallback? onTap,
-    TextDirection? textDirection,
-    TextAlign? textAlign,
-    List<TextInputFormatter>? inputFormatters,
-    TextInputAction? textInputAction,
-    FocusNode? focusNode,
-    bool enabled = true,
-  }) {
-    return AppTextField(
-      textEditingController: textEditingController,
-      hintText: hintText,
-      labelText: labelText,
-      validator: validator,
-      onChanged: onChanged,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      prefixIcon: prefixIcon,
-      suffixIcon: suffixIcon,
-      maxLines: maxLines,
-      minLines: minLines,
-      readOnly: readOnly,
-      onTap: onTap,
-      textDirection: textDirection,
-      textAlign: textAlign,
-      inputFormatters: inputFormatters,
-      textInputAction: textInputAction,
-      focusNode: focusNode,
-      enabled: enabled,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;

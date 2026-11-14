@@ -124,7 +124,7 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
             // النموذج
             Expanded(
               child: ownerNotifier.isLoading
-                  ? customLoader(isDark: themeFlag, themeFlag: themeFlag, context: context)
+                  ? AppLoader(themeFlag: themeFlag)
                   : Form(
                       key: _formKey,
                       child: ListView(

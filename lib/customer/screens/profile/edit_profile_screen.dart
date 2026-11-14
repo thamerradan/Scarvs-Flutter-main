@@ -83,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   padding: const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0),
                   child: Column(
                     children: [
-                      AppTextField.customTextField(
+                      AppTextField(
                         textEditingController: nameController,
                         hintText: 'الاسم الكامل',
                         prefixIcon: const Icon(Icons.person_outline),
@@ -92,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             : null,
                       ),
                       vSizedBox2,
-                      AppTextField.customTextField(
+                      AppTextField(
                         textEditingController: emailController,
                         hintText: 'البريد الإلكتروني (اختياري)',
                         keyboardType: TextInputType.emailAddress,
@@ -109,13 +109,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                       ),
                       vSizedBox2,
-                      AppTextField.customTextField(
+                      AppTextField(
                         textEditingController: cityController,
                         hintText: 'المدينة',
                         prefixIcon: const Icon(Icons.location_city_outlined),
                       ),
                       vSizedBox2,
-                      AppTextField.customTextField(
+                      AppTextField(
                         textEditingController: addressController,
                         hintText: 'العنوان بالتفصيل',
                         prefixIcon: const Icon(Icons.home_outlined),

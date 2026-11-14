@@ -39,6 +39,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
   String? _selectedCategoryId;
   bool _isActive = true;
   bool _isFeatured = false;
+  bool _hasSizes = false;
 
   // قائمة صور المنتج المتعددة (ملفات أو روابط)
   final List<_ProductImageEntry> _images = [];
@@ -75,6 +76,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     }
 
     if (p != null && p.variants.isNotEmpty) {
+      _hasSizes = true;
       for (var v in p.variants) {
         _variants.add({
           'size': v.size,
@@ -341,9 +343,13 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       return;
     }
 
-    if (_variants.isEmpty) {
+    if (_hasSizes && _variants.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى إضافة مقاس واحد على الأقل للمنتج')),
+        const SnackBar(
+          content: Text(
+            'لقد قمت بتفعيل المقاسات، يرجى إضافة مقاس واحد على الأقل أو إيقاف الخيار',
+          ),
+        ),
       );
       return;
     }
@@ -367,7 +373,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       existingImageUrls: existingUrls,
       isActive: _isActive,
       isFeatured: _isFeatured,
-      variants: _variants,
+      variants: _hasSizes ? _variants : const [],
       context: context,
     );
 
@@ -526,9 +532,31 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       activeColor: AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isFeatured = val),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
 
-                    // قسم إدارة المقاسات والمخزون
+                    // خيار تحديد مقاسات للمنتج
+                    SwitchListTile(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      tileColor: themeFlag ? Colors.white10 : Colors.white,
+                      title: const Text('تحديد مقاسات للمنتج'),
+                      subtitle: Text(
+                        _hasSizes
+                            ? 'المنتج يتطلب مقاسات متعددة (مثل الأحذية أو الملابس)'
+                            : 'المنتج بدون مقاس (مثل الإكسسوارات أو الحقائب)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                              .withOpacity(0.6),
+                        ),
+                      ),
+                      value: _hasSizes,
+                      activeColor: AppColors.rawSienna,
+                      onChanged: (val) => setState(() => _hasSizes = val),
+                    ),
+                    if (_hasSizes) ...[
+                      const SizedBox(height: 20),
+
+                      // قسم إدارة المقاسات والمخزون
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -638,6 +666,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                               }).toList(),
                             ),
                     ),
+                    ],
                     const SizedBox(height: 30),
 
                     // زر الحفظ

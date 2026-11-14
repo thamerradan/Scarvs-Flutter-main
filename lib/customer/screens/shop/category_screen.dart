@@ -76,12 +76,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ShimmerEffects.buildCategoryShimmer(context: context);
                   } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-                    return customLoader(
-                      context: context,
-                      themeFlag: themeFlag,
-                      text: 'لا توجد منتجات متوفرة حالياً في هذا التصنيف',
-                      lottieAsset: AppAssets.error,
-                    );
+                    return AppLoader(themeFlag: themeFlag, text: 'لا توجد منتجات متوفرة حالياً في هذا التصنيف', lottieAsset: AppAssets.error);
                   } else {
                     final list = snapshot.data!;
                     return showDataInGrid(

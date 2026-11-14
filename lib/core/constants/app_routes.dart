@@ -1,6 +1,4 @@
 // يعرف مسارات التنقل وينشئ الشاشات المرتبطة بها.
-// ignore_for_file: body_might_complete_normally_nullable
-
 import 'package:concentric_transition/concentric_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:scarvs/models/product_model.dart';
@@ -62,7 +60,7 @@ class AppRouter {
   static const String ownerSettingsRoute = "/owner/settings";
   static const String ownerNotificationsRoute = "/owner/notifications";
 
-  static Route? generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     final route = settings.name ?? '';
     final userRole = AuthGuard.currentUserRole;
 
@@ -78,31 +76,10 @@ class AppRouter {
     // 2. حماية مسارات المتجر من المالك:
     // إذا كان المستخدم مالكاً وحاول فتح مسار عميل (متجر، سلة، شراء، حساب...)،
     // يُعاد توجيهه تلقائياً إلى لوحة الإدارة، باستثناء شاشات البدء والمصادقة
-    final isCustomerRoute = route.startsWith('/customer') ||
-        const [
-          "/home",
-          "/onBoard",
-          "/product",
-          "/appSettings",
-          "/cart",
-          "/search",
-          "/profile",
-          "/accountInfo",
-          "/category",
-          "/productDetail",
-          "/editProfile",
-          "/checkout",
-          "/orders",
-          "/orderDetail",
-          "/notifications",
-        ].contains(route);
-
     if (userRole == 'owner' &&
-        isCustomerRoute &&
+        route.startsWith('/customer') &&
         route != splashRoute &&
-        route != "/splash" &&
-        route != phoneAuthRoute &&
-        route != "/phoneAuth") {
+        route != phoneAuthRoute) {
       return MaterialPageRoute(
         builder: (_) => const OwnerDashboardScreen(),
         settings: settings,
@@ -110,197 +87,176 @@ class AppRouter {
     }
 
     switch (settings.name) {
-      case editProfileRoute:
-      case "/editProfile":
-        {
-          return MaterialPageRoute(
-            builder: (_) => EditProfileScreen(),
-          );
-        }
-      case appSettingsRoute:
-      case "/appSettings":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const SettingsScreen(),
-          );
-        }
-      case homeRoute:
-      case "/home":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const HomeScreen(),
-          );
-        }
+      // ==================== مسارات العميل ====================
+      case customerHomeRoute:
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+          settings: settings,
+        );
+
       case splashRoute:
-      case "/splash":
-        {
-          return ConcentricPageRoute(
-            fullscreenDialog: true,
-            builder: (_) => const SplashScreen(),
-          );
-        }
+        return ConcentricPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => const SplashScreen(),
+          settings: settings,
+        );
+
       case onBoardRoute:
-      case "/onBoard":
-        {
-          return MaterialPageRoute(
-            builder: (_) => OnBoardingScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => OnBoardingScreen(),
+          settings: settings,
+        );
+
       case productRoute:
-      case "/product":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const ProductScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const ProductScreen(),
+          settings: settings,
+        );
+
       case prodDetailRoute:
-      case "/productDetail":
-        {
-          return MaterialPageRoute(
-            builder: (context) => ProductDetail(
-              productDetailsArguements: ModalRoute.of(context)!
-                  .settings
-                  .arguments as ProductDetailsArgs,
-            ),
-            settings: settings,
-          );
-        }
+        return MaterialPageRoute(
+          builder: (context) => ProductDetail(
+            productDetailsArguements: ModalRoute.of(context)!
+                .settings
+                .arguments as ProductDetailsArgs,
+          ),
+          settings: settings,
+        );
+
       case cartRoute:
-      case "/cart":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const CartScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const CartScreen(),
+          settings: settings,
+        );
+
       case searchRoute:
-      case "/search":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const SearchScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const SearchScreen(),
+          settings: settings,
+        );
+
       case profileRoute:
-      case "/profile":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const ProfileScreen(),
-          );
-        }
-      case categoryRoute:
-      case "/category":
-        {
-          return MaterialPageRoute(
-            builder: (context) => CategoryScreen(
-              categoryScreenArgs: ModalRoute.of(context)!.settings.arguments
-                  as CategoryScreenArgs,
-            ),
-            settings: settings,
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const ProfileScreen(),
+          settings: settings,
+        );
+
+      case editProfileRoute:
+        return MaterialPageRoute(
+          builder: (_) => EditProfileScreen(),
+          settings: settings,
+        );
+
+      case appSettingsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const SettingsScreen(),
+          settings: settings,
+        );
+
       case accountInfo:
-      case "/accountInfo":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const AccountInformationScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const AccountInformationScreen(),
+          settings: settings,
+        );
+
+      case categoryRoute:
+        return MaterialPageRoute(
+          builder: (context) => CategoryScreen(
+            categoryScreenArgs: ModalRoute.of(context)!.settings.arguments
+                as CategoryScreenArgs,
+          ),
+          settings: settings,
+        );
+
       case checkoutRoute:
-      case "/checkout":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const CheckoutScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const CheckoutScreen(),
+          settings: settings,
+        );
+
       case ordersRoute:
-      case "/orders":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OrdersScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const OrdersScreen(),
+          settings: settings,
+        );
+
       case orderDetailRoute:
-      case "/orderDetail":
-        {
-          final orderId = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (_) => OrderDetailScreen(orderId: orderId),
-            settings: settings,
-          );
-        }
-      case ownerDashboardRoute:
-      case "/ownerDashboard":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerDashboardScreen(),
-          );
-        }
-      case ownerOrdersRoute:
-      case "/ownerOrders":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerOrdersScreen(),
-          );
-        }
-      case ownerProductsRoute:
-      case "/ownerProducts":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerProductsScreen(),
-          );
-        }
-      case ownerProductFormRoute:
-      case "/ownerProductForm":
-        {
-          final product = settings.arguments as ProductItem?;
-          return MaterialPageRoute(
-            builder: (_) => OwnerProductFormScreen(product: product),
-          );
-        }
-      case ownerInventoryRoute:
-      case "/ownerInventory":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerInventoryScreen(),
-          );
-        }
-      case ownerCategoriesRoute:
-      case "/ownerCategories":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerCategoriesScreen(),
-          );
-        }
-      case ownerSettingsRoute:
-      case "/ownerSettings":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerSettingsScreen(),
-          );
-        }
-      case ownerNotificationsRoute:
-      case "/ownerNotifications":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const OwnerNotificationsScreen(),
-          );
-        }
+        final orderId = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => OrderDetailScreen(orderId: orderId),
+          settings: settings,
+        );
+
       case notificationsRoute:
-      case "/notifications":
-        {
-          return MaterialPageRoute(
-            builder: (_) => const NotificationsScreen(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => const NotificationsScreen(),
+          settings: settings,
+        );
+
       case phoneAuthRoute:
-      case "/phoneAuth":
-        {
-          final args = settings.arguments as PhoneAuthArgs?;
-          return MaterialPageRoute(
-            builder: (_) =>
-                PhoneAuthScreen(args: args ?? const PhoneAuthArgs()),
-          );
-        }
+        final args = settings.arguments as PhoneAuthArgs?;
+        return MaterialPageRoute(
+          builder: (_) =>
+              PhoneAuthScreen(args: args ?? const PhoneAuthArgs()),
+          settings: settings,
+        );
+
+      // ==================== مسارات المالك ====================
+      case ownerDashboardRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerDashboardScreen(),
+          settings: settings,
+        );
+
+      case ownerOrdersRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerOrdersScreen(),
+          settings: settings,
+        );
+
+      case ownerProductsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerProductsScreen(),
+          settings: settings,
+        );
+
+      case ownerProductFormRoute:
+        final product = settings.arguments as ProductItem?;
+        return MaterialPageRoute(
+          builder: (_) => OwnerProductFormScreen(product: product),
+          settings: settings,
+        );
+
+      case ownerInventoryRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerInventoryScreen(),
+          settings: settings,
+        );
+
+      case ownerCategoriesRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerCategoriesScreen(),
+          settings: settings,
+        );
+
+      case ownerSettingsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerSettingsScreen(),
+          settings: settings,
+        );
+
+      case ownerNotificationsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerNotificationsScreen(),
+          settings: settings,
+        );
+
+      // ==================== المسار الافتراضي ====================
+      default:
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+          settings: settings,
+        );
     }
-    return null;
   }
 }

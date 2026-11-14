@@ -90,11 +90,7 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
             // قائمة الإشعارات
             Expanded(
               child: notifNotifier.isLoading
-                  ? customLoader(
-                      isDark: themeFlag,
-                      themeFlag: themeFlag,
-                      context: context,
-                    )
+                  ? AppLoader(themeFlag: themeFlag)
                   : notifNotifier.notifications.isEmpty
                       ? Center(
                           child: Column(

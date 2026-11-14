@@ -127,7 +127,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
             // قائمة عناصر المخزون
             Expanded(
               child: ownerNotifier.isLoading
-                  ? customLoader(isDark: themeFlag, themeFlag: themeFlag, context: context)
+                  ? AppLoader(themeFlag: themeFlag)
                   : filteredList.isEmpty
                       ? Center(
                           child: Column(

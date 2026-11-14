@@ -170,12 +170,7 @@ class _SearchScreenState extends State<SearchScreen> {
               return ShimmerEffects.buildCategoryShimmer(context: context);
             }
             if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-              return customLoader(
-                context: context,
-                themeFlag: themeFlag,
-                text: 'لم يتم العثور على نتائج للبحث!',
-                lottieAsset: AppAssets.error,
-              );
+              return AppLoader(themeFlag: themeFlag, text: 'لم يتم العثور على نتائج للبحث!', lottieAsset: AppAssets.error);
             }
             final list = snapshot.data as List;
             return showDataInGrid(
