@@ -520,4 +520,18 @@ class OwnerNotifier with ChangeNotifier {
       _setSaving(false);
     }
   }
+
+  /// تنظيف بيانات لوحة تحكم المالك عند تسجيل الخروج
+  void clear() {
+    _stats = DashboardStatsModel();
+    _orders = [];
+    _selectedStatus = 'all';
+    _products = [];
+    _inventory = [];
+    _categories = [];
+    _storeSettings = null;
+    _isLoading = false;
+    _isSaving = false;
+    notifyListeners();
+  }
 }

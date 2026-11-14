@@ -1,6 +1,7 @@
 // تعرض نموذج تعديل بيانات الملف الشخصي.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
@@ -64,7 +65,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     horizontal: 16.0, vertical: 8.0),
                 child: Row(
                   children: [
-                    AppBackPop(themeFlag: themeFlag),
+                    AppBackButton(
+                      themeFlag: themeFlag,
+                      fallbackRoute: AppRouter.profileRoute,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'تعديل البيانات الشخصية',

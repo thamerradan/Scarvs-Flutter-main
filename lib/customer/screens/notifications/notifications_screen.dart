@@ -44,7 +44,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Row(
                 children: [
-                  AppBackPop(themeFlag: themeFlag),
+                  AppBackButton(
+                    themeFlag: themeFlag,
+                    fallbackRoute: AppRouter.customerHomeRoute,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'الإشعارات 🔔',

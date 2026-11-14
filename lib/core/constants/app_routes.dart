@@ -1,5 +1,4 @@
 // يعرف مسارات التنقل وينشئ الشاشات المرتبطة بها.
-import 'package:concentric_transition/concentric_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/customer/screens/cart/cart_screen.dart';
@@ -7,7 +6,6 @@ import 'package:scarvs/customer/screens/shop/category_screen.dart';
 import 'package:scarvs/customer/screens/checkout/checkout_screen.dart';
 import 'package:scarvs/customer/screens/shop/home_screen.dart';
 import 'package:scarvs/customer/screens/notifications/notifications_screen.dart';
-import 'package:scarvs/customer/screens/startup/onboarding_screen.dart';
 import 'package:scarvs/customer/screens/orders/order_detail_screen.dart';
 import 'package:scarvs/customer/screens/orders/orders_screen.dart';
 import 'package:scarvs/owner/screens/owner_categories_screen.dart';
@@ -34,7 +32,6 @@ class AppRouter {
   static const String customerHomeRoute = "/customer/home";
   static const String homeRoute = customerHomeRoute;
   static const String splashRoute = "/customer/splash";
-  static const String onBoardRoute = "/customer/onBoard";
   static const String productRoute = "/customer/product";
   static const String appSettingsRoute = "/customer/appSettings";
   static const String cartRoute = "/customer/cart";
@@ -73,13 +70,8 @@ class AppRouter {
       );
     }
 
-    // 2. حماية مسارات المتجر من المالك:
-    // إذا كان المستخدم مالكاً وحاول فتح مسار عميل (متجر، سلة، شراء، حساب...)،
-    // يُعاد توجيهه تلقائياً إلى لوحة الإدارة، باستثناء شاشات البدء والمصادقة
-    if (userRole == 'owner' &&
-        route.startsWith('/customer') &&
-        route != splashRoute &&
-        route != phoneAuthRoute) {
+    // 2. حماية مسارات السلة وإتمام الطلب من المالك (المالك في وضع معاينة المتجر فقط):
+    if (userRole == 'owner' && (route == cartRoute || route == checkoutRoute)) {
       return MaterialPageRoute(
         builder: (_) => const OwnerDashboardScreen(),
         settings: settings,
@@ -95,15 +87,8 @@ class AppRouter {
         );
 
       case splashRoute:
-        return ConcentricPageRoute(
-          fullscreenDialog: true,
-          builder: (_) => const SplashScreen(),
-          settings: settings,
-        );
-
-      case onBoardRoute:
         return MaterialPageRoute(
-          builder: (_) => OnBoardingScreen(),
+          builder: (_) => const SplashScreen(),
           settings: settings,
         );
 

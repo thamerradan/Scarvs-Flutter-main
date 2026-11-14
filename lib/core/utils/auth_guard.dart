@@ -33,6 +33,11 @@ class AuthGuard {
     _cachedRole = role;
   }
 
+  /// تنظيف الدور المخزن عند تسجيل الخروج
+  static void clear() {
+    _cachedRole = null;
+  }
+
   /// هل المستخدم مسجل الدخول حالياً؟
   static bool get isLoggedIn => AppSupabase.isAuthenticated;
 

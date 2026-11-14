@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
@@ -401,7 +402,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Row(
                 children: [
-                  AppBackPop(themeFlag: themeFlag),
+                  AppBackButton(
+                    themeFlag: themeFlag,
+                    fallbackRoute: AppRouter.ownerProductsRoute,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     isEditing ? 'تعديل المنتج ✏️' : 'إضافة منتج جديد ➕',

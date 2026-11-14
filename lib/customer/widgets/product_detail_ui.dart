@@ -176,71 +176,97 @@ Widget productUI({
               ),
             ),
             const SizedBox(width: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: hasStock ? AppColors.rawSienna : Colors.grey,
+            if (AuthGuard.isOwner)
+              Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: RoundedRectangleBorder(
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blueGrey.withOpacity(0.35)),
                 ),
-                elevation: 2,
-              ),
-              onPressed: !hasStock
-                  ? null
-                  : () {
-                      AuthGuard.requireAuth(
-                        context: context,
-                        returnRoute: AppRouter.prodDetailRoute,
-                        customMessage:
-                            'لإضافة منتجات إلى السلة، يرجى تسجيل الدخول برقم هاتفك',
-                        onAuthenticated: () {
-                          cartNotifier
-                              .addToCart(
-                            productId: snapshot.id,
-                            variantId: snapshot.variants.isNotEmpty
-                                ? sizeNotifier.selectedVariant?.id
-                                : null,
-                            useremail: userNotifier.getUserEmail ?? '',
-                            productPrice: snapshot.price.toStringAsFixed(0),
-                            productName: snapshot.name,
-                            productCategory: snapshot.categoryName ?? '',
-                            productImage: snapshot.mainImageUrl,
-                            context: context,
-                            productSize: snapshot.variants.isNotEmpty
-                                ? sizeNotifier.size
-                                : '',
-                          )
-                              .then((value) {
-                            if (value) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackUtil.stylishSnackBar(
-                                  text: 'تمت إضافة المنتج إلى السلة بنجاح 🛍️',
-                                  context: context,
-                                ),
-                              );
-                              Navigator.of(context).pushNamed(AppRouter.homeRoute);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackUtil.stylishSnackBar(
-                                  text: 'حدث خطأ أثناء الإضافة إلى السلة',
-                                  context: context,
-                                ),
-                              );
-                            }
-                          });
-                        },
-                      );
-                    },
-              child: Text(
-                hasStock ? 'إضافة إلى السلة 🛒' : 'غير متوفر',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.visibility_outlined, size: 18, color: Colors.blueGrey),
+                    SizedBox(width: 6),
+                    Text(
+                      'معاينة (المالك)',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueGrey,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: hasStock ? AppColors.rawSienna : Colors.grey,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+                onPressed: !hasStock
+                    ? null
+                    : () {
+                        AuthGuard.requireAuth(
+                          context: context,
+                          returnRoute: AppRouter.prodDetailRoute,
+                          customMessage:
+                              'لإضافة منتجات إلى السلة، يرجى تسجيل الدخول برقم هاتفك',
+                          onAuthenticated: () {
+                            cartNotifier
+                                .addToCart(
+                              productId: snapshot.id,
+                              variantId: snapshot.variants.isNotEmpty
+                                  ? sizeNotifier.selectedVariant?.id
+                                  : null,
+                              useremail: userNotifier.getUserEmail ?? '',
+                              productPrice: snapshot.price.toStringAsFixed(0),
+                              productName: snapshot.name,
+                              productCategory: snapshot.categoryName ?? '',
+                              productImage: snapshot.mainImageUrl,
+                              context: context,
+                              productSize: snapshot.variants.isNotEmpty
+                                  ? sizeNotifier.size
+                                  : '',
+                            )
+                                .then((value) {
+                              if (value) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackUtil.stylishSnackBar(
+                                    text: 'تمت إضافة المنتج إلى السلة بنجاح 🛍️',
+                                    context: context,
+                                  ),
+                                );
+                                Navigator.of(context).pushNamed(AppRouter.homeRoute);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackUtil.stylishSnackBar(
+                                    text: 'حدث خطأ أثناء الإضافة إلى السلة',
+                                    context: context,
+                                  ),
+                                );
+                              }
+                            });
+                          },
+                        );
+                      },
+                child: Text(
+                  hasStock ? 'إضافة إلى السلة 🛒' : 'غير متوفر',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

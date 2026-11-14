@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Row(
                   children: [
                     AppBackButton(
-                      route: AppRouter.homeRoute,
+                      fallbackRoute: AppRouter.customerHomeRoute,
                       themeFlag: themeFlag,
                     ),
                     const SizedBox(width: 8),
@@ -76,6 +76,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       userNotifier: userNotifier,
                     ),
                     const Divider(height: 32),
+                    if (userNotifier.isOwner)
+                      _buildMenuItem(
+                        context: context,
+                        title: 'لوحة تحكم المتجر 👑',
+                        icon: Icons.dashboard_outlined,
+                        themeFlag: themeFlag,
+                        onTap: () {
+                          Navigator.of(context).pushNamed(AppRouter.ownerDashboardRoute);
+                        },
+                      ),
                     _buildMenuItem(
                       context: context,
                       title: 'طلباتي 📦',

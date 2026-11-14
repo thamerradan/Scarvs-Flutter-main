@@ -1,12 +1,18 @@
 // يدير حالة المصادقة وعمليات تسجيل الدخول والتسجيل.
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/profile_model.dart';
 import 'package:scarvs/services/auth_service.dart';
 import 'package:scarvs/services/user_service.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/utils/snackbar_util.dart';
+import 'package:scarvs/providers/cart_provider.dart';
+import 'package:scarvs/providers/notification_provider.dart';
+import 'package:scarvs/providers/order_provider.dart';
+import 'package:scarvs/providers/owner_provider.dart';
+import 'package:scarvs/providers/user_provider.dart';
 
 class AuthenticationNotifier with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -191,14 +197,46 @@ class AuthenticationNotifier with ChangeNotifier {
     }
   }
 
-  /// تسجيل الخروج → يرجع للرئيسية
+  /// تسجيل الخروج → تنظيف شامل لكافة البيانات والاشتراكات ثم الرجوع للرئيسية
   Future<void> signOut({required BuildContext context}) async {
     _setLoading(true);
     try {
+      // 1. إنهاء الجلسة في Supabase أولاً
       await _authService.signOut();
+
+      // 2. تنظيف اشتراك الإشعارات اللحظية وقائمة الإشعارات
+      if (context.mounted) {
+        try {
+          Provider.of<NotificationNotifier>(context, listen: false).clear();
+        } catch (_) {}
+
+        // 3. تنظيف السلة المحلية
+        try {
+          Provider.of<CartNotifier>(context, listen: false).clearLocalCart();
+        } catch (_) {}
+
+        // 4. تنظيف بيانات المستخدم الشخصية
+        try {
+          Provider.of<UserProvider>(context, listen: false).clear();
+        } catch (_) {}
+
+        // 5. تنظيف قائمة طلبات المستخدم
+        try {
+          Provider.of<OrderNotifier>(context, listen: false).clear();
+        } catch (_) {}
+
+        // 6. تنظيف بيانات لوحة تحكم المالك إن وجدت
+        try {
+          Provider.of<OwnerNotifier>(context, listen: false).clear();
+        } catch (_) {}
+      }
+
+      // 7. تنظيف بيانات الجلسة والدور المخزن في الحارس
       _currentProfile = null;
-      AuthGuard.setRole(null);
+      AuthGuard.clear();
       notifyListeners();
+
+      // 8. التوجيه المباشر إلى الواجهة الرئيسية للمتجر وإفراغ سجل التنقل
       if (context.mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil(
           AppRouter.customerHomeRoute,

@@ -110,6 +110,18 @@ class NotificationNotifier with ChangeNotifier {
     } catch (_) {}
   }
 
+  /// إلغاء اشتراك Realtime وتنظيف الإشعارات عند تسجيل الخروج
+  void clear() {
+    try {
+      _subscription?.unsubscribe();
+    } catch (_) {}
+    _subscription = null;
+    _notifications = [];
+    _unreadCount = 0;
+    _isLoading = false;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _subscription?.unsubscribe();

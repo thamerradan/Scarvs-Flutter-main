@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/size_provider.dart';
@@ -81,16 +83,34 @@ class _ProductDetailState extends State<ProductDetail> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppBackPop(themeFlag: themeFlag),
+                  AppBackButton(
+                    themeFlag: themeFlag,
+                    fallbackRoute: AppRouter.customerHomeRoute,
+                  ),
                   Text(
-                    'تفاصيل الحذاء',
+                    'تفاصيل المنتج',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                     ),
                   ),
-                  const SizedBox(width: 48), // لموازنة زر الرجوع
+                  if (AuthGuard.isOwner)
+                    IconButton(
+                      icon: const Icon(Icons.edit_note, size: 28),
+                      color: AppColors.rawSienna,
+                      tooltip: 'تعديل هذا المنتج',
+                      onPressed: () {
+                        if (_product != null) {
+                          Navigator.of(context).pushNamed(
+                            AppRouter.ownerProductFormRoute,
+                            arguments: _product,
+                          );
+                        }
+                      },
+                    )
+                  else
+                    const SizedBox(width: 48), // لموازنة زر الرجوع
                 ],
               ),
             ),
@@ -112,7 +132,10 @@ class _ProductDetailState extends State<ProductDetail> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(
-                            child: AppLoader(themeFlag: themeFlag, lottieAsset: AppAssets.onBoardingOne, text: 'جاري تحميل تفاصيل المنتج...'),
+                            child: AppLoader(
+                              themeFlag: themeFlag,
+                              text: 'جاري تحميل تفاصيل المنتج...',
+                            ),
                           );
                         } else if (snapshot.hasError ||
                             !snapshot.hasData ||

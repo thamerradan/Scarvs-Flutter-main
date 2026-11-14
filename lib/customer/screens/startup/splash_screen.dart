@@ -2,10 +2,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/theme/app_fonts.dart';
-import 'package:scarvs/core/constants/app_keys.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
@@ -22,35 +20,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkSessionAndNavigate() async {
-    // التحقق أولاً من اكتمال شاشات التعريف (OnBoarding) مع التوافق التام مع القيم القديمة
-    final prefs = await SharedPreferences.getInstance();
-    final rawOnBoard = prefs.get(AppKeys.onBoardDone);
-    bool onBoardDone = false;
-
-    if (rawOnBoard is bool) {
-      onBoardDone = rawOnBoard;
-    } else if (rawOnBoard is String) {
-      onBoardDone = rawOnBoard.toLowerCase() == 'true' || rawOnBoard == '1';
-      // تنظيف القيمة القديمة من SharedPreferences وحفظها بصيغة boolean صحيحة
-      await prefs.remove(AppKeys.onBoardDone);
-      if (onBoardDone) {
-        await prefs.setBool(AppKeys.onBoardDone, true);
-      }
-    } else if (rawOnBoard is num) {
-      onBoardDone = rawOnBoard == 1;
-      await prefs.remove(AppKeys.onBoardDone);
-      if (onBoardDone) {
-        await prefs.setBool(AppKeys.onBoardDone, true);
-      }
-    }
-
-    if (!onBoardDone) {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRouter.onBoardRoute);
-      await prefs.setBool(AppKeys.onBoardDone, true);
-      return;
-    }
-
     // التحقق من جلسة Supabase الحالية (إذا كان مسجلاً، نجلب بياناته في الخلفية)
     if (SupabaseConfig.isConfigured && AppSupabase.isAuthenticated) {
       if (!mounted) return;

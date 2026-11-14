@@ -1,6 +1,5 @@
 // تعرض لوحة تحكم المالك ومؤشرات أداء المتجر.
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
@@ -67,14 +66,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     final ownerNotifier = Provider.of<OwnerNotifier>(context);
     final stats = ownerNotifier.stats;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        SystemNavigator.pop();
-      },
-      child: SafeArea(
-        child: Scaffold(
+    return SafeArea(
+      child: Scaffold(
           backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
           body: RefreshIndicator(
             onRefresh: () async {
@@ -140,6 +133,23 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                         ],
                       ),
                     ),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.rawSienna,
+                        side: const BorderSide(color: AppColors.rawSienna, width: 1.2),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      ),
+                      icon: const Icon(Icons.storefront_outlined, size: 18),
+                      label: const Text(
+                        'عرض المتجر',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(AppRouter.customerHomeRoute);
+                      },
+                    ),
+                    const SizedBox(width: 4),
                     Consumer<NotificationNotifier>(
                       builder: (context, notifNotifier, _) {
                         return Stack(
@@ -244,7 +254,6 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           ),
         ),
       ),
-    ),
     );
   }
 
@@ -444,6 +453,16 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   Widget _buildManagementGrid(BuildContext context, stats, bool themeFlag) {
     return Column(
       children: [
+        _buildMenuActionTile(
+          context: context,
+          title: 'عرض وتصفح المتجر 🛍️',
+          subtitle: 'معاينة واجهة العميل والمنتجات والأقسام كما تظهر للزبائن',
+          icon: Icons.storefront_outlined,
+          color: Colors.indigo,
+          themeFlag: themeFlag,
+          onTap: () => Navigator.of(context).pushNamed(AppRouter.customerHomeRoute),
+        ),
+        const SizedBox(height: 12),
         _buildMenuActionTile(
           context: context,
           title: 'إدارة الطلبات',

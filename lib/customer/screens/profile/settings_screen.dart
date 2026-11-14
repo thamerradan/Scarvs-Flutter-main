@@ -1,6 +1,7 @@
 // تعرض إعدادات التطبيق التي يمكن للمستخدم تخصيصها.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
@@ -25,7 +26,10 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
-                  AppBackPop(themeFlag: themeFlag),
+                  AppBackButton(
+                    themeFlag: themeFlag,
+                    fallbackRoute: AppRouter.profileRoute,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'إعدادات التطبيق',

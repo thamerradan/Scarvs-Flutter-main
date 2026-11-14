@@ -127,4 +127,11 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// تنظيف بيانات المستخدم عند تسجيل الخروج
+  void clear() {
+    _profile = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

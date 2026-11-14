@@ -157,4 +157,12 @@ class OrderNotifier with ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  /// تنظيف قائمة الطلبات عند تسجيل الخروج
+  void clear() {
+    _orders = [];
+    _currentOrder = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

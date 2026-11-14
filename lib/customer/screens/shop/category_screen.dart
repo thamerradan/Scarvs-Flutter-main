@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
@@ -56,7 +57,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
-                  AppBackPop(themeFlag: themeFlag),
+                  AppBackButton(
+                    themeFlag: themeFlag,
+                    fallbackRoute: AppRouter.customerHomeRoute,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     widget.categoryScreenArgs.categoryName.toString(),

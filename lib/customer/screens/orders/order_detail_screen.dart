@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/order_model.dart';
 import 'package:scarvs/models/order_item_model.dart';
 import 'package:scarvs/providers/order_provider.dart';
@@ -78,7 +79,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     Row(
                       children: [
-                        AppBackPop(themeFlag: themeFlag),
+                        AppBackButton(
+                          themeFlag: themeFlag,
+                          fallbackRoute: AppRouter.ordersRoute,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(

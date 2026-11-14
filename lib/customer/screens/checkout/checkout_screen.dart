@@ -153,7 +153,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 Row(
                   children: [
-                    AppBackPop(themeFlag: themeFlag),
+                    AppBackButton(
+                      themeFlag: themeFlag,
+                      fallbackRoute: AppRouter.customerHomeRoute,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'إتمام الطلب والشحن',

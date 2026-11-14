@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
@@ -78,7 +79,20 @@ class _ProductScreenState extends State<ProductScreen> {
                           ),
                         ],
                       ),
-                      Consumer<NotificationNotifier>(
+                      Row(
+                        children: [
+                          if (AuthGuard.isOwner)
+                            IconButton(
+                              icon: const Icon(Icons.dashboard_outlined, size: 28),
+                              color: AppColors.rawSienna,
+                              tooltip: 'العودة إلى لوحة التحكم',
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                  AppRouter.ownerDashboardRoute,
+                                );
+                              },
+                            ),
+                          Consumer<NotificationNotifier>(
                         builder: (context, notif, _) {
                           return Stack(
                             children: [
@@ -120,7 +134,60 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ],
                   ),
-                  vSizedBox2,
+                ],
+              ),
+              if (AuthGuard.isOwner) ...[
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.rawSienna.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: AppColors.rawSienna.withOpacity(0.35),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.visibility_outlined, size: 20, color: AppColors.rawSienna),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'أنت في وضع معاينة المتجر (المالك)',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(AppRouter.ownerDashboardRoute);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.rawSienna,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'لوحة التحكم',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              vSizedBox2,
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),

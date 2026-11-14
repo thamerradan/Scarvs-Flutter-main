@@ -8,7 +8,6 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  concentric_transition: ^1.0.1+1
   eva_icons_flutter: ^4.0.0
   flutter:
     sdk: flutter

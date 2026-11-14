@@ -255,4 +255,11 @@ class CartNotifier with ChangeNotifier {
       return false;
     }
   }
+
+  /// تنظيف السلة المحلية عند تسجيل الخروج
+  void clearLocalCart() {
+    _cartItems = [];
+    _isLoading = false;
+    notifyListeners();
+  }
 }

@@ -45,7 +45,10 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Row(
                 children: [
-                  AppBackPop(themeFlag: themeFlag),
+                  AppBackButton(
+                    themeFlag: themeFlag,
+                    fallbackRoute: AppRouter.ownerDashboardRoute,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'إشعارات المتجر 🔔',
