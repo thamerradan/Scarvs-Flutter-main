@@ -6,7 +6,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/providers/user_provider.dart';
+import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
@@ -153,7 +153,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           notifNotifier.markAsRead(notif.id);
         }
         if (notif.orderId != null && notif.orderId!.isNotEmpty) {
-          final isOwner = Provider.of<UserProvider>(context, listen: false).isOwner;
+          final isOwner = AuthGuard.isOwner;
           if (isOwner) {
             Navigator.of(context).pushNamed(AppRouter.ownerOrdersRoute);
           } else {

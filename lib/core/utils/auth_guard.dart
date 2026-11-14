@@ -210,14 +210,6 @@ class AuthGuard {
       },
     );
   }
-
-  /// Widget يعرض محتوى مختلف للمسجل وغير المسجل
-  static Widget guestOrAuth({
-    required Widget authenticated,
-    required Widget guest,
-  }) {
-    return isLoggedIn ? authenticated : guest;
-  }
 }
 
 /// بيانات للانتقال إلى شاشة Phone Auth

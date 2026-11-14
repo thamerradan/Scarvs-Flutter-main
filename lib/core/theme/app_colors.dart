@@ -1,15 +1,14 @@
-// يجمع ألوان الهوية البصرية المستخدمة في واجهات التطبيق.
+// يجمع ألوان الهوية البصرية الموحدة للتطبيق ولوحة التحكم.
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color white = Colors.white;
-  static const Color blackPearl = Color(0xff040e22);
-  static const Color mirage = Color(0xff1d273b);
-  static const Color mediumPurple = Color(0xff9371ea);
-  static const Color fuchsiaPink = Color(0xffc549bc);
+  /// اللون الأساسي الموحد لكافة أرجاء التطبيق ولوحة التحكم
   static const Color rawSienna = Color(0xffd7834f);
-  static const Color blueZodiac = Color(0xff0c1c3d);
-  static const Color blueZodiacTwo = Color(0xff122651);
+  static const Color rawSiennaLight = Color(0xffe29766);
+  static const Color rawSiennaDark = Color(0xffb86735);
+
+  /// ألوان السطح والخلفيات المتناسقة مع الثيمين الداكن والفاتح
+  static const Color mirage = Color(0xff1d273b);
   static const Color creamColor = Color(0xfff5f5ff);
-  static const Color darkCreamColor = Color(0xff18181B);
+  static const Color white = Colors.white;
 }

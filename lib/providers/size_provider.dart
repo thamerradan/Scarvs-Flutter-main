@@ -16,11 +16,6 @@ class SizeNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  void selectSizeString(String newSize) {
-    _size = newSize;
-    notifyListeners();
-  }
-
   void initForProduct(List<ProductVariant> variants) {
     if (variants.isNotEmpty) {
       // اختيار أول مقاس متوفر في المخزون افتراضياً

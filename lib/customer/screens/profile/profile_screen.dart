@@ -303,19 +303,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: userNotifier.isOwner
-                            ? AppColors.rawSienna.withOpacity(0.2)
-                            : Colors.blue.withOpacity(0.15),
+                        color: AppColors.rawSienna.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.rawSienna.withOpacity(0.3),
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         roleName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: userNotifier.isOwner
-                              ? AppColors.rawSienna
-                              : Colors.blue,
+                          color: AppColors.rawSienna,
                         ),
                       ),
                     ),

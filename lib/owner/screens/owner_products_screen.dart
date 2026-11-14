@@ -284,7 +284,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       scale: 0.8,
                       child: Switch(
                         value: product.isActive,
-                        activeColor: Colors.green,
+                        activeThumbColor: AppColors.rawSienna,
                         onChanged: (val) async {
                           await ownerNotifier.toggleProductStatus(
                             product.id,
@@ -370,15 +370,15 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: AppColors.rawSienna.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Icon(Icons.edit, size: 14, color: Colors.blue),
+                            Icon(Icons.edit_outlined, size: 14, color: AppColors.rawSienna),
                             SizedBox(width: 4),
-                            Text('تعديل', style: TextStyle(fontSize: 12, color: Colors.blue)),
+                            Text('تعديل', style: TextStyle(fontSize: 12, color: AppColors.rawSienna, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),

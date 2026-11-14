@@ -196,8 +196,8 @@ class _ProductScreenState extends State<ProductScreen> {
                         end: Alignment.bottomLeft,
                         colors: [
                           AppColors.rawSienna,
-                          AppColors.mediumPurple,
-                          AppColors.fuchsiaPink,
+                          AppColors.rawSiennaLight,
+                          AppColors.rawSiennaDark,
                         ],
                       ),
                       boxShadow: [

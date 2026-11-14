@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/services/notification_service.dart';
+import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/utils/snackbar_util.dart';
 
 class NotificationNotifier with ChangeNotifier {
@@ -42,7 +43,7 @@ class NotificationNotifier with ChangeNotifier {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             content: Row(
               children: [
-                const Icon(Icons.notifications_active, color: Colors.amber),
+                const Icon(Icons.notifications_active, color: AppColors.rawSienna),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(

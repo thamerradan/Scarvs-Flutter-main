@@ -121,18 +121,4 @@ class ProfileService {
       return null;
     }
   }
-
-  /// التحقق من صلاحيات المالك
-  Future<bool> checkIsOwner() async {
-    final uid = _client.auth.currentUser?.id;
-    if (uid == null) return false;
-
-    try {
-      final res = await _client.rpc(SupabaseTables.isOwnerRpc);
-      return res == true;
-    } catch (_) {
-      final profile = await getProfile(uid);
-      return profile?.isOwner == true;
-    }
-  }
 }

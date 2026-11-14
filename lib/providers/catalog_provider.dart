@@ -22,18 +22,7 @@ class CatalogProvider with ChangeNotifier {
   bool _hasLoaded = false;
   bool get hasLoaded => _hasLoaded;
 
-  ProductItem? _currentProduct;
-  ProductItem? get currentProduct => _currentProduct;
-
   RealtimeChannel? _realtimeChannel;
-
-  String? _selectedCategory;
-  String? get selectedCategory => _selectedCategory;
-
-  void setSelectedCategory(String? categoryName) {
-    _selectedCategory = categoryName;
-    notifyListeners();
-  }
 
   /// بدء الاستماع اللحظي (Supabase Realtime) للتحديثات على المنتجات والأصناف
   void initRealtime() {
@@ -183,7 +172,6 @@ class CatalogProvider with ChangeNotifier {
   }) async {
     try {
       final item = await _productService.fetchProductDetail(id.toString());
-      _currentProduct = item;
       return item;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {

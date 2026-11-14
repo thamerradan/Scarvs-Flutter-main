@@ -25,7 +25,6 @@ class AuthenticationNotifier with ChangeNotifier {
   bool get isSendingOtp => _isSendingOtp;
 
   UserProfile? _currentProfile;
-  UserProfile? get currentProfile => _currentProfile;
   bool get isOwner => _currentProfile?.isOwner ?? false;
   String get userRole => _currentProfile?.role ?? 'customer';
 

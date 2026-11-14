@@ -77,6 +77,3 @@ class AppBackButton extends StatelessWidget {
     );
   }
 }
-
-/// توافق مع الاستدعاءات القديمة لضمان عدم حدوث أي كسر برمجي
-typedef AppBackPop = AppBackButton;

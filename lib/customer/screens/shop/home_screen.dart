@@ -58,27 +58,27 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.search_outlined),
         activeIcon: const Icon(Icons.search),
         title: const Text("البحث"),
-        selectedColor: Colors.orange,
+        selectedColor: AppColors.rawSienna,
       ),
       if (isOwner)
         SalomonBottomBarItem(
           icon: const Icon(Icons.dashboard_outlined),
           activeIcon: const Icon(Icons.dashboard),
           title: const Text("لوحة التحكم"),
-          selectedColor: Colors.deepOrange,
+          selectedColor: AppColors.rawSienna,
         )
       else
         SalomonBottomBarItem(
           icon: const Icon(EvaIcons.shoppingCartOutline),
           activeIcon: const Icon(EvaIcons.shoppingCart),
           title: const Text("السلة"),
-          selectedColor: Colors.teal,
+          selectedColor: AppColors.rawSienna,
         ),
       SalomonBottomBarItem(
         icon: const Icon(EvaIcons.personOutline),
         activeIcon: const Icon(EvaIcons.person),
         title: const Text("حسابي"),
-        selectedColor: Colors.purple,
+        selectedColor: AppColors.rawSienna,
       ),
     ];
 
@@ -116,8 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: currentScreens[_currentIndex],
         bottomNavigationBar: SalomonBottomBar(
-          selectedItemColor:
-              themeFlag ? AppColors.rawSienna : const Color(0xff4B7191),
+          selectedItemColor: AppColors.rawSienna,
           unselectedItemColor:
               themeFlag ? Colors.white70 : const Color(0xff777777),
           currentIndex: _currentIndex,

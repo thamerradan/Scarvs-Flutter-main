@@ -49,7 +49,6 @@ flutter:
   assets:
     - assets/animations/
     - assets/images/shoes/
-    - assets/images/misc/
     - assets/images/logo/
     - .env
 

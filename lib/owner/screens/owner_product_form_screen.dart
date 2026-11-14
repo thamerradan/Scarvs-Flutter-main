@@ -141,9 +141,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   const SizedBox(height: 12),
                   ListTile(
                     dense: true,
-                    leading: const CircleAvatar(
-                      backgroundColor: Color(0xFFE8F5E9),
-                      child: Icon(Icons.photo_library, color: Colors.green),
+                    leading: CircleAvatar(
+                      backgroundColor: AppColors.rawSienna.withOpacity(0.12),
+                      child: const Icon(Icons.photo_library, color: AppColors.rawSienna),
                     ),
                     title: const Text('معرض الصور (عدة صور دفعة واحدة)'),
                     subtitle: const Text('حدد أكثر من صورة من ألبوم الهاتف'),
@@ -154,9 +154,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ),
                   ListTile(
                     dense: true,
-                    leading: const CircleAvatar(
-                      backgroundColor: Color(0xFFE3F2FD),
-                      child: Icon(Icons.camera_alt, color: Colors.blue),
+                    leading: CircleAvatar(
+                      backgroundColor: AppColors.rawSienna.withOpacity(0.12),
+                      child: const Icon(Icons.camera_alt, color: AppColors.rawSienna),
                     ),
                     title: const Text('التقاط بالكاميرا'),
                     subtitle: const Text('تصوير الحذاء مباشرة الآن'),
@@ -167,9 +167,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ),
                   ListTile(
                     dense: true,
-                    leading: const CircleAvatar(
-                      backgroundColor: Color(0xFFFFF3E0),
-                      child: Icon(Icons.link, color: AppColors.rawSienna),
+                    leading: CircleAvatar(
+                      backgroundColor: AppColors.rawSienna.withOpacity(0.12),
+                      child: const Icon(Icons.link, color: AppColors.rawSienna),
                     ),
                     title: const Text('إضافة رابط صورة مباشر (URL)'),
                     subtitle: const Text('لصق رابط صورة على الإنترنت'),
@@ -524,7 +524,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
                       title: const Text('المنتج نشط ومتاح للبيع'),
                       value: _isActive,
-                      activeColor: Colors.green,
+                      activeThumbColor: AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isActive = val),
                     ),
                     const SizedBox(height: 8),
@@ -533,7 +533,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
                       title: const Text('منتج مميز (يظهر في الرئيسية) ⭐'),
                       value: _isFeatured,
-                      activeColor: AppColors.rawSienna,
+                      activeThumbColor: AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isFeatured = val),
                     ),
                     const SizedBox(height: 8),
@@ -554,7 +554,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                         ),
                       ),
                       value: _hasSizes,
-                      activeColor: AppColors.rawSienna,
+                      activeThumbColor: AppColors.rawSienna,
                       onChanged: (val) => setState(() => _hasSizes = val),
                     ),
                     if (_hasSizes) ...[

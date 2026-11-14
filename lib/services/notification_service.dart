@@ -25,24 +25,6 @@ class NotificationService {
     }
   }
 
-  /// حساب عدد الإشعارات غير المقروءة للمستخدم الحالي
-  Future<int> getUnreadCount() async {
-    final user = _client.auth.currentUser;
-    if (user == null) return 0;
-
-    try {
-      final res = await _client
-          .from(SupabaseTables.notifications)
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('is_read', false);
-
-      return (res as List).length;
-    } catch (_) {
-      return 0;
-    }
-  }
-
   /// تحديد إشعار كمقروء
   Future<void> markAsRead(String notificationId) async {
     final user = _client.auth.currentUser;

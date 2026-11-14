@@ -9,7 +9,6 @@ class AuthService {
   User? get currentUser => _client.auth.currentUser;
   Session? get currentSession => _client.auth.currentSession;
   bool get isAuthenticated => currentUser != null;
-  Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
   // ============================================================
   // Phone OTP Auth (نظام التحقق المباشر عبر قاعدة البيانات)
@@ -146,9 +145,6 @@ class AuthService {
       throw 'فشل تسجيل الخروج: ${e.toString()}';
     }
   }
-
-  /// جلب معرّف المستخدم الحالي
-  String? get currentUserId => currentUser?.id;
 
   /// جلب البريد الحقيقي للمستخدم (إن لم يكن بريداً تلقائياً)
   String? get userEmail {

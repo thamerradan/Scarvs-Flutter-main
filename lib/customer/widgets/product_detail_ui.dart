@@ -181,21 +181,21 @@ Widget productUI({
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Colors.blueGrey.withOpacity(0.15),
+                  color: AppColors.rawSienna.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blueGrey.withOpacity(0.35)),
+                  border: Border.all(color: AppColors.rawSienna.withOpacity(0.35)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(Icons.visibility_outlined, size: 18, color: Colors.blueGrey),
+                    Icon(Icons.visibility_outlined, size: 18, color: AppColors.rawSienna),
                     SizedBox(width: 6),
                     Text(
                       'معاينة (المالك)',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey,
+                        color: AppColors.rawSienna,
                       ),
                     ),
                   ],
