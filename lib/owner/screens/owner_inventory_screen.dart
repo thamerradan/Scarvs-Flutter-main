@@ -28,6 +28,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
   }
 
   void _showSetStockDialog(BuildContext context, String variantId, int currentStock) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final ownerNotifier = Provider.of<OwnerNotifier>(context, listen: false);
     final ctrl = TextEditingController(text: currentStock.toString());
 
@@ -49,7 +50,10 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
             child: const Text('إلغاء'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.rawSienna),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
+              foregroundColor: isDark ? AppColors.mirage : Colors.white,
+            ),
             onPressed: () async {
               final newStock = int.tryParse(ctrl.text.trim());
               if (newStock != null && newStock >= 0) {
@@ -57,7 +61,9 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                 await ownerNotifier.updateStock(variantId, newStock, context: context);
               }
             },
-            child: const Text('تحديث', style: TextStyle(color: Colors.white)),
+            child: Text('تحديث',
+                style: TextStyle(
+                    color: isDark ? AppColors.mirage : Colors.white)),
           ),
         ],
       ),
@@ -184,9 +190,11 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
-      selectedColor: AppColors.rawSienna,
+      selectedColor: themeFlag ? Colors.white : AppColors.rawSienna,
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : (themeFlag ? AppColors.creamColor : AppColors.mirage),
+        color: isSelected
+            ? (themeFlag ? AppColors.mirage : Colors.white)
+            : (themeFlag ? AppColors.creamColor : AppColors.mirage),
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         fontSize: 12,
       ),
@@ -207,7 +215,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
     final size = item['size']?.toString() ?? '';
     final stock = (item['stock_quantity'] as num?)?.toInt() ?? 0;
     final product = item['products'] as Map<String, dynamic>?;
-    final productName = product?['name']?.toString() ?? 'حذاء بدون اسم';
+    final productName = product?['name']?.toString() ?? 'منتج بدون اسم';
     final imageUrl = product?['main_image_url']?.toString();
 
     Color tagColor = Colors.green;
@@ -268,15 +276,17 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.rawSienna.withOpacity(0.15),
+                        color: themeFlag
+                            ? Colors.white.withOpacity(0.15)
+                            : AppColors.rawSienna.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         'مقاس: $size',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.rawSienna,
+                          color: themeFlag ? Colors.white : AppColors.rawSienna,
                         ),
                       ),
                     ),

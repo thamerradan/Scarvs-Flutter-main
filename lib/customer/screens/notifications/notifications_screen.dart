@@ -174,7 +174,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           border: Border.all(
             color: notif.isRead
                 ? (themeFlag ? Colors.white10 : Colors.black.withOpacity(0.06))
-                : AppColors.rawSienna.withOpacity(0.4),
+                : (themeFlag ? Colors.white38 : AppColors.rawSienna.withOpacity(0.4)),
             width: notif.isRead ? 1 : 1.5,
           ),
         ),
@@ -186,12 +186,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               decoration: BoxDecoration(
                 color: notif.isRead
                     ? (themeFlag ? Colors.white10 : Colors.grey.withOpacity(0.12))
-                    : AppColors.rawSienna.withOpacity(0.2),
+                    : (themeFlag ? Colors.white24 : AppColors.rawSienna.withOpacity(0.2)),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 notif.type == 'order' ? Icons.local_shipping_outlined : Icons.notifications_active,
-                color: notif.isRead ? Colors.grey : AppColors.rawSienna,
+                color: notif.isRead ? Colors.grey : (themeFlag ? Colors.white : AppColors.rawSienna),
                 size: 22,
               ),
             ),

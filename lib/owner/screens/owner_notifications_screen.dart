@@ -201,7 +201,9 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                 ? (themeFlag
                     ? Colors.white10
                     : Colors.black.withValues(alpha: 0.06))
-                : AppColors.rawSienna.withValues(alpha: 0.4),
+                : (themeFlag
+                    ? Colors.white38
+                    : AppColors.rawSienna.withValues(alpha: 0.4)),
             width: notif.isRead ? 1 : 1.5,
           ),
         ),
@@ -215,14 +217,18 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                     ? (themeFlag
                         ? Colors.white10
                         : Colors.grey.withValues(alpha: 0.12))
-                    : AppColors.rawSienna.withValues(alpha: 0.2),
+                    : (themeFlag
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : AppColors.rawSienna.withValues(alpha: 0.2)),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isOrderNotification
                     ? Icons.shopping_bag_outlined
                     : Icons.notifications_active,
-                color: notif.isRead ? Colors.grey : AppColors.rawSienna,
+                color: notif.isRead
+                    ? Colors.grey
+                    : (themeFlag ? Colors.white : AppColors.rawSienna),
                 size: 22,
               ),
             ),
@@ -285,20 +291,20 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                       ),
                       if (notif.orderId != null && notif.orderId!.isNotEmpty)
                         Row(
-                          children: const [
+                          children: [
                             Text(
                               'عرض الطلبات',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: AppColors.rawSienna,
+                                color: themeFlag ? Colors.white : AppColors.rawSienna,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(width: 2),
+                            const SizedBox(width: 2),
                             Icon(
                               Icons.arrow_back_ios_new,
                               size: 10,
-                              color: AppColors.rawSienna,
+                              color: themeFlag ? Colors.white : AppColors.rawSienna,
                             ),
                           ],
                         ),

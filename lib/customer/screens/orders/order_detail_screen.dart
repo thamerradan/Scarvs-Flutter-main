@@ -109,7 +109,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
                     // 2. قائمة المنتجات المشتراة
                     Text(
-                      'الأحذية المطلوبة (${order.items.length})',
+                      'المنتجات المطلوبة (${order.items.length})',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -176,7 +176,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.rawSienna,
+                                color: themeFlag ? Colors.white : AppColors.rawSienna,
                               ),
                             ),
                           ],
@@ -329,7 +329,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              color: AppColors.rawSienna,
+              color: themeFlag ? Colors.white : AppColors.rawSienna,
             ),
           ),
         ],

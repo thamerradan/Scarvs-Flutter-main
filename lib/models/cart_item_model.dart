@@ -44,7 +44,7 @@ class CartItemModel {
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       productName: product['name'] as String? ??
           json['product_name'] as String? ??
-          'حذاء',
+          'منتج',
       productPrice: (product['price'] as num?)?.toDouble() ??
           double.tryParse(json['product_price']?.toString() ?? '0') ??
           0.0,

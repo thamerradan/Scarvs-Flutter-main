@@ -95,7 +95,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                'عند قيامك بطلب أي حذاء سيظهر هنا لتتابع حالته',
+                                'عند قيامك بطلب أي منتج سيظهر هنا لتتابع حالته',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: (themeFlag
@@ -216,7 +216,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${order.items.length} أحذية في الطلب',
+                    '${order.items.length} قطع في الطلب',
                     style: const TextStyle(fontSize: 13),
                   ),
                   Row(
@@ -236,7 +236,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.rawSienna,
+                          color: themeFlag ? Colors.white : AppColors.rawSienna,
                         ),
                       ),
                       const SizedBox(width: 4),

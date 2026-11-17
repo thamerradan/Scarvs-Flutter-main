@@ -104,11 +104,11 @@ class _CartScreenState extends State<CartScreen> {
                               ? AppColors.creamColor
                               : AppColors.mirage,
                         ),
-                        const TitleText(
-                          text: 'المشتريات 🛍️',
+                        TitleText(
+                          text: 'المشتريات',
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.rawSienna,
+                          color: themeFlag ? Colors.white : AppColors.rawSienna,
                         ),
                       ],
                     ),
@@ -119,13 +119,15 @@ class _CartScreenState extends State<CartScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppColors.rawSienna.withOpacity(0.15),
+                              color: themeFlag
+                                  ? Colors.white.withOpacity(0.12)
+                                  : AppColors.rawSienna.withOpacity(0.12),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${cartNotifier.totalItemsCount} عناصر',
-                              style: const TextStyle(
-                                color: AppColors.rawSienna,
+                              style: TextStyle(
+                                color: themeFlag ? Colors.white : AppColors.rawSienna,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -173,7 +175,7 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    'لم تقم بإضافة أي أحذية إلى سلتك بعد',
+                                    'لم تقم بإضافة أي ملابس إلى سلتك بعد',
                                     style: TextStyle(
                                       color: (themeFlag
                                               ? AppColors.creamColor
@@ -185,19 +187,26 @@ class _CartScreenState extends State<CartScreen> {
                                   const SizedBox(height: 20),
                                   ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.rawSienna,
+                                      backgroundColor: themeFlag
+                                          ? Colors.white
+                                          : AppColors.rawSienna,
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 22, vertical: 12),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(14),
                                       ),
                                     ),
-                                    icon: const Icon(Icons.shopping_bag_outlined,
-                                        color: Colors.white, size: 20),
-                                    label: const Text(
-                                      'تصفح أحدث الأحذية',
+                                    icon: Icon(Icons.shopping_bag_outlined,
+                                        color: themeFlag
+                                            ? AppColors.mirage
+                                            : Colors.white,
+                                        size: 20),
+                                    label: Text(
+                                      'تصفح أحدث الملابس',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: themeFlag
+                                            ? AppColors.mirage
+                                            : Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),

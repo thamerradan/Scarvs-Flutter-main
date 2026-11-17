@@ -242,7 +242,7 @@ class CartNotifier with ChangeNotifier {
       if (context != null && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(
-            text: 'تم حذف الحذاء من السلة',
+            text: 'تم حذف المنتج من السلة',
             context: context,
           ),
         );

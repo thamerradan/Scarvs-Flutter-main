@@ -41,136 +41,142 @@ class _ProfileScreenState extends State<ProfileScreen> {
         returnRoute: AppRouter.profileRoute,
         message: 'سجّل دخولك لعرض ملفك الشخصي وإدارة طلباتك',
         child: Scaffold(
-        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Text(
-                      'الملف الشخصي 👤',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+          backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 12.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        'الملف الشخصي',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              vSizedBox1,
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    _createAccountInformation(
-                      context: context,
-                      themeFlag: themeFlag,
-                      userNotifier: userNotifier,
-                    ),
-                    const Divider(height: 32),
-                    _buildMenuItem(
-                      context: context,
-                      title: 'طلباتي 📦',
-                      icon: Icons.local_shipping_outlined,
-                      themeFlag: themeFlag,
-                      onTap: () {
-                        Navigator.of(context).pushNamed(AppRouter.ordersRoute);
-                      },
-                    ),
-                    _buildMenuItem(
-                      context: context,
-                      title: 'تعديل البيانات',
-                      icon: Icons.person_outline,
-                      themeFlag: themeFlag,
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(AppRouter.editProfileRoute)
-                            .then((_) => userNotifier.getUserData(context: context));
-                      },
-                    ),
-                    _buildMenuItem(
-                      context: context,
-                      title: 'إعدادات التطبيق والمظهر',
-                      icon: Icons.settings_outlined,
-                      themeFlag: themeFlag,
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(AppRouter.appSettingsRoute);
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () async {
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            title: const Text('تسجيل الخروج',
-                                textAlign: TextAlign.right),
-                            content: const Text(
-                              'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
-                              textAlign: TextAlign.right,
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(ctx).pop(false),
-                                child: const Text('إلغاء'),
+                vSizedBox1,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      _createAccountInformation(
+                        context: context,
+                        themeFlag: themeFlag,
+                        userNotifier: userNotifier,
+                      ),
+                      const Divider(height: 32),
+                      _buildMenuItem(
+                        context: context,
+                        title: 'طلباتي',
+                        icon: Icons.local_shipping_outlined,
+                        themeFlag: themeFlag,
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(AppRouter.ordersRoute);
+                        },
+                      ),
+                      _buildMenuItem(
+                        context: context,
+                        title: 'تعديل البيانات',
+                        icon: Icons.person_outline,
+                        themeFlag: themeFlag,
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(AppRouter.editProfileRoute)
+                              .then((_) =>
+                                  userNotifier.getUserData(context: context));
+                        },
+                      ),
+                      _buildMenuItem(
+                        context: context,
+                        title: 'إعدادات التطبيق والمظهر',
+                        icon: Icons.settings_outlined,
+                        themeFlag: themeFlag,
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(AppRouter.appSettingsRoute);
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
+                              title: const Text('تسجيل الخروج',
+                                  textAlign: TextAlign.right),
+                              content: const Text(
+                                'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                                textAlign: TextAlign.right,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('إلغاء'),
                                 ),
-                                onPressed: () => Navigator.of(ctx).pop(true),
-                                child: const Text('خروج',
-                                    style: TextStyle(color: Colors.white)),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 7, 7, 7),
+                                  ),
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: const Text('خروج',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true && mounted) {
+                            await authNotifier.signOut(context: context);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border:
+                                Border.all(color: Colors.red.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.power_settings_new,
+                                  color: Colors.red, size: 22),
+                              SizedBox(width: 8),
+                              Text(
+                                'تسجيل الخروج',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
                               ),
                             ],
                           ),
-                        );
-                        if (confirm == true && mounted) {
-                          await authNotifier.signOut(context: context);
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 14, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: Colors.red.withOpacity(0.3)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.power_settings_new,
-                                color: Colors.red, size: 22),
-                            SizedBox(width: 8),
-                            Text(
-                              'تسجيل الخروج',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -224,8 +230,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required bool themeFlag,
     required UserProvider userNotifier,
   }) {
-    final userName = userNotifier.getUserName ?? 'عميل سكارفس';
-    final roleName = userNotifier.isOwner ? 'مالك المتجر 👑' : 'عميل';
+    final userName = userNotifier.getUserName ?? 'عميل تنمى';
+    final roleName = userNotifier.isOwner ? 'مالك المتجر' : 'عميل';
     final double profilePictureSize = MediaQuery.of(context).size.width / 4.5;
 
     return Container(
@@ -279,19 +285,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: AppColors.rawSienna.withOpacity(0.15),
+                        color: themeFlag
+                            ? Colors.white.withOpacity(0.12)
+                            : AppColors.rawSienna.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.rawSienna.withOpacity(0.3),
+                          color: themeFlag
+                              ? Colors.white.withOpacity(0.3)
+                              : AppColors.rawSienna.withOpacity(0.2),
                           width: 1,
                         ),
                       ),
                       child: Text(
                         roleName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.rawSienna,
+                          color: themeFlag ? Colors.white : AppColors.rawSienna,
                         ),
                       ),
                     ),
@@ -330,9 +340,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Icon(
                         Icons.chevron_left,
                         size: 18,
-                        color: themeFlag
-                            ? AppColors.creamColor
-                            : AppColors.mirage,
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
                       ),
                     ],
                   ),

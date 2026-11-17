@@ -89,7 +89,7 @@ class AppTextField extends StatelessWidget {
       maxLines: obscureText ? 1 : maxLines,
       minLines: minLines,
       inputFormatters: inputFormatters,
-      cursorColor: AppColors.rawSienna,
+      cursorColor: isDark ? Colors.white : AppColors.rawSienna,
       cursorWidth: 2.0,
       cursorRadius: const Radius.circular(2),
       // عدم تحديد height هنا هو الحل الجذري لمشكلة عدم استجابة زر الحذف (Backspace) في النصوص العربية
@@ -143,7 +143,10 @@ class AppTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.rawSienna, width: 2),
+          borderSide: BorderSide(
+            color: isDark ? Colors.white : AppColors.rawSienna,
+            width: 2,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),

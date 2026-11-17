@@ -47,7 +47,7 @@ class SettingsScreen extends StatelessWidget {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                   secondary: Icon(
                     themeFlag ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-                    color: AppColors.rawSienna,
+                    color: themeFlag ? Colors.white : AppColors.rawSienna,
                   ),
                   title: Text(
                     'الوضع الداكن',
@@ -57,16 +57,9 @@ class SettingsScreen extends StatelessWidget {
                       color: textColor,
                     ),
                   ),
-                  subtitle: Text(
-                    themeFlag ? 'مفعّل' : 'معطّل',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: textColor.withValues(alpha: 0.6),
-                    ),
-                  ),
                   value: themeFlag,
-                  activeThumbColor: AppColors.rawSienna,
-                  activeTrackColor: AppColors.rawSienna.withValues(alpha: 0.4),
+                  activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                  activeTrackColor: themeFlag ? Colors.white38 : AppColors.rawSienna.withValues(alpha: 0.4),
                   onChanged: (bool value) {
                     notifier.toggleTheme();
                   },
@@ -87,15 +80,17 @@ class SettingsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.rawSienna.withValues(alpha: 0.15),
+                color: themeFlag
+                    ? Colors.white.withOpacity(0.12)
+                    : AppColors.rawSienna.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
-                'v1.0.0 (عربي)',
+              child: Text(
+                'v1.0.0',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.rawSienna,
+                  color: themeFlag ? Colors.white : AppColors.rawSienna,
                 ),
               ),
             ),

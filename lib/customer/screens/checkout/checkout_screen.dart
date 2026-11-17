@@ -116,7 +116,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       Text(
                         'رقم الطلب: #$orderNumber',
                         style: const TextStyle(
-                          color: AppColors.rawSienna,
+                          color: Colors.white70,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -233,15 +233,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: themeFlag ? Colors.white10 : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.rawSienna,
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
                       width: 1.5,
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.payments_outlined,
-                        color: AppColors.rawSienna,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna,
                         size: 28,
                       ),
                       const SizedBox(width: 12),
@@ -305,7 +305,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('عدد الأحذية'),
+                          const Text('عدد القطع'),
                           Text('${cartNotifier.totalItemsCount} قطعة'),
                         ],
                       ),
@@ -351,7 +351,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             style: TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.rawSienna,
+                              color: themeFlag ? Colors.white : AppColors.rawSienna,
                             ),
                           ),
                         ],
@@ -368,7 +368,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   height: 52,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.rawSienna,
+                      backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -376,18 +376,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     onPressed: orderNotifier.isLoading ? null : _submitOrder,
                     child: orderNotifier.isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 22,
                             width: 22,
                             child: CircularProgressIndicator(
-                              color: Colors.white,
+                              color: themeFlag ? AppColors.mirage : Colors.white,
                               strokeWidth: 2.5,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'تأكيد الطلب الآن 📦',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: themeFlag ? AppColors.mirage : Colors.white,
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),

@@ -179,10 +179,10 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                   return ChoiceChip(
                     label: Text(filter['label']!),
                     selected: isSelected,
-                    selectedColor: AppColors.rawSienna,
+                    selectedColor: themeFlag ? Colors.white : AppColors.rawSienna,
                     labelStyle: TextStyle(
                       color: isSelected
-                          ? Colors.white
+                          ? (themeFlag ? AppColors.mirage : Colors.white)
                           : (themeFlag ? AppColors.creamColor : AppColors.mirage),
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 13,
@@ -364,10 +364,10 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     ),
                     Text(
                       'الإجمالي: ${order.total.toStringAsFixed(2)} ر.س',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.rawSienna,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna,
                       ),
                     ),
                   ],
@@ -406,13 +406,17 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.rawSienna,
+                      backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                      foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    icon: const Icon(Icons.edit_note, size: 20, color: Colors.white),
-                    label: const Text(
+                    icon: Icon(Icons.edit_note,
+                        size: 20, color: themeFlag ? AppColors.mirage : Colors.white),
+                    label: Text(
                       'تعديل الحالة',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: themeFlag ? AppColors.mirage : Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                     onPressed: () => _showChangeStatusDialog(context, order),
                   ),

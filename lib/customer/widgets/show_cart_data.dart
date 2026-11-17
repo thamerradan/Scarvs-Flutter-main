@@ -27,12 +27,12 @@ Widget showCartData({
           decoration: BoxDecoration(
             color: cartNotifier.isFreeShipping
                 ? Colors.green.withOpacity(0.12)
-                : AppColors.rawSienna.withOpacity(0.1),
+                : (themeFlag ? Colors.white.withOpacity(0.08) : AppColors.rawSienna.withOpacity(0.08)),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: cartNotifier.isFreeShipping
                   ? Colors.green.withOpacity(0.3)
-                  : AppColors.rawSienna.withOpacity(0.2),
+                  : (themeFlag ? Colors.white.withOpacity(0.2) : AppColors.rawSienna.withOpacity(0.2)),
             ),
           ),
           child: Row(
@@ -43,7 +43,7 @@ Widget showCartData({
                     : Icons.info_outline,
                 color: cartNotifier.isFreeShipping
                     ? Colors.green
-                    : AppColors.rawSienna,
+                    : (themeFlag ? Colors.white : AppColors.rawSienna),
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -57,7 +57,7 @@ Widget showCartData({
                     fontWeight: FontWeight.w600,
                     color: cartNotifier.isFreeShipping
                         ? Colors.green
-                        : AppColors.rawSienna,
+                        : (themeFlag ? Colors.white : AppColors.rawSienna),
                   ),
                 ),
               ),
@@ -125,7 +125,7 @@ Widget _buildCartItemCard({
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // صورة الحذاء المتراكبة
+        // صورة المنتج المتراكبة
         Stack(
           alignment: Alignment.center,
           children: [
@@ -181,15 +181,17 @@ Widget _buildCartItemCard({
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.rawSienna.withOpacity(0.12),
+                    color: themeFlag
+                        ? Colors.white.withOpacity(0.12)
+                        : AppColors.rawSienna.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     'مقاس: ${item.productSize}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.rawSienna,
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
                     ),
                   ),
                 ),
@@ -200,7 +202,7 @@ Widget _buildCartItemCard({
                 text: '${item.productPrice.toStringAsFixed(0)} ر.س',
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
-                color: AppColors.rawSienna,
+                color: themeFlag ? Colors.white : AppColors.rawSienna,
               ),
 
               if (!item.isStockSufficient)
@@ -359,7 +361,7 @@ Widget _buildCartSummary({
               text: '${cartNotifier.total.toStringAsFixed(0)} ر.س',
               fontSize: 22,
               fontWeight: FontWeight.w900,
-              color: AppColors.rawSienna,
+              color: themeFlag ? Colors.white : AppColors.rawSienna,
             ),
           ],
         ),
@@ -369,7 +371,7 @@ Widget _buildCartSummary({
           height: 50,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.rawSienna,
+              backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -386,11 +388,11 @@ Widget _buildCartSummary({
                 },
               );
             },
-            child: const TitleText(
+            child: TitleText(
               text: 'متابعة الشراء وإتمام الطلب 🛍️',
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: themeFlag ? AppColors.mirage : Colors.white,
             ),
           ),
         ),

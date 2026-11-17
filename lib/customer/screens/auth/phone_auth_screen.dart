@@ -225,7 +225,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                 const SizedBox(height: 20),
 
                 // العنوان والوصف
-                _buildHeader(textColor),
+                _buildHeader(textColor, themeFlag),
 
                 const SizedBox(height: 36),
 
@@ -239,7 +239,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                 const SizedBox(height: 24),
 
                 // تبديل بين تسجيل الدخول وإنشاء حساب
-                if (!_otpSent) _buildToggleMode(textColor),
+                if (!_otpSent) _buildToggleMode(textColor, themeFlag),
               ],
             ),
           ),
@@ -252,7 +252,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   // Widgets المساعدة
   // ============================================================
 
-  Widget _buildHeader(Color textColor) {
+  Widget _buildHeader(Color textColor, bool themeFlag) {
     final title = _otpSent
         ? 'أدخل رمز التحقق'
         : (_isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول');
@@ -271,12 +271,14 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: AppColors.rawSienna.withValues(alpha: 0.12),
+            color: themeFlag
+                ? Colors.white.withValues(alpha: 0.12)
+                : AppColors.rawSienna.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Icon(
             _otpSent ? Icons.sms_outlined : Icons.phone_android_outlined,
-            color: AppColors.rawSienna,
+            color: themeFlag ? Colors.white : AppColors.rawSienna,
             size: 28,
           ),
         ),
@@ -366,8 +368,10 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
             height: 54,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.rawSienna,
-                foregroundColor: Colors.white,
+                backgroundColor:
+                    themeFlag ? Colors.white : AppColors.rawSienna,
+                foregroundColor:
+                    themeFlag ? AppColors.mirage : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -376,19 +380,20 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               onPressed:
                   authNotifier.isSendingOtp ? null : _sendOtp,
               child: authNotifier.isSendingOtp
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 22,
                       height: 22,
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: themeFlag ? AppColors.mirage : Colors.white,
                         strokeWidth: 2.5,
                       ),
                     )
                   : Text(
                       _isSignUp ? 'إرسال رمز التحقق' : 'إرسال رمز الدخول',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
+                        color: themeFlag ? AppColors.mirage : Colors.white,
                       ),
                     ),
             ),
@@ -407,25 +412,30 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.rawSienna.withValues(alpha: 0.12),
+              color: themeFlag
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : AppColors.rawSienna.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                  color: AppColors.rawSienna.withValues(alpha: 0.3)),
+                  color: themeFlag
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : AppColors.rawSienna.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.key,
-                        color: AppColors.rawSienna, size: 20),
+                    Icon(Icons.key,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna,
+                        size: 20),
                     const SizedBox(width: 8),
                     Text(
                       'رمز التحقق: ${authNotifier.lastGeneratedOtp}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: AppColors.rawSienna,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna,
                       ),
                     ),
                   ],
@@ -434,11 +444,11 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                   onPressed: () {
                     _otpController.text = authNotifier.lastGeneratedOtp!;
                   },
-                  child: const Text(
+                  child: Text(
                     'تعبئة تلقائية',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.rawSienna,
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
                     ),
                   ),
                 ),
@@ -478,7 +488,9 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.rawSienna, width: 2),
+              borderSide: BorderSide(
+                  color: themeFlag ? Colors.white : AppColors.rawSienna,
+                  width: 2),
             ),
           ),
         ),
@@ -498,8 +510,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                   onTap: authNotifier.isSendingOtp ? null : _resendOtp,
                   child: Text(
                     authNotifier.isSendingOtp ? 'جاري الإرسال...' : 'إعادة إرسال الرمز',
-                    style: const TextStyle(
-                      color: AppColors.rawSienna,
+                    style: TextStyle(
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -514,8 +526,10 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
           height: 54,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.rawSienna,
-              foregroundColor: Colors.white,
+              backgroundColor:
+                  themeFlag ? Colors.white : AppColors.rawSienna,
+              foregroundColor:
+                  themeFlag ? AppColors.mirage : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -523,19 +537,20 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
             ),
             onPressed: authNotifier.isLoading ? null : _verifyOtp,
             child: authNotifier.isLoading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: themeFlag ? AppColors.mirage : Colors.white,
                       strokeWidth: 2.5,
                     ),
                   )
-                : const Text(
+                : Text(
                     'تأكيد وإكمال',
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
+                      color: themeFlag ? AppColors.mirage : Colors.white,
                     ),
                   ),
           ),
@@ -593,7 +608,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       keyboardType: keyboardType,
       textDirection: effectiveDirection,
       textAlign: TextAlign.start,
-      cursorColor: AppColors.rawSienna,
+      cursorColor: themeFlag ? Colors.white : AppColors.rawSienna,
       style: GoogleFonts.cairo(
         color: textColor,
         fontSize: 15,
@@ -607,7 +622,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
           color: textColor.withValues(alpha: 0.45),
           fontSize: 14,
         ),
-        prefixIcon: Icon(icon, color: AppColors.rawSienna, size: 22),
+        prefixIcon: Icon(icon,
+            color: themeFlag ? Colors.white : AppColors.rawSienna, size: 22),
         filled: true,
         fillColor:
             themeFlag ? Colors.white.withValues(alpha: 0.06) : Colors.grey.shade100,
@@ -617,7 +633,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.rawSienna, width: 2),
+          borderSide: BorderSide(
+              color: themeFlag ? Colors.white : AppColors.rawSienna, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -638,7 +655,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       keyboardType: TextInputType.phone,
       textDirection: TextDirection.ltr, // الأرقام تعرض LTR بشكل سليم مع بادئة الدولة
       textAlign: TextAlign.start,
-      cursorColor: AppColors.rawSienna,
+      cursorColor: themeFlag ? Colors.white : AppColors.rawSienna,
       style: GoogleFonts.cairo(
         color: textColor,
         fontSize: 16,
@@ -683,8 +700,9 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               value: _selectedCountry,
               dropdownColor: themeFlag ? AppColors.mirage : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              icon: const Icon(Icons.arrow_drop_down,
-                  color: AppColors.rawSienna, size: 20),
+              icon: Icon(Icons.arrow_drop_down,
+                  color: themeFlag ? Colors.white : AppColors.rawSienna,
+                  size: 20),
               items: const [
                 DropdownMenuItem(
                   value: '+967',
@@ -739,7 +757,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.rawSienna, width: 2),
+          borderSide: BorderSide(
+              color: themeFlag ? Colors.white : AppColors.rawSienna, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -754,7 +773,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     );
   }
 
-  Widget _buildToggleMode(Color textColor) {
+  Widget _buildToggleMode(Color textColor, bool themeFlag) {
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -772,8 +791,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
             },
             child: Text(
               _isSignUp ? 'تسجيل الدخول' : 'إنشاء حساب جديد',
-              style: const TextStyle(
-                color: AppColors.rawSienna,
+              style: TextStyle(
+                color: themeFlag ? Colors.white : AppColors.rawSienna,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
                 decoration: TextDecoration.underline,

@@ -65,7 +65,10 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       decoration: BoxDecoration(
                         color: Colors.grey.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.rawSienna.withOpacity(0.3)),
+                        border: Border.all(
+                            color: isDark
+                                ? Colors.white30
+                                : AppColors.rawSienna.withOpacity(0.3)),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
@@ -147,7 +150,8 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.rawSienna,
+                  backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
+                  foregroundColor: isDark ? AppColors.mirage : Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 ),
@@ -243,10 +247,13 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: AppColors.rawSienna,
+          backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
           elevation: 4,
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text('إضافة تصنيف', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          icon: Icon(Icons.add, color: themeFlag ? AppColors.mirage : Colors.white),
+          label: Text('إضافة تصنيف',
+              style: TextStyle(
+                  color: themeFlag ? AppColors.mirage : Colors.white,
+                  fontWeight: FontWeight.bold)),
           onPressed: () => _showCategoryDialog(context),
         ),
         body: Column(
@@ -307,9 +314,13 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                               ),
                               const SizedBox(height: 12),
                               ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.rawSienna),
-                                icon: const Icon(Icons.add, color: Colors.white),
-                                label: const Text('إضافة أول تصنيف للمتجر', style: TextStyle(color: Colors.white)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                                  foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
+                                ),
+                                icon: Icon(Icons.add, color: themeFlag ? AppColors.mirage : Colors.white),
+                                label: Text('إضافة أول تصنيف للمتجر',
+                                    style: TextStyle(color: themeFlag ? AppColors.mirage : Colors.white)),
                                 onPressed: () => _showCategoryDialog(context),
                               ),
                             ],
@@ -368,7 +379,8 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                                   children: [
                                     // زر تعديل التصنيف
                                     IconButton(
-                                      icon: const Icon(Icons.edit_outlined, color: AppColors.rawSienna),
+                                      icon: Icon(Icons.edit_outlined,
+                                          color: themeFlag ? Colors.white : AppColors.rawSienna),
                                       tooltip: 'تعديل التصنيف',
                                       onPressed: () => _showCategoryDialog(context, category: cat),
                                     ),

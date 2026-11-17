@@ -6,10 +6,10 @@ import 'app_colors.dart';
 final darkTheme = ThemeData(
   useMaterial3: false,
   brightness: Brightness.dark,
-  primaryColor: AppColors.rawSienna,
+  primaryColor: Colors.white,
   colorScheme: ColorScheme.fromSwatch().copyWith(
-    primary: AppColors.rawSienna,
-    secondary: AppColors.rawSienna,
+    primary: Colors.white,
+    secondary: Colors.white,
     brightness: Brightness.dark,
     surface: AppColors.mirage,
   ),

@@ -86,6 +86,7 @@ class AuthGuard {
       context: context,
       barrierDismissible: true,
       builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -100,13 +101,15 @@ class AuthGuard {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: AppColors.rawSienna.withValues(alpha: 0.1),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : AppColors.rawSienna.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_outline_rounded,
                     size: 36,
-                    color: AppColors.rawSienna,
+                    color: isDark ? Colors.white : AppColors.rawSienna,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -137,8 +140,8 @@ class AuthGuard {
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.rawSienna,
-                      foregroundColor: Colors.white,
+                      backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
+                      foregroundColor: isDark ? AppColors.mirage : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -169,8 +172,10 @@ class AuthGuard {
                   height: 48,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.rawSienna,
-                      side: const BorderSide(color: AppColors.rawSienna),
+                      foregroundColor: isDark ? Colors.white70 : AppColors.rawSienna,
+                      side: BorderSide(
+                        color: isDark ? Colors.white24 : AppColors.rawSienna,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -271,6 +276,7 @@ class _GuestPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -281,13 +287,15 @@ class _GuestPlaceholder extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.rawSienna.withValues(alpha: 0.1),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : AppColors.rawSienna.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.lock_outline_rounded,
                 size: 40,
-                color: AppColors.rawSienna,
+                color: isDark ? Colors.white : AppColors.rawSienna,
               ),
             ),
             const SizedBox(height: 20),
@@ -311,8 +319,8 @@ class _GuestPlaceholder extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.rawSienna,
-                  foregroundColor: Colors.white,
+                  backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
+                  foregroundColor: isDark ? AppColors.mirage : Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -338,8 +346,10 @@ class _GuestPlaceholder extends StatelessWidget {
               height: 50,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.rawSienna,
-                  side: const BorderSide(color: AppColors.rawSienna),
+                  foregroundColor: isDark ? Colors.white70 : AppColors.rawSienna,
+                  side: BorderSide(
+                    color: isDark ? Colors.white24 : AppColors.rawSienna,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

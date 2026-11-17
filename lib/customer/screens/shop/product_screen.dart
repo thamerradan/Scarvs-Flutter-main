@@ -1,4 +1,4 @@
-// شاشة عرض المنتجات الرئيسية بتصميم متجر الأحذية المرجعي العصري المتوافق مع العربية.
+// شاشة عرض المنتجات الرئيسية بتصميم متجر تنمى للملابس والأزياء المتنوعة والعصرية المتوافق مع العربية.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
@@ -96,11 +96,11 @@ class _ProductScreenState extends State<ProductScreen> {
                 fontWeight: FontWeight.w400,
                 color: themeFlag ? AppColors.creamColor : AppColors.mirage,
               ),
-              const TitleText(
+              TitleText(
                 text: 'المميزة ✨',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.rawSienna,
+                color: themeFlag ? Colors.white : AppColors.rawSienna,
               ),
             ],
           ),
@@ -186,7 +186,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'ابحث عن الأحذية أو الماركات...',
+                          'ابحث عن الملابس أو الماركات...',
                           style: TextStyle(
                             fontSize: 13,
                             color: themeFlag
@@ -251,7 +251,7 @@ class _ProductScreenState extends State<ProductScreen> {
               id: cat.id,
               name: cat.name,
               imageUrl: cat.imageUrl,
-              icon: Icons.sports_basketball_outlined,
+              icon: Icons.checkroom_outlined,
             ),
             isSelected: _selectedCategoryId == cat.id,
             themeFlag: themeFlag,
@@ -319,7 +319,7 @@ class _ProductScreenState extends State<ProductScreen> {
         backgroundColor:
             themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
         body: RefreshIndicator(
-          color: AppColors.rawSienna,
+          color: themeFlag ? Colors.white : AppColors.rawSienna,
           onRefresh: () => catalogNotifier.loadInitialData(
             refresh: true,
             context: context,
@@ -349,7 +349,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 40),
                       child: Text(
-                        'لا توجد أحذية في هذا القسم حالياً',
+                        'لا توجد ملابس في هذا القسم حالياً',
                         style: TextStyle(
                           color: themeFlag
                               ? AppColors.creamColor

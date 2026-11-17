@@ -93,19 +93,23 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.rawSienna.withOpacity(0.15),
+                        color: themeFlag
+                            ? Colors.white.withOpacity(0.12)
+                            : AppColors.rawSienna.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.rawSienna.withOpacity(0.3),
+                          color: themeFlag
+                              ? Colors.white.withOpacity(0.3)
+                              : AppColors.rawSienna.withOpacity(0.2),
                           width: 1,
                         ),
                       ),
                       child: Text(
                         userNotifier.isOwner ? '👑 مالك المتجر' : 'عميل',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.rawSienna,
+                          color: themeFlag ? Colors.white : AppColors.rawSienna,
                         ),
                       ),
                     ),
@@ -171,7 +175,7 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
           Icon(
             icon,
             size: 22,
-            color: AppColors.rawSienna,
+            color: themeFlag ? Colors.white : AppColors.rawSienna,
           ),
           const SizedBox(width: 14),
           Expanded(

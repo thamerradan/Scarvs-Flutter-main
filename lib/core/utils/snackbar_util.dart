@@ -11,8 +11,9 @@ class SnackUtil {
     Duration duration = const Duration(seconds: 3),
     Widget? icon,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SnackBar(
-      backgroundColor: backgroundColor ?? AppColors.rawSienna,
+      backgroundColor: backgroundColor ?? (isDark ? const Color(0xff2c384e) : AppColors.rawSienna),
       behavior: SnackBarBehavior.floating,
       elevation: 4,
       shape: RoundedRectangleBorder(

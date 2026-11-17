@@ -27,7 +27,7 @@ class Core extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, notifier, _) {
         return MaterialApp(
-          title: 'متجر سكارفس',
+          title: 'متجر تنمى',
           locale: const Locale('ar', 'SA'),
           supportedLocales: const [
             Locale('ar', 'SA'),

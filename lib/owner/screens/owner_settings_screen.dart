@@ -205,7 +205,7 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                             title: const Text('تفعيل الدفع عند الاستلام (COD)'),
                             subtitle: const Text('إتاحة الدفع كاش عند استلام الشحنة'),
                             value: _codEnabled,
-                            activeThumbColor: AppColors.rawSienna,
+                            activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
                             onChanged: (val) => setState(() => _codEnabled = val),
                           ),
                           const SizedBox(height: 8),
@@ -225,7 +225,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                             height: 52,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.rawSienna,
+                                backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                                foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
@@ -233,18 +234,18 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                               ),
                               onPressed: ownerNotifier.isSaving ? null : _saveSettings,
                               child: ownerNotifier.isSaving
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       width: 24,
                                       height: 24,
                                       child: CircularProgressIndicator(
-                                        color: Colors.white,
+                                        color: themeFlag ? AppColors.mirage : Colors.white,
                                         strokeWidth: 2.5,
                                       ),
                                     )
-                                  : const Text(
+                                  : Text(
                                       'حفظ التغييرات ✅',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: themeFlag ? AppColors.mirage : Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),

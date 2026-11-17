@@ -86,12 +86,14 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: AppColors.rawSienna,
+          backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
           elevation: 4,
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
+          icon: Icon(Icons.add, color: themeFlag ? AppColors.mirage : Colors.white),
+          label: Text(
             'إضافة منتج جديد',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: themeFlag ? AppColors.mirage : Colors.white,
+                fontWeight: FontWeight.bold),
           ),
           onPressed: () {
             Navigator.of(context).pushNamed(AppRouter.ownerProductFormRoute);
@@ -284,7 +286,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       scale: 0.8,
                       child: Switch(
                         value: product.isActive,
-                        activeThumbColor: AppColors.rawSienna,
+                        activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
                         onChanged: (val) async {
                           await ownerNotifier.toggleProductStatus(
                             product.id,
@@ -304,7 +306,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                   product.categoryName ?? 'بدون تصنيف',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.rawSienna,
+                    color: themeFlag ? AppColors.creamColor : AppColors.rawSienna,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -313,10 +315,10 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                   children: [
                     Text(
                       '${product.price.toStringAsFixed(0)} ر.س',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.rawSienna,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna,
                       ),
                     ),
                     if (product.oldPrice != null && product.oldPrice! > product.price) ...[
@@ -370,15 +372,23 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: AppColors.rawSienna.withOpacity(0.12),
+                          color: themeFlag
+                              ? Colors.white.withOpacity(0.12)
+                              : AppColors.rawSienna.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.edit_outlined, size: 14, color: AppColors.rawSienna),
-                            SizedBox(width: 4),
-                            Text('تعديل', style: TextStyle(fontSize: 12, color: AppColors.rawSienna, fontWeight: FontWeight.bold)),
+                          children: [
+                            Icon(Icons.edit_outlined,
+                                size: 14,
+                                color: themeFlag ? Colors.white : AppColors.rawSienna),
+                            const SizedBox(width: 4),
+                            Text('تعديل',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: themeFlag ? Colors.white : AppColors.rawSienna,
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),

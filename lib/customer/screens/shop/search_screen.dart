@@ -78,7 +78,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         textInputAction: TextInputAction.search,
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.start,
-                        cursorColor: AppColors.rawSienna,
+                        cursorColor:
+                            themeFlag ? Colors.white : AppColors.rawSienna,
                         onSubmitted: (_) => _executeSearch(),
                         style: TextStyle(
                           color:
@@ -87,7 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'ابحث عن اسم الحذاء، الماركة...',
+                          hintText: 'ابحث عن اسم المنتج، الماركة...',
                           hintStyle: TextStyle(
                             color: (themeFlag
                                     ? AppColors.creamColor
@@ -113,7 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       onPressed: _executeSearch,
                       icon: Icon(
                         Icons.search,
-                        color: AppColors.rawSienna,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna,
                       ),
                     ),
                   ],
@@ -137,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'اكتب اسم الحذاء أو الماركة للبحث',
+                              'اكتب اسم الملابس أو الماركة للبحث',
                               style: TextStyle(
                                 fontSize: 15,
                                 color: (themeFlag

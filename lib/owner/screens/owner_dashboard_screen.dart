@@ -11,7 +11,8 @@ import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
   final VoidCallback? onSwitchToStore;
-  const OwnerDashboardScreen({Key? key, this.onSwitchToStore}) : super(key: key);
+  const OwnerDashboardScreen({Key? key, this.onSwitchToStore})
+      : super(key: key);
 
   @override
   State<OwnerDashboardScreen> createState() => _OwnerDashboardScreenState();
@@ -110,36 +111,6 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                         ],
                       ),
                     ),
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.rawSienna,
-                        side: const BorderSide(
-                            color: AppColors.rawSienna, width: 1.2),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                      ),
-                      icon: const Icon(Icons.storefront_outlined, size: 18),
-                      label: const Text(
-                        'عرض المتجر',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
-                      onPressed: () {
-                        if (widget.onSwitchToStore != null) {
-                          widget.onSwitchToStore!();
-                        } else if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        } else {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            AppRouter.customerHomeRoute,
-                            (route) => false,
-                          );
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 4),
                     Consumer<NotificationNotifier>(
                       builder: (context, notifNotifier, _) {
                         return Stack(
@@ -260,7 +231,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         _buildMenuActionTile(
           context: context,
           title: 'إدارة المخزون والكميات',
-          subtitle: 'مراقبة وتعديل مقاسات الأحذية فورياً',
+          subtitle: 'مراقبة وتعديل مقاسات الملابس والمنتجات فورياً',
           icon: Icons.analytics_outlined,
           badgeCount: stats.outOfStockCount > 0 ? stats.outOfStockCount : null,
           color: AppColors.rawSienna,
@@ -272,7 +243,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         _buildMenuActionTile(
           context: context,
           title: 'إدارة التصنيفات',
-          subtitle: 'إضافة وتعديل ماركات وأقسام الأحذية',
+          subtitle: 'إضافة وتعديل أقسام وتصنيفات الملابس',
           icon: Icons.category_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
@@ -325,10 +296,16 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
+            color: themeFlag
+                ? Colors.white.withOpacity(0.12)
+                : color.withOpacity(0.08),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: color, size: 24),
+          child: Icon(
+            icon,
+            color: themeFlag ? Colors.white : color,
+            size: 24,
+          ),
         ),
         title: Row(
           children: [

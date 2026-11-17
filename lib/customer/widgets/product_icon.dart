@@ -54,16 +54,19 @@ class EcommerceCategoryChip extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: isSelected
-                  ? (themeFlag ? AppColors.rawSienna.withOpacity(0.2) : activeBg)
+                  ? (themeFlag ? Colors.white : AppColors.rawSienna)
                   : (themeFlag ? Colors.white.withOpacity(0.04) : Colors.transparent),
               border: Border.all(
-                color: isSelected ? AppColors.rawSienna : inactiveBorder,
+                color: isSelected
+                    ? (themeFlag ? Colors.white : AppColors.rawSienna)
+                    : inactiveBorder,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.rawSienna.withOpacity(themeFlag ? 0.2 : 0.15),
+                        color: (themeFlag ? Colors.white : AppColors.rawSienna)
+                            .withOpacity(themeFlag ? 0.25 : 0.2),
                         blurRadius: 10,
                         spreadRadius: 2,
                         offset: const Offset(0, 3),
@@ -86,7 +89,7 @@ class EcommerceCategoryChip extends StatelessWidget {
                         model.icon ?? Icons.category_outlined,
                         size: 20,
                         color: isSelected
-                            ? AppColors.rawSienna
+                            ? (themeFlag ? AppColors.mirage : Colors.white)
                             : (themeFlag ? Colors.white70 : Colors.grey.shade600),
                       ),
                     ),
@@ -97,7 +100,7 @@ class EcommerceCategoryChip extends StatelessWidget {
                     model.icon,
                     size: 20,
                     color: isSelected
-                        ? AppColors.rawSienna
+                        ? (themeFlag ? AppColors.mirage : Colors.white)
                         : (themeFlag ? Colors.white70 : Colors.grey.shade600),
                   ),
                   const SizedBox(width: 8),
@@ -107,7 +110,7 @@ class EcommerceCategoryChip extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                   color: isSelected
-                      ? AppColors.rawSienna
+                      ? (themeFlag ? AppColors.mirage : Colors.white)
                       : (themeFlag ? AppColors.creamColor : AppColors.mirage),
                 ),
               ],

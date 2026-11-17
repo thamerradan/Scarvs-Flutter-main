@@ -1,4 +1,4 @@
-// بطاقة عرض المنتج بتصميم المتجر المرجعي الأنيق مع الهالة الدائرية خلف الحذاء.
+// بطاقة عرض المنتج بتصميم متجر تنمى المرجعي الأنيق مع الهالة الدائرية خلف المنتج.
 import 'package:flutter/material.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
@@ -125,8 +125,9 @@ class EcommerceProductCard extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 46,
-                            backgroundColor:
-                                AppColors.rawSienna.withOpacity(0.12),
+                            backgroundColor: themeFlag
+                                ? Colors.white.withOpacity(0.08)
+                                : AppColors.rawSienna.withOpacity(0.08),
                           ),
                           heroTag != null && heroTag!.isNotEmpty
                               ? Hero(
@@ -186,7 +187,9 @@ class EcommerceProductCard extends StatelessWidget {
                         text: product.categoryName!,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.rawSienna,
+                        color: themeFlag
+                            ? AppColors.creamColor
+                            : AppColors.rawSienna,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'سكارفس',
+              'تنمى',
               style: TextStyle(
                 color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                 fontFamily: AppFonts.contax,
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'أفضل تشكيلة من الأحذية العصرية',
+              'أرقى تشكيلة من الملابس والأزياء المتنوعة',
               style: TextStyle(
                 color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
                     .withOpacity(0.7),

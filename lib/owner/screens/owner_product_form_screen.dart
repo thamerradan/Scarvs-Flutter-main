@@ -134,7 +134,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'يمكنك اختيار أكثر من صورة معاً لعرض تفاصيل الحذاء للعميل',
+                    'يمكنك اختيار أكثر من صورة معاً لعرض تفاصيل المنتج للعميل',
                     style: TextStyle(fontSize: 13, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
@@ -142,8 +142,11 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ListTile(
                     dense: true,
                     leading: CircleAvatar(
-                      backgroundColor: AppColors.rawSienna.withOpacity(0.12),
-                      child: const Icon(Icons.photo_library, color: AppColors.rawSienna),
+                      backgroundColor: isDark
+                          ? Colors.white.withOpacity(0.12)
+                          : AppColors.rawSienna.withOpacity(0.12),
+                      child: Icon(Icons.photo_library,
+                          color: isDark ? Colors.white : AppColors.rawSienna),
                     ),
                     title: const Text('معرض الصور (عدة صور دفعة واحدة)'),
                     subtitle: const Text('حدد أكثر من صورة من ألبوم الهاتف'),
@@ -155,11 +158,14 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ListTile(
                     dense: true,
                     leading: CircleAvatar(
-                      backgroundColor: AppColors.rawSienna.withOpacity(0.12),
-                      child: const Icon(Icons.camera_alt, color: AppColors.rawSienna),
+                      backgroundColor: isDark
+                          ? Colors.white.withOpacity(0.12)
+                          : AppColors.rawSienna.withOpacity(0.12),
+                      child: Icon(Icons.camera_alt,
+                          color: isDark ? Colors.white : AppColors.rawSienna),
                     ),
                     title: const Text('التقاط بالكاميرا'),
-                    subtitle: const Text('تصوير الحذاء مباشرة الآن'),
+                    subtitle: const Text('تصوير المنتج مباشرة الآن'),
                     onTap: () {
                       Navigator.of(ctx).pop();
                       _pickCameraImage();
@@ -168,8 +174,11 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ListTile(
                     dense: true,
                     leading: CircleAvatar(
-                      backgroundColor: AppColors.rawSienna.withOpacity(0.12),
-                      child: const Icon(Icons.link, color: AppColors.rawSienna),
+                      backgroundColor: isDark
+                          ? Colors.white.withOpacity(0.12)
+                          : AppColors.rawSienna.withOpacity(0.12),
+                      child: Icon(Icons.link,
+                          color: isDark ? Colors.white : AppColors.rawSienna),
                     ),
                     title: const Text('إضافة رابط صورة مباشر (URL)'),
                     subtitle: const Text('لصق رابط صورة على الإنترنت'),
@@ -223,6 +232,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
   }
 
   void _addViaUrlDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final urlCtrl = TextEditingController();
     showDialog(
       context: context,
@@ -233,7 +243,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
           controller: urlCtrl,
           textAlign: TextAlign.left,
           decoration: const InputDecoration(
-            hintText: 'https://example.com/shoe.jpg',
+            hintText: 'https://example.com/product.jpg',
             prefixIcon: Icon(Icons.link),
           ),
         ),
@@ -243,7 +253,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
             child: const Text('إلغاء'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.rawSienna),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
+              foregroundColor: isDark ? AppColors.mirage : Colors.white,
+            ),
             onPressed: () {
               final u = urlCtrl.text.trim();
               if (u.isNotEmpty && u.startsWith('http')) {
@@ -253,7 +266,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                 Navigator.of(ctx).pop();
               }
             },
-            child: const Text('إضافة', style: TextStyle(color: Colors.white)),
+            child: Text('إضافة',
+                style: TextStyle(
+                    color: isDark ? AppColors.mirage : Colors.white)),
           ),
         ],
       ),
@@ -282,6 +297,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
   }
 
   void _addVariantRow() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) {
@@ -296,9 +312,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
             children: [
               TextField(
                 controller: sizeCtrl,
-                keyboardType: TextInputType.number,
                 textAlign: TextAlign.right,
-                decoration: const InputDecoration(labelText: 'رقم المقاس (مثال: 45)'),
+                decoration: const InputDecoration(labelText: 'المقاس (مثال: L أو 40)'),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -315,7 +330,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
               child: const Text('إلغاء'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.rawSienna),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
+                foregroundColor: isDark ? AppColors.mirage : Colors.white,
+              ),
               onPressed: () {
                 final s = sizeCtrl.text.trim();
                 final qty = int.tryParse(stockCtrl.text.trim()) ?? 0;
@@ -326,7 +344,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   Navigator.of(ctx).pop();
                 }
               },
-              child: const Text('إضافة', style: TextStyle(color: Colors.white)),
+              child: Text('إضافة',
+                  style: TextStyle(
+                      color: isDark ? AppColors.mirage : Colors.white)),
             ),
           ],
         );
@@ -438,7 +458,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       validator: (val) =>
                           val == null || val.trim().isEmpty ? 'يرجى كتابة اسم المنتج' : null,
                       decoration: _inputDecoration(
-                        label: 'اسم الحذاء / المنتج *',
+                        label: 'اسم المنتج *',
                         icon: Icons.shopping_bag_outlined,
                         themeFlag: themeFlag,
                       ),
@@ -524,7 +544,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
                       title: const Text('المنتج نشط ومتاح للبيع'),
                       value: _isActive,
-                      activeThumbColor: AppColors.rawSienna,
+                      activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isActive = val),
                     ),
                     const SizedBox(height: 8),
@@ -533,7 +553,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
                       title: const Text('منتج مميز (يظهر في الرئيسية) ⭐'),
                       value: _isFeatured,
-                      activeThumbColor: AppColors.rawSienna,
+                      activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isFeatured = val),
                     ),
                     const SizedBox(height: 8),
@@ -545,7 +565,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       title: const Text('تحديد مقاسات للمنتج'),
                       subtitle: Text(
                         _hasSizes
-                            ? 'المنتج يتطلب مقاسات متعددة (مثل الأحذية أو الملابس)'
+                            ? 'المنتج يتطلب مقاسات متعددة (مثل الملابس والأزياء)'
                             : 'المنتج بدون مقاس (مثل الإكسسوارات أو الحقائب)',
                         style: TextStyle(
                           fontSize: 12,
@@ -554,7 +574,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                         ),
                       ),
                       value: _hasSizes,
-                      activeThumbColor: AppColors.rawSienna,
+                      activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
                       onChanged: (val) => setState(() => _hasSizes = val),
                     ),
                     if (_hasSizes) ...[
@@ -641,14 +661,17 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                 return ListTile(
                                   dense: true,
                                   leading: CircleAvatar(
-                                    backgroundColor:
-                                        AppColors.rawSienna.withOpacity(0.2),
+                                    backgroundColor: themeFlag
+                                        ? Colors.white.withOpacity(0.2)
+                                        : AppColors.rawSienna.withOpacity(0.2),
                                     radius: 16,
                                     child: Text(
                                       '${item['size']}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: AppColors.rawSienna,
+                                        color: themeFlag
+                                            ? Colors.white
+                                            : AppColors.rawSienna,
                                         fontSize: 12,
                                       ),
                                     ),
@@ -678,24 +701,31 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.rawSienna,
+                          backgroundColor:
+                              themeFlag ? Colors.white : AppColors.rawSienna,
+                          foregroundColor:
+                              themeFlag ? AppColors.mirage : Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           elevation: 3,
                         ),
                         onPressed: ownerNotifier.isSaving ? null : _submitForm,
                         child: ownerNotifier.isSaving
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 24,
                                 height: 24,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: themeFlag
+                                      ? AppColors.mirage
+                                      : Colors.white,
                                   strokeWidth: 2.5,
                                 ),
                               )
                             : Text(
                                 isEditing ? 'حفظ التعديلات ✅' : 'إضافة المنتج للمتجر 🚀',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: themeFlag
+                                      ? AppColors.mirage
+                                      : Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -732,7 +762,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.photo_library_outlined, color: AppColors.rawSienna, size: 20),
+                  Icon(Icons.photo_library_outlined,
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
+                      size: 20),
                   const SizedBox(width: 8),
                   Text(
                     'صور المنتج (${_images.length})',
@@ -746,8 +778,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
               ),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.rawSienna,
-                  foregroundColor: Colors.white,
+                  backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                  foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
@@ -778,17 +810,21 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   color: Colors.grey.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: AppColors.rawSienna.withOpacity(0.4),
+                    color: themeFlag
+                        ? Colors.white30
+                        : AppColors.rawSienna.withOpacity(0.4),
                     style: BorderStyle.solid,
                     width: 1.5,
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.add_photo_alternate_outlined, size: 40, color: AppColors.rawSienna),
-                    SizedBox(height: 8),
-                    Text(
+                  children: [
+                    Icon(Icons.add_photo_alternate_outlined,
+                        size: 40,
+                        color: themeFlag ? Colors.white : AppColors.rawSienna),
+                    const SizedBox(height: 8),
+                    const Text(
                       'انقر هنا لإضافة صور للمنتج 📸 (يمكنك اختيار عدة صور)',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
@@ -815,18 +851,28 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                         decoration: BoxDecoration(
                           color: Colors.grey.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.rawSienna.withOpacity(0.3)),
+                          border: Border.all(
+                              color: themeFlag
+                                  ? Colors.white24
+                                  : AppColors.rawSienna.withOpacity(0.3)),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             CircleAvatar(
-                              backgroundColor: AppColors.rawSienna,
+                              backgroundColor:
+                                  themeFlag ? Colors.white : AppColors.rawSienna,
                               radius: 18,
-                              child: Icon(Icons.add, color: Colors.white, size: 20),
+                              child: Icon(Icons.add,
+                                  color: themeFlag
+                                      ? AppColors.mirage
+                                      : Colors.white,
+                                  size: 20),
                             ),
-                            SizedBox(height: 8),
-                            Text('إضافة المزيد', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            const Text('إضافة المزيد',
+                                style: TextStyle(
+                                    fontSize: 11, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -841,7 +887,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isMain ? AppColors.rawSienna : Colors.grey.withOpacity(0.3),
+                        color: isMain
+                            ? (themeFlag ? Colors.white : AppColors.rawSienna)
+                            : Colors.grey.withOpacity(0.3),
                         width: isMain ? 2.5 : 1,
                       ),
                     ),
@@ -870,12 +918,18 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                               decoration: BoxDecoration(
-                                color: AppColors.rawSienna,
+                                color:
+                                    themeFlag ? Colors.white : AppColors.rawSienna,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'الغلاف ⭐',
-                                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    color: themeFlag
+                                        ? AppColors.mirage
+                                        : Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           )

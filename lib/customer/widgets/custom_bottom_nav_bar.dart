@@ -189,7 +189,7 @@ class _EcommerceBottomNavigationBarState
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOutCubic,
     );
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
         _yController.animateTo(
           1.0,
@@ -200,7 +200,7 @@ class _EcommerceBottomNavigationBarState
     });
     _yController.animateTo(
       0.0,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 1000),
       curve: Curves.easeIn,
     );
   }
@@ -212,8 +212,7 @@ class _EcommerceBottomNavigationBarState
   }
 
   Widget _buildBackground() {
-    final barColor =
-        widget.themeFlag ? AppColors.mirage : Colors.white;
+    final barColor = widget.themeFlag ? AppColors.mirage : Colors.white;
     const inCurve = ElasticOutCurve(0.38);
 
     return CustomPaint(
@@ -247,12 +246,13 @@ class _EcommerceBottomNavigationBarState
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.rawSienna
+                      ? (widget.themeFlag ? Colors.white : AppColors.rawSienna)
                       : Colors.transparent,
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: AppColors.rawSienna.withOpacity(0.35),
+                            color: (widget.themeFlag ? Colors.white : AppColors.rawSienna)
+                                .withOpacity(0.35),
                             blurRadius: 12,
                             spreadRadius: 2,
                             offset: const Offset(0, 4),
@@ -262,12 +262,13 @@ class _EcommerceBottomNavigationBarState
                   shape: BoxShape.circle,
                 ),
                 child: Opacity(
-                  opacity: isSelected ? _yController.value.clamp(0.0, 1.0) : 1.0,
+                  opacity:
+                      isSelected ? _yController.value.clamp(0.0, 1.0) : 1.0,
                   child: Icon(
                     isSelected ? item.activeIcon : item.icon,
                     size: isSelected ? 22 : 24,
                     color: isSelected
-                        ? Colors.white
+                        ? (widget.themeFlag ? AppColors.mirage : Colors.white)
                         : (widget.themeFlag
                             ? Colors.white70
                             : const Color(0xff797878)),
@@ -345,4 +346,3 @@ class _EcommerceBottomNavigationBarState
     );
   }
 }
-

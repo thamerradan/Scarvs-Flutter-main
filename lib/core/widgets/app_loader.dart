@@ -65,8 +65,8 @@ class AppLoader extends StatelessWidget {
           SizedBox(
             width: size,
             height: size,
-            child: const CircularProgressIndicator(
-              color: AppColors.rawSienna,
+            child: CircularProgressIndicator(
+              color: themeFlag ? Colors.white : AppColors.rawSienna,
               strokeWidth: 3,
             ),
           ),

@@ -133,7 +133,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.rawSienna,
+                            backgroundColor:
+                                themeFlag ? Colors.white : AppColors.rawSienna,
+                            foregroundColor:
+                                themeFlag ? AppColors.mirage : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -157,18 +160,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   }
                                 },
                           child: userNotifier.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   height: 22,
                                   width: 22,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: themeFlag
+                                        ? AppColors.mirage
+                                        : Colors.white,
                                     strokeWidth: 2.5,
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   'حفظ التعديلات',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: themeFlag
+                                        ? AppColors.mirage
+                                        : Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),

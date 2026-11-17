@@ -101,8 +101,7 @@ class _ProductDetailState extends State<ProductDetail>
     Color? color,
     bool isOutLine = false,
   }) {
-    final defaultColor =
-        themeFlag ? AppColors.creamColor : AppColors.mirage;
+    final defaultColor = themeFlag ? AppColors.creamColor : AppColors.mirage;
     final bgColor = themeFlag ? AppColors.mirage : Colors.white;
 
     return Material(
@@ -174,7 +173,7 @@ class _ProductDetailState extends State<ProductDetail>
               if (AuthGuard.isOwner && _product != null) ...[
                 _buildSquircleIcon(
                   icon: Icons.edit_note_rounded,
-                  color: AppColors.rawSienna,
+                  color: themeFlag ? Colors.white : AppColors.rawSienna,
                   themeFlag: themeFlag,
                   onTap: () {
                     Navigator.of(context).pushNamed(
@@ -221,14 +220,14 @@ class _ProductDetailState extends State<ProductDetail>
                   text: (product.categoryName != null &&
                           product.categoryName!.isNotEmpty)
                       ? product.categoryName!.toUpperCase()
-                      : "SCARVS",
+                      : "..",
                   fontSize: 110,
                   fontWeight: FontWeight.bold,
                   color: themeFlag ? Colors.white : Colors.black,
                 ),
               ),
 
-              // صورة الحذاء الأساسية
+              // صورة المنتج الأساسية
               widget.productDetailsArguements.heroTag != null &&
                       widget.productDetailsArguements.heroTag!.isNotEmpty
                   ? Hero(
@@ -292,19 +291,21 @@ class _ProductDetailState extends State<ProductDetail>
                       borderRadius: BorderRadius.circular(13),
                       color: themeFlag
                           ? (isSelected
-                              ? AppColors.rawSienna.withOpacity(0.2)
+                              ? Colors.white.withOpacity(0.25)
                               : Colors.white.withOpacity(0.05))
                           : (isSelected ? Colors.white : Colors.grey.shade100),
                       border: Border.all(
                         color: isSelected
-                            ? AppColors.rawSienna
-                            : (themeFlag ? Colors.white12 : Colors.grey.shade300),
+                            ? (themeFlag ? Colors.white : AppColors.rawSienna)
+                            : (themeFlag
+                                ? Colors.white12
+                                : Colors.grey.shade300),
                         width: isSelected ? 2 : 1,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: AppColors.rawSienna.withOpacity(0.2),
+                                color: (themeFlag ? Colors.white : AppColors.rawSienna).withOpacity(0.2),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),
@@ -335,8 +336,8 @@ class _ProductDetailState extends State<ProductDetail>
     );
   }
 
-  Widget _buildSizeWidget(
-      ProductVariant variant, bool isSelected, SizeNotifier sizeNotifier, bool themeFlag) {
+  Widget _buildSizeWidget(ProductVariant variant, bool isSelected,
+      SizeNotifier sizeNotifier, bool themeFlag) {
     final isAvailable = variant.inStock;
 
     return Material(
@@ -350,7 +351,7 @@ class _ProductDetailState extends State<ProductDetail>
           decoration: BoxDecoration(
             border: Border.all(
               color: isSelected
-                  ? AppColors.rawSienna
+                  ? (themeFlag ? Colors.white : AppColors.rawSienna)
                   : (!isAvailable
                       ? Colors.grey.shade400
                       : (themeFlag ? Colors.white24 : Colors.grey.shade300)),
@@ -358,14 +359,16 @@ class _ProductDetailState extends State<ProductDetail>
             ),
             borderRadius: BorderRadius.circular(13),
             color: isSelected
-                ? AppColors.rawSienna
+                ? (themeFlag ? Colors.white : AppColors.rawSienna)
                 : (!isAvailable
                     ? (themeFlag ? Colors.white10 : Colors.grey.shade200)
-                    : (themeFlag ? Colors.white.withOpacity(0.06) : Colors.grey.shade50)),
+                    : (themeFlag
+                        ? Colors.white.withOpacity(0.06)
+                        : Colors.grey.shade50)),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: AppColors.rawSienna.withOpacity(0.3),
+                      color: (themeFlag ? Colors.white : AppColors.rawSienna).withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -380,10 +383,12 @@ class _ProductDetailState extends State<ProductDetail>
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: isSelected
-                    ? Colors.white
+                    ? (themeFlag ? AppColors.mirage : Colors.white)
                     : (!isAvailable
                         ? Colors.grey
-                        : (themeFlag ? AppColors.creamColor : AppColors.mirage)),
+                        : (themeFlag
+                            ? AppColors.creamColor
+                            : AppColors.mirage)),
               ),
               if (!isAvailable)
                 const Text(
@@ -403,7 +408,7 @@ class _ProductDetailState extends State<ProductDetail>
 
     return DraggableScrollableSheet(
       maxChildSize: 0.82,
-      initialChildSize: 0.52,
+      initialChildSize: 0.48,
       minChildSize: 0.48,
       builder: (context, scrollController) {
         return Container(
@@ -463,7 +468,7 @@ class _ProductDetailState extends State<ProductDetail>
                               text: product.categoryName!,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.rawSienna,
+                              color: themeFlag ? AppColors.creamColor : AppColors.rawSienna,
                             ),
                           ],
                         ],
@@ -481,13 +486,13 @@ class _ProductDetailState extends State<ProductDetail>
                               text: '${product.price.toStringAsFixed(0)} ',
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.rawSienna,
+                              color: themeFlag ? Colors.white : AppColors.rawSienna,
                             ),
-                            const TitleText(
+                            TitleText(
                               text: 'ر.س',
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.rawSienna,
+                              color: themeFlag ? Colors.white70 : AppColors.rawSienna,
                             ),
                           ],
                         ),
@@ -560,8 +565,9 @@ class _ProductDetailState extends State<ProductDetail>
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.6,
-                      color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                          .withOpacity(0.8),
+                      color:
+                          (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                              .withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 22),
@@ -574,23 +580,28 @@ class _ProductDetailState extends State<ProductDetail>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
-                      color: AppColors.rawSienna.withOpacity(0.12),
+                      color: themeFlag
+                          ? Colors.white.withOpacity(0.08)
+                          : AppColors.rawSienna.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: AppColors.rawSienna.withOpacity(0.35)),
+                          color: themeFlag
+                              ? Colors.white.withOpacity(0.2)
+                              : AppColors.rawSienna.withOpacity(0.2)),
                     ),
                     child: Row(
-                      children: const [
+                      children: [
                         Icon(Icons.visibility_outlined,
-                            size: 18, color: AppColors.rawSienna),
-                        SizedBox(width: 8),
+                            size: 18,
+                            color: themeFlag ? Colors.white : AppColors.rawSienna),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'وضع معاينة المتجر (المالك) — الشراء معطل في هذا الوضع',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.rawSienna,
+                              color: themeFlag ? Colors.white : AppColors.rawSienna,
                             ),
                           ),
                         ),
@@ -680,7 +691,7 @@ class _ProductDetailState extends State<ProductDetail>
                 return Center(
                   child: AppLoader(
                     themeFlag: themeFlag,
-                    text: 'جاري تحميل تفاصيل الحذاء...',
+                    text: 'جاري تحميل تفاصيل المنتج...',
                   ),
                 );
               } else if (snapshot.hasError ||
@@ -722,25 +733,28 @@ class _ProductDetailState extends State<ProductDetail>
     final product = _product!;
     final allImages = product.images.isNotEmpty
         ? product.images
-        : (product.mainImageUrl.isNotEmpty ? [product.mainImageUrl] : <String>[]);
+        : (product.mainImageUrl.isNotEmpty
+            ? [product.mainImageUrl]
+            : <String>[]);
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor:
-            themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
+        backgroundColor: themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
         floatingActionButton: !AuthGuard.isOwner
             ? FloatingActionButton.extended(
                 onPressed: product.inStock
                     ? () => _handleAddToCart(context, product, sizeNotifier)
                     : null,
-                backgroundColor:
-                    product.inStock ? AppColors.rawSienna : Colors.grey,
+                backgroundColor: product.inStock
+                    ? (themeFlag ? Colors.white : AppColors.rawSienna)
+                    : Colors.grey,
                 elevation: 6,
-                icon: const Icon(Icons.shopping_basket_rounded, color: Colors.white),
+                icon: Icon(Icons.shopping_basket_rounded,
+                    color: themeFlag ? AppColors.mirage : Colors.white),
                 label: Text(
                   product.inStock ? 'إضافة إلى السلة' : 'نفد من المخزون',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: themeFlag ? AppColors.mirage : Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -777,4 +791,3 @@ class ProductDetailsArgs {
     this.heroTag,
   });
 }
-
