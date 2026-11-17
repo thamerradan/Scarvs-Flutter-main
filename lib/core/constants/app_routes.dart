@@ -9,7 +9,6 @@ import 'package:scarvs/customer/screens/notifications/notifications_screen.dart'
 import 'package:scarvs/customer/screens/orders/order_detail_screen.dart';
 import 'package:scarvs/customer/screens/orders/orders_screen.dart';
 import 'package:scarvs/owner/screens/owner_categories_screen.dart';
-import 'package:scarvs/owner/screens/owner_dashboard_screen.dart';
 import 'package:scarvs/owner/screens/owner_inventory_screen.dart';
 import 'package:scarvs/owner/screens/owner_orders_screen.dart';
 import 'package:scarvs/owner/screens/owner_product_form_screen.dart';
@@ -73,7 +72,7 @@ class AppRouter {
     // 2. حماية مسارات السلة وإتمام الطلب من المالك (المالك في وضع معاينة المتجر فقط):
     if (userRole == 'owner' && (route == cartRoute || route == checkoutRoute)) {
       return MaterialPageRoute(
-        builder: (_) => const OwnerDashboardScreen(),
+        builder: (_) => const HomeScreen(initialIndex: 2),
         settings: settings,
       );
     }
@@ -189,7 +188,7 @@ class AppRouter {
       // ==================== مسارات المالك ====================
       case ownerDashboardRoute:
         return MaterialPageRoute(
-          builder: (_) => const OwnerDashboardScreen(),
+          builder: (_) => const HomeScreen(initialIndex: 2),
           settings: settings,
         );
 

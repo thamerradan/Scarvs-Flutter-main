@@ -1,11 +1,10 @@
-// يعرض الصفحة الرئيسية وأقسام اكتشاف المنتجات.
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+// يعرض الصفحة الرئيسية وأقسام اكتشاف المنتجات مع شريط التنقل السفلي المنحني.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
+import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
@@ -14,20 +13,24 @@ import 'package:scarvs/customer/screens/cart/cart_screen.dart';
 import 'package:scarvs/customer/screens/shop/product_screen.dart';
 import 'package:scarvs/customer/screens/profile/profile_screen.dart';
 import 'package:scarvs/customer/screens/shop/search_screen.dart';
+import 'package:scarvs/customer/widgets/custom_bottom_nav_bar.dart';
+import 'package:scarvs/owner/screens/owner_dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final int initialIndex;
+  const HomeScreen({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var _currentIndex = 0;
+  late int _currentIndex;
 
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialIndex;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<CatalogProvider>(context, listen: false).initRealtime();
       if (AuthGuard.isLoggedIn) {
@@ -37,48 +40,47 @@ class _HomeScreenState extends State<HomeScreen> {
             Provider.of<NotificationNotifier>(context, listen: false);
         notifNotifier.fetchNotifications(context: context);
         notifNotifier.initRealtime(context);
+        Provider.of<CartNotifier>(context, listen: false)
+            .loadCart(context: context);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
-    var themeFlag = themeNotifier.darkTheme;
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeFlag = themeNotifier.darkTheme;
     final isOwner = AuthGuard.isOwner;
+    final cartNotifier = Provider.of<CartNotifier>(context);
 
-    final navIcons = [
-      SalomonBottomBarItem(
-        icon: const Icon(Icons.home_outlined),
-        activeIcon: const Icon(Icons.home),
-        title: const Text("الرئيسية"),
-        selectedColor: AppColors.rawSienna,
+    final navItems = [
+      const NavItemData(
+        icon: Icons.home_outlined,
+        activeIcon: Icons.home_rounded,
+        label: "الرئيسية",
       ),
-      SalomonBottomBarItem(
-        icon: const Icon(Icons.search_outlined),
-        activeIcon: const Icon(Icons.search),
-        title: const Text("البحث"),
-        selectedColor: AppColors.rawSienna,
+      const NavItemData(
+        icon: Icons.search_rounded,
+        activeIcon: Icons.search_rounded,
+        label: "البحث",
       ),
       if (isOwner)
-        SalomonBottomBarItem(
-          icon: const Icon(Icons.dashboard_outlined),
-          activeIcon: const Icon(Icons.dashboard),
-          title: const Text("لوحة التحكم"),
-          selectedColor: AppColors.rawSienna,
+        const NavItemData(
+          icon: Icons.dashboard_outlined,
+          activeIcon: Icons.dashboard_rounded,
+          label: "لوحة التحكم",
         )
       else
-        SalomonBottomBarItem(
-          icon: const Icon(EvaIcons.shoppingCartOutline),
-          activeIcon: const Icon(EvaIcons.shoppingCart),
-          title: const Text("السلة"),
-          selectedColor: AppColors.rawSienna,
+        NavItemData(
+          icon: Icons.shopping_bag_outlined,
+          activeIcon: Icons.shopping_bag_rounded,
+          label: "السلة",
+          badgeCount: cartNotifier.totalItemsCount,
         ),
-      SalomonBottomBarItem(
-        icon: const Icon(EvaIcons.personOutline),
-        activeIcon: const Icon(EvaIcons.person),
-        title: const Text("حسابي"),
-        selectedColor: AppColors.rawSienna,
+      const NavItemData(
+        icon: Icons.person_outline_rounded,
+        activeIcon: Icons.person_rounded,
+        label: "حسابي",
       ),
     ];
 
@@ -86,7 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
       const ProductScreen(),
       const SearchScreen(),
       if (isOwner)
-        const SizedBox.shrink()
+        OwnerDashboardScreen(
+          onSwitchToStore: () => setState(() => _currentIndex = 0),
+        )
       else
         AuthProtected(
           returnRoute: AppRouter.cartRoute,
@@ -101,33 +105,33 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return PopScope(
-      canPop: !isOwner,
+      canPop: _currentIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        if (isOwner) {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-          } else {
-            Navigator.of(context).pushReplacementNamed(AppRouter.ownerDashboardRoute);
-          }
+        if (_currentIndex != 0) {
+          setState(() => _currentIndex = 0);
         }
       },
       child: Scaffold(
-        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        body: currentScreens[_currentIndex],
-        bottomNavigationBar: SalomonBottomBar(
-          selectedItemColor: AppColors.rawSienna,
-          unselectedItemColor:
-              themeFlag ? Colors.white70 : const Color(0xff777777),
-          currentIndex: _currentIndex,
-          onTap: (i) {
-            if (isOwner && i == 2) {
-              Navigator.of(context).pushNamed(AppRouter.ownerDashboardRoute);
-              return;
-            }
-            setState(() => _currentIndex = i);
-          },
-          items: navIcons,
+        backgroundColor:
+            themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
+        body: Stack(
+          children: [
+            currentScreens[_currentIndex],
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: EcommerceBottomNavigationBar(
+                selectedIndex: _currentIndex,
+                themeFlag: themeFlag,
+                items: navItems,
+                onItemSelected: (i) {
+                  setState(() => _currentIndex = i);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

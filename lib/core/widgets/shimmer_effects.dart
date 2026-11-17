@@ -13,31 +13,34 @@ class ShimmerEffects {
     final highlightColor =
         isDark ? Colors.white.withValues(alpha: 0.12) : Colors.grey.shade300;
 
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: 8,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(start: 16.0, end: 8.0),
-            child: Container(
-              height: 250,
-              width: 170,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-                color: Colors.white,
-                border: Border.all(
-                  color: isDark ? Colors.white12 : Colors.grey.shade300,
-                  width: 1.5,
+    return SizedBox(
+      height: 250,
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: 8,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsetsDirectional.only(start: 16.0, end: 8.0),
+              child: Container(
+                height: 250,
+                width: 170,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                  color: Colors.white,
+                  border: Border.all(
+                    color: isDark ? Colors.white12 : Colors.grey.shade300,
+                    width: 1.5,
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

@@ -50,7 +50,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'الإشعارات 🔔',
+                    'الإشعارات',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

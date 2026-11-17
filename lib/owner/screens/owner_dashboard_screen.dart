@@ -10,7 +10,8 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
-  const OwnerDashboardScreen({Key? key}) : super(key: key);
+  final VoidCallback? onSwitchToStore;
+  const OwnerDashboardScreen({Key? key, this.onSwitchToStore}) : super(key: key);
 
   @override
   State<OwnerDashboardScreen> createState() => _OwnerDashboardScreenState();
@@ -68,67 +69,43 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
 
     return SafeArea(
       child: Scaffold(
-          backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-          body: RefreshIndicator(
-            onRefresh: () async {
-              await ownerNotifier.fetchDashboard(context: context);
-              if (context.mounted) {
-                await Provider.of<NotificationNotifier>(context, listen: false)
-                    .fetchNotifications(context: context);
-              }
-            },
-            child: Column(
-              children: [
-                // الهيدر
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 12.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await ownerNotifier.fetchDashboard(context: context);
+            if (context.mounted) {
+              await Provider.of<NotificationNotifier>(context, listen: false)
+                  .fetchNotifications(context: context);
+            }
+          },
+          child: Column(
+            children: [
+              // الهيدر
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Row(
                             children: [
                               Flexible(
                                 child: Text(
-                                  'لوحة تحكم المتجر',
+                                  'لوحة التحكم ',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.bold,
-                                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                                    color: themeFlag
+                                        ? AppColors.creamColor
+                                        : AppColors.mirage,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const SizedBox(width: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppColors.rawSienna.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Text(
-                                  '👑 المالك',
-                                  style: TextStyle(
-                                    color: AppColors.rawSienna,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
                             ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'نظرة عامة وإدارة العمليات',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                  .withOpacity(0.6),
-                            ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -136,17 +113,30 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.rawSienna,
-                        side: const BorderSide(color: AppColors.rawSienna, width: 1.2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        side: const BorderSide(
+                            color: AppColors.rawSienna, width: 1.2),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                       ),
                       icon: const Icon(Icons.storefront_outlined, size: 18),
                       label: const Text(
                         'عرض المتجر',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushNamed(AppRouter.customerHomeRoute);
+                        if (widget.onSwitchToStore != null) {
+                          widget.onSwitchToStore!();
+                        } else if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        } else {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            AppRouter.customerHomeRoute,
+                            (route) => false,
+                          );
+                        }
                       },
                     ),
                     const SizedBox(width: 4),
@@ -222,30 +212,13 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                     ? AppLoader(themeFlag: themeFlag)
                     : SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 1. بطاقات الإيرادات والمبيعات الكبرى
-                            _buildRevenueBanner(stats, themeFlag),
-                            const SizedBox(height: 16),
-
-                            // 2. شبكة الإحصائيات السريعة
-                            _buildStatsGrid(stats, themeFlag),
-                            const SizedBox(height: 24),
-
-                            // 3. أقسام إدارة المتجر (Quick Menu)
-                            Text(
-                              'أقسام الإدارة والتحكم',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
                             _buildManagementGrid(context, stats, themeFlag),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 80),
                           ],
                         ),
                       ),
@@ -257,221 +230,20 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     );
   }
 
-  Widget _buildRevenueBanner(stats, bool themeFlag) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.rawSienna,
-            AppColors.rawSienna.withOpacity(0.8),
-            const Color(0xffD97D3E),
-          ],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.rawSienna.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
-                'إجمالي الإيرادات المكتملة 💰',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Icon(Icons.trending_up, color: Colors.white, size: 28),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '${stats.totalSales.toStringAsFixed(2)} ر.س',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildSmallSalesMetric('مبيعات اليوم', '${stats.todaySales.toStringAsFixed(0)} ر.س'),
-                Container(width: 1, height: 28, color: Colors.white24),
-                _buildSmallSalesMetric('مبيعات الشهر', '${stats.monthSales.toStringAsFixed(0)} ر.س'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSmallSalesMetric(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatsGrid(stats, bool themeFlag) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildMetricCard(
-            title: 'طلبات جديدة',
-            value: '${stats.pendingOrders}',
-            subtitle: 'بانتظار التأكيد',
-            icon: Icons.hourglass_top,
-            iconColor: AppColors.rawSienna,
-            bgColor: AppColors.rawSienna.withOpacity(0.12),
-            themeFlag: themeFlag,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Expanded(
-          child: _buildMetricCard(
-            title: 'المخزون المنخفض',
-            value: '${stats.lowStockCount + stats.outOfStockCount}',
-            subtitle: '${stats.outOfStockCount} نفذ تماماً',
-            icon: Icons.warning_amber_rounded,
-            iconColor: Colors.redAccent,
-            bgColor: Colors.red.withOpacity(0.12),
-            themeFlag: themeFlag,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMetricCard({
-    required String title,
-    required String value,
-    required String subtitle,
-    required IconData icon,
-    required Color iconColor,
-    required Color bgColor,
-    required bool themeFlag,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: themeFlag ? AppColors.mirage : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: themeFlag ? Colors.white10 : Colors.black.withOpacity(0.06),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.7),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: iconColor, size: 18),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 11,
-              color: iconColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildManagementGrid(BuildContext context, stats, bool themeFlag) {
     return Column(
       children: [
         _buildMenuActionTile(
           context: context,
-          title: 'عرض وتصفح المتجر 🛍️',
-          subtitle: 'معاينة واجهة العميل والمنتجات والأقسام كما تظهر للزبائن',
-          icon: Icons.storefront_outlined,
-          color: AppColors.rawSienna,
-          themeFlag: themeFlag,
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.customerHomeRoute),
-        ),
-        const SizedBox(height: 12),
-        _buildMenuActionTile(
-          context: context,
           title: 'إدارة الطلبات',
-          subtitle: '${stats.totalOrders} إجمالي الطلبات (${stats.pendingOrders} جديدة)',
+          subtitle:
+              '${stats.totalOrders} إجمالي الطلبات (${stats.pendingOrders} جديدة)',
           icon: Icons.local_shipping_outlined,
           badgeCount: stats.pendingOrders,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.ownerOrdersRoute),
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRouter.ownerOrdersRoute),
         ),
         const SizedBox(height: 12),
         _buildMenuActionTile(
@@ -481,7 +253,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           icon: Icons.inventory_2_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.ownerProductsRoute),
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRouter.ownerProductsRoute),
         ),
         const SizedBox(height: 12),
         _buildMenuActionTile(
@@ -492,7 +265,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           badgeCount: stats.outOfStockCount > 0 ? stats.outOfStockCount : null,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.ownerInventoryRoute),
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRouter.ownerInventoryRoute),
         ),
         const SizedBox(height: 12),
         _buildMenuActionTile(
@@ -502,7 +276,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           icon: Icons.category_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.ownerCategoriesRoute),
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRouter.ownerCategoriesRoute),
         ),
         const SizedBox(height: 12),
         _buildMenuActionTile(
@@ -512,28 +287,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           icon: Icons.storefront_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.ownerSettingsRoute),
-        ),
-        const SizedBox(height: 12),
-        Consumer<NotificationNotifier>(
-          builder: (context, notifNotifier, _) {
-            return _buildMenuActionTile(
-              context: context,
-              title: 'إشعارات وتنبيهات المتجر',
-              subtitle: notifNotifier.unreadCount > 0
-                  ? '${notifNotifier.unreadCount} إشعار جديد بانتظار المتابعة'
-                  : 'تنبيهات الطلبات الجديدة وتحديثات الشحنات',
-              icon: Icons.notifications_active_outlined,
-              badgeCount: notifNotifier.unreadCount > 0
-                  ? notifNotifier.unreadCount
-                  : null,
-              color: AppColors.rawSienna,
-              themeFlag: themeFlag,
-              onTap: () => Navigator.of(context).pushNamed(
-                AppRouter.ownerNotificationsRoute,
-              ),
-            );
-          },
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRouter.ownerSettingsRoute),
         ),
       ],
     );
@@ -609,7 +364,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           subtitle,
           style: TextStyle(
             fontSize: 12,
-            color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.6),
+            color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                .withOpacity(0.6),
           ),
         ),
         trailing: Icon(

@@ -8,8 +8,6 @@ import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
-import 'package:scarvs/core/widgets/custom_text_style.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -48,17 +46,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
                 child: Row(
                   children: [
-                    AppBackButton(
-                      fallbackRoute: AppRouter.customerHomeRoute,
-                      themeFlag: themeFlag,
-                    ),
-                    const SizedBox(width: 8),
                     Text(
-                      'الملف الشخصي',
-                      style: CustomTextWidget.bodyTextB2(
+                      'الملف الشخصي 👤',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                         color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                       ),
                     ),
@@ -76,16 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       userNotifier: userNotifier,
                     ),
                     const Divider(height: 32),
-                    if (userNotifier.isOwner)
-                      _buildMenuItem(
-                        context: context,
-                        title: 'لوحة تحكم المتجر 👑',
-                        icon: Icons.dashboard_outlined,
-                        themeFlag: themeFlag,
-                        onTap: () {
-                          Navigator.of(context).pushNamed(AppRouter.ownerDashboardRoute);
-                        },
-                      ),
                     _buildMenuItem(
                       context: context,
                       title: 'طلباتي 📦',
@@ -93,15 +78,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       themeFlag: themeFlag,
                       onTap: () {
                         Navigator.of(context).pushNamed(AppRouter.ordersRoute);
-                      },
-                    ),
-                    _buildMenuItem(
-                      context: context,
-                      title: 'مركز الإشعارات 🔔',
-                      icon: Icons.notifications_outlined,
-                      themeFlag: themeFlag,
-                      onTap: () {
-                        Navigator.of(context).pushNamed(AppRouter.notificationsRoute);
                       },
                     ),
                     _buildMenuItem(

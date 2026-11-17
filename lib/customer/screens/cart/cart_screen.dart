@@ -1,4 +1,4 @@
-// يعرض سلة التسوق وعناصرها وإجراءات تعديلها.
+// يعرض سلة التسوق بتصميم المتجر المرجعي المتوافق مع العربية.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
@@ -7,6 +7,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
+import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/customer/widgets/show_cart_data.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
@@ -29,6 +30,46 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  Widget _buildSquircleIcon({
+    required IconData icon,
+    required bool themeFlag,
+    required VoidCallback onTap,
+    Color? color,
+    String? tooltip,
+  }) {
+    final defaultColor =
+        themeFlag ? AppColors.creamColor : AppColors.mirage;
+
+    return Tooltip(
+      message: tooltip ?? '',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(13),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              color: themeFlag ? Colors.white.withOpacity(0.08) : Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: themeFlag
+                      ? Colors.black.withOpacity(0.25)
+                      : const Color(0xfff0f0f0),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: color ?? defaultColor, size: 20),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -40,129 +81,148 @@ class _CartScreenState extends State<CartScreen> {
         returnRoute: AppRouter.cartRoute,
         message: 'سجّل دخولك لعرض سلة المشتريات ومتابعة التسوق',
         child: Scaffold(
-        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'سلة المشتريات 🛍️',
-                        style: TextStyle(
+          backgroundColor:
+              themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // الهيدر بتصميم السطرين
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TitleText(
+                          text: 'سلة ',
                           fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w400,
                           color: themeFlag
                               ? AppColors.creamColor
                               : AppColors.mirage,
                         ),
-                      ),
-                      if (cartNotifier.totalItemsCount > 0) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.rawSienna,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${cartNotifier.totalItemsCount}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                        const TitleText(
+                          text: 'المشتريات 🛍️',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.rawSienna,
                         ),
                       ],
-                    ],
-                  ),
-                  if (cartNotifier.cartItems.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(Icons.refresh, size: 22),
-                      tooltip: 'تحديث السلة',
-                      onPressed: () => cartNotifier.loadCart(context: context),
                     ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: cartNotifier.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : cartNotifier.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                AppLoader(themeFlag: themeFlag, text: '', lottieAsset: AppAssets.nodata),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'سلة التسوق فارغة حالياً!',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: themeFlag
-                                        ? AppColors.creamColor
-                                        : AppColors.mirage,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'لم تقم بإضافة أي أحذية إلى سلتك بعد',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: (themeFlag
-                                            ? AppColors.creamColor
-                                            : AppColors.mirage)
-                                        .withOpacity(0.6),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.rawSienna,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24, vertical: 12),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pushReplacementNamed(AppRouter.homeRoute);
-                                  },
-                                  child: const Text(
-                                    'تصفح الأحذية الآن 👟',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                    Row(
+                      children: [
+                        if (cartNotifier.totalItemsCount > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.rawSienna.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${cartNotifier.totalItemsCount} عناصر',
+                              style: const TextStyle(
+                                color: AppColors.rawSienna,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        )
-                      : showCartData(
-                          height: 100,
-                          snapshot: cartNotifier.cartItems,
+                        const SizedBox(width: 8),
+                        _buildSquircleIcon(
+                          icon: Icons.refresh_rounded,
                           themeFlag: themeFlag,
-                          context: context,
+                          tooltip: 'تحديث السلة',
+                          onTap: () =>
+                              cartNotifier.loadCart(context: context),
                         ),
-            ),
-          ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: cartNotifier.isLoading
+                    ? Center(
+                        child: AppLoader(
+                          themeFlag: themeFlag,
+                          text: 'جاري تحديث السلة...',
+                        ),
+                      )
+                    : cartNotifier.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AppLoader(
+                                    themeFlag: themeFlag,
+                                    text: '',
+                                    lottieAsset: AppAssets.nodata,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  TitleText(
+                                    text: 'سلة التسوق فارغة حالياً!',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'لم تقم بإضافة أي أحذية إلى سلتك بعد',
+                                    style: TextStyle(
+                                      color: (themeFlag
+                                              ? AppColors.creamColor
+                                              : AppColors.mirage)
+                                          .withOpacity(0.7),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.rawSienna,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 22, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                    icon: const Icon(Icons.shopping_bag_outlined,
+                                        color: Colors.white, size: 20),
+                                    label: const Text(
+                                      'تصفح أحدث الأحذية',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pushNamedAndRemoveUntil(
+                                        AppRouter.customerHomeRoute,
+                                        (route) => false,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : showCartData(
+                            snapshot: cartNotifier.cartItems,
+                            themeFlag: themeFlag,
+                            context: context,
+                            height: MediaQuery.of(context).size.height,
+                          ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

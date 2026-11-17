@@ -1,17 +1,15 @@
-// يعرض قائمة المنتجات في الكتالوج.
+// شاشة عرض المنتجات الرئيسية بتصميم متجر الأحذية المرجعي العصري المتوافق مع العربية.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
-import 'package:scarvs/core/utils/auth_guard.dart';
+import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/providers/user_provider.dart';
-import 'package:scarvs/customer/widgets/brands_widget.dart';
-import 'package:scarvs/customer/widgets/recommended_widget.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
+import 'package:scarvs/customer/widgets/title_text.dart';
+import 'package:scarvs/customer/widgets/product_card.dart';
+import 'package:scarvs/customer/widgets/product_icon.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -22,6 +20,8 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  String? _selectedCategoryId;
+
   @override
   void initState() {
     super.initState();
@@ -31,267 +31,339 @@ class _ProductScreenState extends State<ProductScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final themeFlag = themeNotifier.darkTheme;
-    final userData = Provider.of<UserProvider>(context);
-    final userName = userData.getUserName ?? 'عميلنا العزيز';
-    final productNotifier = Provider.of<CatalogProvider>(context);
+  Widget _buildSquircleIcon({
+    required IconData icon,
+    required bool themeFlag,
+    required VoidCallback onTap,
+    Color? color,
+    Widget? badge,
+    String? tooltip,
+  }) {
+    final defaultColor =
+        themeFlag ? AppColors.creamColor : AppColors.mirage;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        body: RefreshIndicator(
-          onRefresh: () => productNotifier.loadInitialData(
-            refresh: true,
-            context: context,
+    return Tooltip(
+      message: tooltip ?? '',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(13),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              color: themeFlag ? Colors.white.withOpacity(0.08) : Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: themeFlag
+                      ? Colors.black.withOpacity(0.25)
+                      : const Color(0xfff0f0f0),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                Icon(icon, color: color ?? defaultColor, size: 22),
+                if (badge != null) badge,
+              ],
+            ),
           ),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'أهلاً بك، $userName 👋',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'ماذا تحب أن ترتدي اليوم؟',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                  .withOpacity(0.7),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          if (AuthGuard.isOwner)
-                            IconButton(
-                              icon: const Icon(Icons.dashboard_outlined, size: 28),
-                              color: AppColors.rawSienna,
-                              tooltip: 'العودة إلى لوحة التحكم',
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  AppRouter.ownerDashboardRoute,
-                                );
-                              },
-                            ),
-                          Consumer<NotificationNotifier>(
-                        builder: (context, notif, _) {
-                          return Stack(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.notifications_outlined, size: 28),
-                                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                                onPressed: () {
-                                  Navigator.of(context).pushNamed(AppRouter.notificationsRoute);
-                                },
-                              ),
-                              if (notif.unreadCount > 0)
-                                Positioned(
-                                  top: 6,
-                                  right: 6,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.redAccent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    constraints: const BoxConstraints(
-                                      minWidth: 16,
-                                      minHeight: 16,
-                                    ),
-                                    child: Text(
-                                      '${notif.unreadCount}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, bool themeFlag) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // عنوان الشاشة في الـ AppBar على شكل Row
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TitleText(
+                text: 'منتجاتنا ',
+                fontSize: 22,
+                fontWeight: FontWeight.w400,
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
               ),
-              if (AuthGuard.isOwner) ...[
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              const TitleText(
+                text: 'المميزة ✨',
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.rawSienna,
+              ),
+            ],
+          ),
+
+          // أيقونة الإشعارات مع الشارة
+          Consumer<NotificationNotifier>(
+            builder: (context, notif, _) {
+              return _buildSquircleIcon(
+                icon: Icons.notifications_none_rounded,
+                themeFlag: themeFlag,
+                tooltip: 'الإشعارات',
+                badge: notif.unreadCount > 0
+                    ? Positioned(
+                        top: -6,
+                        right: -6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.redAccent,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '${notif.unreadCount > 99 ? "99+" : notif.unreadCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : null,
+                onTap: () {
+                  Navigator.of(context).pushNamed(AppRouter.notificationsRoute);
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearch(BuildContext context, bool themeFlag) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(13),
+                onTap: () {
+                  Navigator.of(context).pushNamed(AppRouter.searchRoute);
+                },
+                child: Container(
+                  height: 46,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    color: AppColors.rawSienna.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    color: themeFlag
+                        ? Colors.white.withOpacity(0.06)
+                        : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(13),
                     border: Border.all(
-                      color: AppColors.rawSienna.withOpacity(0.35),
-                      width: 1.2,
+                      color: themeFlag
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.grey.shade200,
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.visibility_outlined, size: 20, color: AppColors.rawSienna),
-                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.search_rounded,
+                        color: themeFlag ? Colors.white60 : Colors.grey.shade600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'أنت في وضع معاينة المتجر (المالك)',
+                          'ابحث عن الأحذية أو الماركات...',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                            color: themeFlag
+                                ? Colors.white60
+                                : Colors.grey.shade600,
                           ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushNamed(AppRouter.ownerDashboardRoute);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.rawSienna,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            'لوحة التحكم',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-              vSizedBox2,
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: const LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [
-                          AppColors.rawSienna,
-                          AppColors.rawSiennaLight,
-                          AppColors.rawSiennaDark,
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.rawSienna.withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    height: 160,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'دلّل قدميك ✨',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'أحدث التشكيلات العالمية الأصلية',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 110,
-                          width: 140,
-                          child: Image.asset(
-                            AppAssets.homeJordan,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  vSizedBox2,
-                  const BrandWidget(),
-                  vSizedBox2,
-                  Text(
-                    'أحدث الأحذية المميزة',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                  vSizedBox1,
-                  SizedBox(
-                    height: 220,
-                    width: double.infinity,
-                    child: Consumer<CatalogProvider>(
-                      builder: (context, notifier, _) {
-                        if (notifier.isLoading && notifier.products.isEmpty) {
-                          return ShimmerEffects.loadShimmer(context: context);
-                        }
-                        if (notifier.products.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'لا توجد منتجات حالياً',
-                              style: TextStyle(
-                                color: themeFlag
-                                    ? AppColors.creamColor
-                                    : AppColors.mirage,
-                              ),
-                            ),
-                          );
-                        }
-                        return productForYou(
-                          snapshot: notifier.products,
-                          themeFlag: themeFlag,
-                          context: context,
-                        );
-                      },
-                    ),
-                  ),
-                ],
               ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          _buildSquircleIcon(
+            icon: Icons.filter_list_rounded,
+            themeFlag: themeFlag,
+            tooltip: 'تصفية المنتجات',
+            onTap: () {
+              Navigator.of(context).pushNamed(AppRouter.searchRoute);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryWidget(CatalogProvider notifier, bool themeFlag) {
+    final categories = notifier.categories;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8, bottom: 12),
+      height: 60,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        itemCount: categories.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            // خيار "الكل" الافتراضي
+            return EcommerceCategoryChip(
+              model: const CategoryChipItem(
+                id: null,
+                name: 'الكل',
+                icon: Icons.all_inclusive_rounded,
+              ),
+              isSelected: _selectedCategoryId == null,
+              themeFlag: themeFlag,
+              onSelected: (item) {
+                setState(() => _selectedCategoryId = null);
+              },
+            );
+          }
+
+          final cat = categories[index - 1];
+          return EcommerceCategoryChip(
+            model: CategoryChipItem(
+              id: cat.id,
+              name: cat.name,
+              imageUrl: cat.imageUrl,
+              icon: Icons.sports_basketball_outlined,
+            ),
+            isSelected: _selectedCategoryId == cat.id,
+            themeFlag: themeFlag,
+            onSelected: (item) {
+              setState(() {
+                if (_selectedCategoryId == item.id) {
+                  _selectedCategoryId = null;
+                } else {
+                  _selectedCategoryId = item.id;
+                }
+              });
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAllProductsGrid(List<ProductItem> products, bool themeFlag) {
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.68,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final prod = products[index];
+        return EcommerceProductCard(
+          product: prod,
+          themeFlag: themeFlag,
+          heroTag: 'grid_${prod.id}',
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeFlag = themeNotifier.darkTheme;
+    final catalogNotifier = Provider.of<CatalogProvider>(context);
+
+    // المنتجات بعد التصفية
+    final allProducts = catalogNotifier.products;
+    final rawFiltered = _selectedCategoryId == null
+        ? allProducts
+        : allProducts
+            .where((p) => p.categoryId == _selectedCategoryId)
+            .toList();
+
+    // إزالة أي عناصر مكررة لضمان تفادي تعارض المفاتيح والرسوم
+    final uniqueMap = <String, ProductItem>{};
+    for (final p in rawFiltered) {
+      uniqueMap[p.id] = p;
+    }
+    final filteredProducts = uniqueMap.values.toList();
+
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor:
+            themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
+        body: RefreshIndicator(
+          color: AppColors.rawSienna,
+          onRefresh: () => catalogNotifier.loadInitialData(
+            refresh: true,
+            context: context,
+          ),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1. الشريط العلوي (App Bar)
+                _buildAppBar(context, themeFlag),
+
+                // 2. شريط البحث مع زر الفلترة
+                _buildSearch(context, themeFlag),
+
+                // 3. شرائح التصنيفات الأفقية
+                _buildCategoryWidget(catalogNotifier, themeFlag),
+
+                // 4. شبكة عرض المنتجات
+                if (catalogNotifier.isLoading && allProducts.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ShimmerEffects.loadShimmer(context: context),
+                  )
+                else if (filteredProducts.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Text(
+                        'لا توجد أحذية في هذا القسم حالياً',
+                        style: TextStyle(
+                          color: themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  _buildAllProductsGrid(filteredProducts, themeFlag),
+
+                const SizedBox(height: 80), // مسافة لمنع التداخل مع شريط التنقل السفلي
+              ],
             ),
           ),
         ),
