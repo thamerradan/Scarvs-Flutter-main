@@ -21,7 +21,7 @@ void main() {
   test('StoreSettingsModel test', () {
     final settings = StoreSettingsModel(
       id: 's1',
-      storeName: 'متجر تنمى للملابس',
+      storeName: 'متجر تمنى للملابس',
       shippingFee: 25.0,
       freeShippingLimit: 300.0,
       cashOnDeliveryEnabled: true,
@@ -29,7 +29,7 @@ void main() {
       maintenanceMode: false,
     );
 
-    expect(settings.storeName, 'متجر تنمى للملابس');
+    expect(settings.storeName, 'متجر تمنى للملابس');
     expect(settings.shippingFee, 25.0);
     expect(settings.cashOnDeliveryEnabled, true);
   });

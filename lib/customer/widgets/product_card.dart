@@ -1,4 +1,4 @@
-// بطاقة عرض المنتج بتصميم متجر تنمى المرجعي الأنيق مع الهالة الدائرية خلف المنتج.
+// بطاقة عرض المنتج بتصميم متجر تمنى المرجعي الأنيق مع الهالة الدائرية خلف المنتج.
 import 'package:flutter/material.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/constants/app_routes.dart';

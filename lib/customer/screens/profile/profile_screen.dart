@@ -230,7 +230,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required bool themeFlag,
     required UserProvider userNotifier,
   }) {
-    final userName = userNotifier.getUserName ?? 'عميل تنمى';
+    final userName = userNotifier.getUserName ?? 'عميل تمنى';
     final roleName = userNotifier.isOwner ? 'مالك المتجر' : 'عميل';
     final double profilePictureSize = MediaQuery.of(context).size.width / 4.5;
 

@@ -27,7 +27,7 @@ class StoreSettingsModel {
   factory StoreSettingsModel.fromJson(Map<String, dynamic> json) {
     return StoreSettingsModel(
       id: json['id'] as String? ?? '',
-      storeName: json['store_name'] as String? ?? 'متجر تنمى للملابس',
+      storeName: json['store_name'] as String? ?? 'متجر تمنى للملابس',
       logoUrl: json['logo_url'] as String?,
       phone: json['phone'] as String? ?? '+966500000000',
       whatsapp: json['whatsapp'] as String? ?? '+966500000000',

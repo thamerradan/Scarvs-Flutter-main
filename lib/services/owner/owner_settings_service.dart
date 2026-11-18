@@ -19,7 +19,7 @@ class OwnerSettingsService {
         final created = await _client
             .from(SupabaseTables.storeSettings)
             .insert({
-              'store_name': 'متجر تنمى للملابس',
+              'store_name': 'متجر تمنى للملابس',
               'shipping_fee': 25.00,
               'free_shipping_limit': 300.00,
               'cash_on_delivery_enabled': true,

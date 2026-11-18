@@ -1,9 +1,10 @@
 // يعرض شاشة البداية ويحدد وجهة التطبيق بعد اكتمال التهيئة.
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
-import 'package:scarvs/core/theme/app_fonts.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
@@ -48,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), _checkSessionAndNavigate);
+    Timer(const Duration(milliseconds: 2300), _checkSessionAndNavigate);
   }
 
   @override
@@ -62,22 +63,26 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'تنمى',
-              style: TextStyle(
-                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                fontFamily: AppFonts.contax,
-                fontSize: 48.0,
-                fontWeight: FontWeight.bold,
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                themeFlag ? Colors.white : AppColors.mirage,
+                BlendMode.srcIn,
+              ),
+              child: Lottie.asset(
+                AppAssets.tamannaLogo,
+                width: 260,
+                height: 260,
+                fit: BoxFit.contain,
+                repeat: false,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'أرقى تشكيلة من الملابس والأزياء المتنوعة',
+              'خيارك الأول',
               style: TextStyle(
                 color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
                     .withOpacity(0.7),
-                fontSize: 16.0,
+                fontSize: 18.0,
               ),
             ),
           ],

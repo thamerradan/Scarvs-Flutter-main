@@ -1,4 +1,4 @@
-// شاشة عرض المنتجات الرئيسية بتصميم متجر تنمى للملابس والأزياء المتنوعة والعصرية المتوافق مع العربية.
+// شاشة عرض المنتجات الرئيسية بتصميم متجر تمنى للملابس والأزياء المتنوعة والعصرية المتوافق مع العربية.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
