@@ -47,7 +47,7 @@ class UserProvider with ChangeNotifier {
 
   /// جلب بيانات المستخدم فقط إذا لم تكن محملة مسبقاً
   Future<void> loadIfNeeded({required BuildContext context}) async {
-    if (_profile != null) return;
+    if (_profile != null || _isLoading) return;
     await getUserData(context: context);
   }
 
@@ -56,7 +56,7 @@ class UserProvider with ChangeNotifier {
     String? token,
     required BuildContext context,
   }) async {
-    if (!_authService.isAuthenticated) return;
+    if (!_authService.isAuthenticated || _isLoading) return;
     _isLoading = true;
     try {
       _profile = await _profileService.getProfile();

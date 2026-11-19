@@ -21,7 +21,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeAndNavigate() async {
-    final minDelay = Future.delayed(const Duration(milliseconds: 800));
+    final minDelay = Future.delayed(const Duration(milliseconds: 4000));
 
     Future<void> initAuth() async {
       if (SupabaseConfig.isConfigured && AppSupabase.isAuthenticated) {
@@ -80,15 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 repeat: false,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'خيارك الأول',
-              style: TextStyle(
-                color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                    .withOpacity(0.7),
-                fontSize: 18.0,
-              ),
-            ),
+           
           ],
         ),
       ),

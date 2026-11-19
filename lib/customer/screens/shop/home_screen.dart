@@ -35,11 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
       if (AuthGuard.isLoggedIn) {
         Provider.of<UserProvider>(context, listen: false)
             .loadIfNeeded(context: context);
-        final notifNotifier =
-            Provider.of<NotificationNotifier>(context, listen: false);
-        notifNotifier.fetchUnreadCountOnly();
-        notifNotifier.initRealtime(context);
+        // تحميل الإشعارات والسلة مخصص للعميل فقط، فالمالك يديرها في لوحة التحكم
         if (!AuthGuard.isOwner) {
+          final notifNotifier =
+              Provider.of<NotificationNotifier>(context, listen: false);
+          notifNotifier.fetchUnreadCountOnly();
+          notifNotifier.initRealtime(context);
           Provider.of<CartNotifier>(context, listen: false)
               .loadIfNeeded(context: context);
         }

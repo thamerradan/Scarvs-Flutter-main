@@ -60,8 +60,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
               Navigator.of(ctx).pop();
               final ok = await ownerNotifier.deleteProduct(product.id, context: context);
               if (ok && context.mounted) {
-                Provider.of<CatalogProvider>(context, listen: false)
-                    .refreshProducts(silent: true);
+                Provider.of<CatalogProvider>(context, listen: false).invalidate();
               }
             },
             child: const Text('حذف نهائي', style: TextStyle(color: Colors.white)),
@@ -291,8 +290,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                             context: context,
                           );
                           if (context.mounted) {
-                            Provider.of<CatalogProvider>(context, listen: false)
-                                .refreshProducts(silent: true);
+                            Provider.of<CatalogProvider>(context, listen: false).invalidate();
                           }
                         },
                       ),

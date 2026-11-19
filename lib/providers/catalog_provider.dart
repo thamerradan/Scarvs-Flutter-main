@@ -1,7 +1,8 @@
-// يدير بيانات المنتجات والتصنيفات وعمليات تحميلها.
+// يدير بيانات المنتجات والتصنيفات وعمليات تحميلها وتخزينها المؤقت محلياً.
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scarvs/models/category_model.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/services/catalog_service.dart';
@@ -9,6 +10,9 @@ import 'package:scarvs/core/utils/snackbar_util.dart';
 
 class CatalogProvider with ChangeNotifier {
   final ProductService _productService = ProductService();
+
+  static const String _cachedCategoriesKey = 'cached_categories_json';
+  static const String _cachedProductsKey = 'cached_products_json';
 
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
@@ -22,33 +26,75 @@ class CatalogProvider with ChangeNotifier {
   bool _hasLoaded = false;
   bool get hasLoaded => _hasLoaded;
 
-  RealtimeChannel? _realtimeChannel;
+  /// إبطال كاش الكتالوج حتى يعاد جلبه عند فتح متجر العميل
+  void invalidate() {
+    _hasLoaded = false;
+  }
 
-  /// بدء الاستماع اللحظي (Supabase Realtime) للتحديثات على المنتجات والأصناف
-  void initRealtime() {
-    if (_realtimeChannel != null) return;
+  /// استرجاع البيانات المخزنة محلياً للعرض الفوري
+  Future<void> _loadFromCache() async {
     try {
-      _realtimeChannel = _productService.subscribeToCatalogChanges(
-        onProductsChanged: () {
-          refreshProducts(silent: true);
-        },
-        onCategoriesChanged: () {
-          refreshCategories(silent: true);
-        },
-      );
+      final prefs = await SharedPreferences.getInstance();
+      final cachedCatsRaw = prefs.getString(_cachedCategoriesKey);
+      final cachedProdsRaw = prefs.getString(_cachedProductsKey);
+
+      bool updated = false;
+      if (cachedCatsRaw != null && _categories.isEmpty) {
+        final List list = jsonDecode(cachedCatsRaw) as List;
+        _categories = list
+            .map((c) => CategoryModel.fromJson(c as Map<String, dynamic>))
+            .toList();
+        updated = true;
+      }
+      if (cachedProdsRaw != null && _products.isEmpty) {
+        final List list = jsonDecode(cachedProdsRaw) as List;
+        _products = list
+            .map((p) => ProductItem.fromJson(p as Map<String, dynamic>))
+            .toList();
+        updated = true;
+      }
+      if (updated) {
+        notifyListeners();
+      }
     } catch (e) {
-      debugPrint('Error subscribing to catalog realtime: $e');
+      debugPrint('Error loading cached catalog: $e');
     }
   }
 
-  /// تحميل البيانات الأولية للرئيسية (التصنيفات والمنتجات) مرة واحدة مع التخزين المؤقت
+  /// حفظ البيانات محلياً للاستخدام عند بطء أو انقطاع الإنترنت
+  Future<void> _saveToCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        _cachedCategoriesKey,
+        jsonEncode(_categories.map((c) => c.toJson()).toList()),
+      );
+      await prefs.setString(
+        _cachedProductsKey,
+        jsonEncode(_products.map((p) => p.toJson()).toList()),
+      );
+    } catch (e) {
+      debugPrint('Error saving catalog to cache: $e');
+    }
+  }
+
+  /// تحميل البيانات الأولية للرئيسية (التصنيفات والمنتجات) مع التخزين المؤقت والعرض اللحظي
   Future<void> loadInitialData({bool refresh = false, BuildContext? context}) async {
+    if (_isLoading) return;
     if (_hasLoaded && !refresh && _products.isNotEmpty && _categories.isNotEmpty) {
       return;
     }
 
-    _isLoading = true;
-    notifyListeners();
+    // 1. عرض البيانات من الكاش المحلي فوراً إن وجدت
+    if (_products.isEmpty || _categories.isEmpty) {
+      await _loadFromCache();
+    }
+
+    // 2. إذا توفرت بيانات من الكاش، لا نعيق المستخدم بمؤشر تحميل
+    _isLoading = _products.isEmpty || _categories.isEmpty;
+    if (_isLoading) {
+      notifyListeners();
+    }
 
     try {
       final results = await Future.wait([
@@ -59,8 +105,11 @@ class CatalogProvider with ChangeNotifier {
       _categories = results[0] as List<CategoryModel>;
       _products = results[1] as List<ProductItem>;
       _hasLoaded = true;
+
+      // حفظ أحدث نسخة محلية
+      _saveToCache();
     } on SocketException catch (_) {
-      if (context != null && context.mounted) {
+      if (context != null && context.mounted && _products.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(
             text: 'يرجى التحقق من اتصالك بالإنترنت',
@@ -81,6 +130,8 @@ class CatalogProvider with ChangeNotifier {
     bool silent = true,
     BuildContext? context,
   }) async {
+    if (_isLoading) return _products;
+
     if (!silent) {
       _isLoading = true;
       notifyListeners();
@@ -89,6 +140,7 @@ class CatalogProvider with ChangeNotifier {
       final list = await _productService.fetchProducts();
       _products = list;
       _hasLoaded = true;
+      _saveToCache();
       notifyListeners();
       return list;
     } catch (e) {
@@ -110,6 +162,7 @@ class CatalogProvider with ChangeNotifier {
     try {
       final list = await _productService.fetchCategories();
       _categories = list;
+      _saveToCache();
       notifyListeners();
       return list;
     } catch (e) {
@@ -131,6 +184,7 @@ class CatalogProvider with ChangeNotifier {
     if (_categories.isNotEmpty) return _categories;
     try {
       _categories = await _productService.fetchCategories();
+      _saveToCache();
       notifyListeners();
       return _categories;
     } catch (_) {
@@ -153,6 +207,7 @@ class CatalogProvider with ChangeNotifier {
       );
       if (categoryId == null && categoryName == null && featuredOnly == null) {
         _products = list;
+        _saveToCache();
         notifyListeners();
       }
       return list;
@@ -160,7 +215,6 @@ class CatalogProvider with ChangeNotifier {
       return [];
     }
   }
-
 
   /// جلب تفاصيل المنتج بالـ ID
   Future<ProductItem?> fetchProductDetail({
@@ -236,14 +290,5 @@ class CatalogProvider with ChangeNotifier {
     } catch (e) {
       return [];
     }
-  }
-
-  @override
-  void dispose() {
-    if (_realtimeChannel != null) {
-      _productService.unsubscribeChannel(_realtimeChannel!);
-      _realtimeChannel = null;
-    }
-    super.dispose();
   }
 }

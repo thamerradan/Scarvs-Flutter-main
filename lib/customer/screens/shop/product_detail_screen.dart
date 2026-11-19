@@ -57,7 +57,8 @@ class _ProductDetailState extends State<ProductDetail>
     if (widget.productDetailsArguements.initialProduct != null) {
       _product = widget.productDetailsArguements.initialProduct;
       _initSizeForProduct(_product!);
-      if (_product!.variants.isNotEmpty && _product!.images.length > 1) {
+      // إذا كانت المقاسات متوفرة مسبقاً، نعتمد على المنتج مباشرة دون أي طلب شبكة إضافي
+      if (_product!.variants.isNotEmpty) {
         _detailFuture = Future.value(_product);
       } else {
         _detailFuture = _fetchProductDetails();

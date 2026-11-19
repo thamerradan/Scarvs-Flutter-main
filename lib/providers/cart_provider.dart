@@ -19,7 +19,7 @@ class CartNotifier with ChangeNotifier {
 
   /// تحميل السلة فقط إذا لم يتم تحميلها بعد
   Future<void> loadIfNeeded({BuildContext? context}) async {
-    if (_hasLoaded) return;
+    if (_hasLoaded || _isLoading) return;
     await loadCart(context: context);
   }
 
@@ -50,6 +50,7 @@ class CartNotifier with ChangeNotifier {
     BuildContext? context,
     bool silent = false,
   }) async {
+    if (_isLoading) return _cartItems;
     if (!silent) {
       _isLoading = true;
       notifyListeners();

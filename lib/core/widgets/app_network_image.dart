@@ -39,6 +39,28 @@ class AppNetworkImage extends StatelessWidget {
       cacheWidth: cacheWidth > 0 ? cacheWidth : null,
       cacheHeight: cacheHeight,
       filterQuality: FilterQuality.low,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return placeholder ??
+            Container(
+              width: width,
+              height: height,
+              alignment: Alignment.center,
+              color: Colors.grey.withValues(alpha: 0.05),
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                  color: Colors.grey.shade400,
+                ),
+              ),
+            );
+      },
       errorBuilder: (context, error, stackTrace) {
         return _buildError();
       },
