@@ -70,6 +70,14 @@ class NotificationNotifier with ChangeNotifier {
     });
   }
 
+  /// جلب عدد الإشعارات غير المقروءة فقط للرئيسية
+  Future<void> fetchUnreadCountOnly() async {
+    try {
+      _unreadCount = await _service.fetchUnreadCount();
+      notifyListeners();
+    } catch (_) {}
+  }
+
   /// جلب الإشعارات
   Future<void> fetchNotifications({BuildContext? context}) async {
     _setLoading(true);

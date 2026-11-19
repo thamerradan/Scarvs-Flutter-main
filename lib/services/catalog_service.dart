@@ -46,19 +46,6 @@ class ProductService {
         categories (
           id,
           name
-        ),
-        product_variants (
-          id,
-          product_id,
-          size,
-          stock_quantity,
-          is_available
-        ),
-        product_images (
-          id,
-          product_id,
-          image_url,
-          sort_order
         )
       ''').eq('is_active', true);
 

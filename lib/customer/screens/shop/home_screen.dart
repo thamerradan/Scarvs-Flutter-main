@@ -32,16 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _currentIndex = widget.initialIndex;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<CatalogProvider>(context, listen: false).initRealtime();
       if (AuthGuard.isLoggedIn) {
         Provider.of<UserProvider>(context, listen: false)
-            .getUserData(context: context);
+            .loadIfNeeded(context: context);
         final notifNotifier =
             Provider.of<NotificationNotifier>(context, listen: false);
-        notifNotifier.fetchNotifications(context: context);
+        notifNotifier.fetchUnreadCountOnly();
         notifNotifier.initRealtime(context);
-        Provider.of<CartNotifier>(context, listen: false)
-            .loadCart(context: context);
+        if (!AuthGuard.isOwner) {
+          Provider.of<CartNotifier>(context, listen: false)
+              .loadIfNeeded(context: context);
+        }
       }
     });
   }

@@ -5,6 +5,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/customer/screens/shop/product_detail_screen.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class EcommerceProductCard extends StatelessWidget {
   final ProductItem product;
@@ -132,38 +133,17 @@ class EcommerceProductCard extends StatelessWidget {
                           heroTag != null && heroTag!.isNotEmpty
                               ? Hero(
                                   tag: heroTag!,
-                                  child: product.mainImageUrl.isNotEmpty
-                                      ? Image.network(
-                                          product.mainImageUrl,
-                                          fit: BoxFit.contain,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(
-                                            Icons.image_not_supported_outlined,
-                                            size: 40,
-                                            color: Colors.grey,
-                                          ),
-                                        )
-                                      : const Icon(
-                                          Icons.image_not_supported_outlined,
-                                          size: 40,
-                                          color: Colors.grey,
-                                        ),
+                                  child: AppNetworkImage(
+                                    url: product.mainImageUrl,
+                                    fit: BoxFit.contain,
+                                    cacheWidth: 400,
+                                  ),
                                 )
-                              : (product.mainImageUrl.isNotEmpty
-                                  ? Image.network(
-                                      product.mainImageUrl,
-                                      fit: BoxFit.contain,
-                                      errorBuilder: (_, __, ___) => const Icon(
-                                        Icons.image_not_supported_outlined,
-                                        size: 40,
-                                        color: Colors.grey,
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.image_not_supported_outlined,
-                                      size: 40,
-                                      color: Colors.grey,
-                                    )),
+                              : AppNetworkImage(
+                                  url: product.mainImageUrl,
+                                  fit: BoxFit.contain,
+                                  cacheWidth: 400,
+                                ),
                         ],
                       ),
                     ),

@@ -43,9 +43,6 @@ class CatalogProvider with ChangeNotifier {
 
   /// تحميل البيانات الأولية للرئيسية (التصنيفات والمنتجات) مرة واحدة مع التخزين المؤقت
   Future<void> loadInitialData({bool refresh = false, BuildContext? context}) async {
-    // تفعيل التحديث اللحظي تلقائياً
-    initRealtime();
-
     if (_hasLoaded && !refresh && _products.isNotEmpty && _categories.isNotEmpty) {
       return;
     }

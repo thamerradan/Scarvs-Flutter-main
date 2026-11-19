@@ -14,6 +14,15 @@ class CartNotifier with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _hasLoaded = false;
+  bool get hasLoaded => _hasLoaded;
+
+  /// تحميل السلة فقط إذا لم يتم تحميلها بعد
+  Future<void> loadIfNeeded({BuildContext? context}) async {
+    if (_hasLoaded) return;
+    await loadCart(context: context);
+  }
+
   double _shippingFee = 25.0;
   double _freeShippingLimit = 300.0;
 
@@ -52,6 +61,7 @@ class CartNotifier with ChangeNotifier {
 
       final items = await _cartService.fetchCartItems();
       _cartItems = items;
+      _hasLoaded = true;
       return _cartItems;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {

@@ -56,8 +56,14 @@ class _ProductDetailState extends State<ProductDetail>
     if (widget.productDetailsArguements.initialProduct != null) {
       _product = widget.productDetailsArguements.initialProduct;
       _initSizeForProduct(_product!);
+      if (_product!.variants.isNotEmpty && _product!.images.length > 1) {
+        _detailFuture = Future.value(_product);
+      } else {
+        _detailFuture = _fetchProductDetails();
+      }
+    } else {
+      _detailFuture = _fetchProductDetails();
     }
-    _detailFuture = _fetchProductDetails();
   }
 
   @override

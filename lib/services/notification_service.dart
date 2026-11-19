@@ -25,6 +25,23 @@ class NotificationService {
     }
   }
 
+  /// جلب عدد الإشعارات غير المقروءة فقط بصورة سريعة وخفيفة
+  Future<int> fetchUnreadCount() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return 0;
+
+    try {
+      final res = await _client
+          .from(SupabaseTables.notifications)
+          .count(CountOption.exact)
+          .eq('user_id', user.id)
+          .eq('is_read', false);
+      return res;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   /// تحديد إشعار كمقروء
   Future<void> markAsRead(String notificationId) async {
     final user = _client.auth.currentUser;
