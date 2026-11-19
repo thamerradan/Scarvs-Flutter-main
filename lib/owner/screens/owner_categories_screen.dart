@@ -11,6 +11,7 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class OwnerCategoriesScreen extends StatefulWidget {
   const OwnerCategoriesScreen({Key? key}) : super(key: key);
@@ -74,14 +75,12 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                         borderRadius: BorderRadius.circular(16),
                         child: localImageFile != null
                             ? Image.file(localImageFile!, fit: BoxFit.cover)
-                            : urlCtrl.text.trim().isNotEmpty
-                                ? Image.network(
-                                    urlCtrl.text.trim(),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) =>
-                                        const Icon(Icons.broken_image, size: 36, color: Colors.grey),
-                                  )
-                                : const Icon(Icons.category, size: 36, color: Colors.grey),
+                            : AppNetworkImage(
+                                url: urlCtrl.text.trim(),
+                                fit: BoxFit.cover,
+                                cacheWidth: 200,
+                                errorWidget: const Icon(Icons.broken_image, size: 36, color: Colors.grey),
+                              ),
                       ),
                     ),
                   ),
@@ -131,7 +130,12 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       ),
                       onPressed: () async {
                         final picker = ImagePicker();
-                        final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+                        final picked = await picker.pickImage(
+                          source: ImageSource.gallery,
+                          imageQuality: 75,
+                          maxWidth: 1200,
+                          maxHeight: 1200,
+                        );
                         if (picked != null) {
                           setDialogState(() {
                             localImageFile = File(picked.path);
@@ -342,19 +346,15 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                               ),
                               child: ListTile(
                                 onTap: () => _showCategoryDialog(context, category: cat),
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Container(
-                                    width: 48,
-                                    height: 48,
-                                    color: Colors.grey.withOpacity(0.1),
-                                    child: cat.imageUrl != null && cat.imageUrl!.isNotEmpty
-                                        ? Image.network(
-                                            cat.imageUrl!,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) => const Icon(Icons.category),
-                                          )
-                                        : const Icon(Icons.category, color: Colors.grey),
+                                leading: SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: AppNetworkImage(
+                                    url: cat.imageUrl ?? '',
+                                    fit: BoxFit.cover,
+                                    borderRadius: 10,
+                                    cacheWidth: 150,
+                                    errorWidget: const Icon(Icons.category, color: Colors.grey),
                                   ),
                                 ),
                                 title: Text(

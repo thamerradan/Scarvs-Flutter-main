@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class CategoryChipItem {
   final String? id;
@@ -78,20 +79,19 @@ class EcommerceCategoryChip extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (model.imageUrl != null && model.imageUrl!.isNotEmpty) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      model.imageUrl!,
-                      width: 24,
-                      height: 24,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
-                        model.icon ?? Icons.category_outlined,
-                        size: 20,
-                        color: isSelected
-                            ? (themeFlag ? AppColors.mirage : Colors.white)
-                            : (themeFlag ? Colors.white70 : Colors.grey.shade600),
-                      ),
+                  AppNetworkImage(
+                    url: model.imageUrl!,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.cover,
+                    borderRadius: 6,
+                    cacheWidth: 80,
+                    errorWidget: Icon(
+                      model.icon ?? Icons.category_outlined,
+                      size: 20,
+                      color: isSelected
+                          ? (themeFlag ? AppColors.mirage : Colors.white)
+                          : (themeFlag ? Colors.white70 : Colors.grey.shade600),
                     ),
                   ),
                   const SizedBox(width: 8),

@@ -10,6 +10,7 @@ import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class _ProductImageEntry {
   final File? file;
@@ -200,7 +201,11 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
   Future<void> _pickMultipleImages() async {
     try {
       final picker = ImagePicker();
-      final pickedList = await picker.pickMultiImage(imageQuality: 85);
+      final pickedList = await picker.pickMultiImage(
+        imageQuality: 75,
+        maxWidth: 1200,
+        maxHeight: 1200,
+      );
       if (pickedList.isNotEmpty) {
         setState(() {
           for (final item in pickedList) {
@@ -218,7 +223,12 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
   Future<void> _pickCameraImage() async {
     try {
       final picker = ImagePicker();
-      final picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+      final picked = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 75,
+        maxWidth: 1200,
+        maxHeight: 1200,
+      );
       if (picked != null) {
         setState(() {
           _images.add(_ProductImageEntry(file: File(picked.path)));
@@ -902,10 +912,11 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                             height: 155,
                             child: item.isFile
                                 ? Image.file(item.file!, fit: BoxFit.cover)
-                                : Image.network(
-                                    item.url!,
+                                : AppNetworkImage(
+                                    url: item.url!,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                                    cacheWidth: 300,
+                                    errorWidget: const Icon(Icons.broken_image),
                                   ),
                           ),
                         ),

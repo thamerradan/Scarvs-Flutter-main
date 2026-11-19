@@ -270,28 +270,6 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Widget _buildAllProductsGrid(List<ProductItem> products, bool themeFlag) {
-    return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.68,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 16,
-      ),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        final prod = products[index];
-        return EcommerceProductCard(
-          product: prod,
-          themeFlag: themeFlag,
-          heroTag: 'grid_${prod.id}',
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -324,32 +302,36 @@ class _ProductScreenState extends State<ProductScreen> {
             refresh: true,
             context: context,
           ),
-          child: SingleChildScrollView(
+          child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. الشريط العلوي (App Bar)
-                _buildAppBar(context, themeFlag),
+            slivers: [
+              // 1. الأجزاء العلوية (الشريط العلوي، البحث، وشرائح التصنيفات)
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildAppBar(context, themeFlag),
+                    _buildSearch(context, themeFlag),
+                    _buildCategoryWidget(catalogNotifier, themeFlag),
+                  ],
+                ),
+              ),
 
-                // 2. شريط البحث مع زر الفلترة
-                _buildSearch(context, themeFlag),
-
-                // 3. شرائح التصنيفات الأفقية
-                _buildCategoryWidget(catalogNotifier, themeFlag),
-
-                // 4. شبكة عرض المنتجات
-                if (catalogNotifier.isLoading && allProducts.isEmpty)
-                  Padding(
+              // 2. شبكة عرض المنتجات بطريقة Lazy حقيقية (SliverGrid)
+              if (catalogNotifier.isLoading && allProducts.isEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ShimmerEffects.loadShimmer(context: context),
-                  )
-                else if (filteredProducts.isEmpty)
-                  Center(
+                  ),
+                )
+              else if (filteredProducts.isEmpty)
+                SliverToBoxAdapter(
+                  child: Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 40),
                       child: Text(
-                        'لا توجد ملابس في هذا القسم حالياً',
+                        'لا توجد منتجات في هذا القسم حالياً',
                         style: TextStyle(
                           color: themeFlag
                               ? AppColors.creamColor
@@ -358,13 +340,37 @@ class _ProductScreenState extends State<ProductScreen> {
                         ),
                       ),
                     ),
-                  )
-                else
-                  _buildAllProductsGrid(filteredProducts, themeFlag),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.68,
+                      crossAxisSpacing: 14,
+                      mainAxisSpacing: 16,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final prod = filteredProducts[index];
+                        return EcommerceProductCard(
+                          product: prod,
+                          themeFlag: themeFlag,
+                          heroTag: 'grid_${prod.id}',
+                        );
+                      },
+                      childCount: filteredProducts.length,
+                    ),
+                  ),
+                ),
 
-                const SizedBox(height: 80), // مسافة لمنع التداخل مع شريط التنقل السفلي
-              ],
-            ),
+              // مسافة أمان سفلية لمنع التداخل مع شريط التنقل السفلي
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
+              ),
+            ],
           ),
         ),
       ),

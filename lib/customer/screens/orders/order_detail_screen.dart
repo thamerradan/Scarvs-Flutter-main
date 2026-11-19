@@ -9,6 +9,7 @@ import 'package:scarvs/providers/order_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -272,25 +273,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: 55,
-              height: 55,
-              color: Colors.grey.shade100,
-              child: item.productImage != null && item.productImage!.isNotEmpty
-                  ? Image.network(
-                      item.productImage!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.image_not_supported_outlined,
-                        color: Colors.grey,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.image_not_supported_outlined,
-                      color: Colors.grey,
-                    ),
+          SizedBox(
+            width: 55,
+            height: 55,
+            child: AppNetworkImage(
+              url: item.productImage ?? '',
+              fit: BoxFit.cover,
+              borderRadius: 8,
+              cacheWidth: 150,
             ),
           ),
           const SizedBox(width: 10),

@@ -15,6 +15,7 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class ProductDetail extends StatefulWidget {
   final ProductDetailsArgs productDetailsArguements;
@@ -238,39 +239,19 @@ class _ProductDetailState extends State<ProductDetail>
                       widget.productDetailsArguements.heroTag!.isNotEmpty
                   ? Hero(
                       tag: widget.productDetailsArguements.heroTag!,
-                      child: currentImage.isNotEmpty
-                          ? Image.network(
-                              currentImage,
-                              height: 200,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.image_not_supported_outlined,
-                                size: 70,
-                                color: Colors.grey,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.image_not_supported_outlined,
-                              size: 70,
-                              color: Colors.grey,
-                            ),
+                      child: AppNetworkImage(
+                        url: currentImage,
+                        height: 200,
+                        fit: BoxFit.contain,
+                        cacheWidth: 600,
+                      ),
                     )
-                  : (currentImage.isNotEmpty
-                      ? Image.network(
-                          currentImage,
-                          height: 200,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.image_not_supported_outlined,
-                            size: 70,
-                            color: Colors.grey,
-                          ),
-                        )
-                      : const Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 70,
-                          color: Colors.grey,
-                        )),
+                  : AppNetworkImage(
+                      url: currentImage,
+                      height: 200,
+                      fit: BoxFit.contain,
+                      cacheWidth: 600,
+                    ),
             ],
           ),
         ),
@@ -319,17 +300,11 @@ class _ProductDetailState extends State<ProductDetail>
                           : null,
                     ),
                     padding: const EdgeInsets.all(4),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(9),
-                      child: Image.network(
-                        allImages[index],
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.image,
-                          size: 20,
-                          color: Colors.grey,
-                        ),
-                      ),
+                    child: AppNetworkImage(
+                      url: allImages[index],
+                      fit: BoxFit.contain,
+                      borderRadius: 9,
+                      cacheWidth: 200,
                     ),
                   ),
                 );

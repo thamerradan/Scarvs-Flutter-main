@@ -20,16 +20,20 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Future<void> _checkSessionAndNavigate() async {
-    // التحقق من جلسة Supabase الحالية (إذا كان مسجلاً، نجلب بياناته في الخلفية)
-    if (SupabaseConfig.isConfigured && AppSupabase.isAuthenticated) {
-      if (!mounted) return;
-      try {
-        final authNotifier =
-            Provider.of<AuthenticationNotifier>(context, listen: false);
-        await authNotifier.fetchCurrentUserProfile();
-      } catch (_) {}
+  Future<void> _initializeAndNavigate() async {
+    final minDelay = Future.delayed(const Duration(milliseconds: 800));
+
+    Future<void> initAuth() async {
+      if (SupabaseConfig.isConfigured && AppSupabase.isAuthenticated) {
+        try {
+          final authNotifier =
+              Provider.of<AuthenticationNotifier>(context, listen: false);
+          await authNotifier.fetchCurrentUserProfile();
+        } catch (_) {}
+      }
     }
+
+    await Future.wait([minDelay, initAuth()]);
 
     if (!mounted) return;
     final userRole = AuthGuard.currentUserRole;
@@ -49,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(milliseconds: 2300), _checkSessionAndNavigate);
+    _initializeAndNavigate();
   }
 
   @override

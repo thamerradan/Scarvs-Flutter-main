@@ -7,6 +7,7 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class OwnerInventoryScreen extends StatefulWidget {
   const OwnerInventoryScreen({Key? key}) : super(key: key);
@@ -240,15 +241,15 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
       child: Row(
         children: [
           // صورة مصغرة
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: 50,
-              height: 50,
-              color: Colors.grey.withOpacity(0.1),
-              child: imageUrl != null && imageUrl.isNotEmpty
-                  ? Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.image))
-                  : const Icon(Icons.image, color: Colors.grey),
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: AppNetworkImage(
+              url: imageUrl ?? '',
+              fit: BoxFit.cover,
+              borderRadius: 8,
+              cacheWidth: 150,
+              errorWidget: const Icon(Icons.image, color: Colors.grey),
             ),
           ),
           const SizedBox(width: 12),

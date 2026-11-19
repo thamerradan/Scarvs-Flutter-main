@@ -7,6 +7,7 @@ import 'package:scarvs/models/cart_item_model.dart';
 import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 Widget showCartData({
   required dynamic snapshot,
@@ -137,26 +138,14 @@ Widget _buildCartItemCard({
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: SizedBox(
-                width: 72,
-                height: 72,
-                child: item.productImage.isNotEmpty
-                    ? Image.network(
-                        item.productImage,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.image_not_supported_outlined,
-                          color: Colors.grey,
-                          size: 30,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.image_not_supported_outlined,
-                        color: Colors.grey,
-                        size: 30,
-                      ),
+            SizedBox(
+              width: 72,
+              height: 72,
+              child: AppNetworkImage(
+                url: item.productImage,
+                fit: BoxFit.contain,
+                borderRadius: 12,
+                cacheWidth: 200,
               ),
             ),
           ],

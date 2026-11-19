@@ -9,6 +9,7 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class OwnerProductsScreen extends StatefulWidget {
   const OwnerProductsScreen({Key? key}) : super(key: key);
@@ -245,19 +246,15 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // صورة المنتج
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 80,
-              height: 80,
-              color: Colors.grey.withOpacity(0.1),
-              child: product.mainImageUrl.isNotEmpty
-                  ? Image.network(
-                      product.mainImageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
-                    )
-                  : const Icon(Icons.image_outlined, size: 36, color: Colors.grey),
+          SizedBox(
+            width: 80,
+            height: 80,
+            child: AppNetworkImage(
+              url: product.mainImageUrl,
+              fit: BoxFit.cover,
+              borderRadius: 12,
+              cacheWidth: 200,
+              errorWidget: const Icon(Icons.image_outlined, size: 36, color: Colors.grey),
             ),
           ),
           const SizedBox(width: 12),
