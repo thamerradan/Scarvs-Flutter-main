@@ -10,6 +10,9 @@ import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/customer/widgets/show_cart_data.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_squircle_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -28,46 +31,6 @@ class _CartScreenState extends State<CartScreen> {
             .loadCart(context: context);
       }
     });
-  }
-
-  Widget _buildSquircleIcon({
-    required IconData icon,
-    required bool themeFlag,
-    required VoidCallback onTap,
-    Color? color,
-    String? tooltip,
-  }) {
-    final defaultColor =
-        themeFlag ? AppColors.creamColor : AppColors.mirage;
-
-    return Tooltip(
-      message: tooltip ?? '',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(13),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(13),
-              color: themeFlag ? Colors.white.withOpacity(0.08) : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: themeFlag
-                      ? Colors.black.withOpacity(0.25)
-                      : const Color(0xfff0f0f0),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Icon(icon, color: color ?? defaultColor, size: 20),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -134,7 +97,7 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                         const SizedBox(width: 8),
-                        _buildSquircleIcon(
+                        AppSquircleButton(
                           icon: Icons.refresh_rounded,
                           themeFlag: themeFlag,
                           tooltip: 'تحديث السلة',
@@ -184,38 +147,19 @@ class _CartScreenState extends State<CartScreen> {
                                       fontSize: 14,
                                     ),
                                   ),
-                                  const SizedBox(height: 20),
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: themeFlag
-                                          ? Colors.white
-                                          : AppColors.rawSienna,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 22, vertical: 12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
+                                  AppSpacing.gapH24,
+                                  SizedBox(
+                                    width: 220,
+                                    child: AppPrimaryButton(
+                                      text: 'تصفح أحدث المنتجات',
+                                      icon: Icons.shopping_bag_outlined,
+                                      onPressed: () {
+                                        Navigator.of(context).pushNamedAndRemoveUntil(
+                                          AppRouter.customerHomeRoute,
+                                          (route) => false,
+                                        );
+                                      },
                                     ),
-                                    icon: Icon(Icons.shopping_bag_outlined,
-                                        color: themeFlag
-                                            ? AppColors.mirage
-                                            : Colors.white,
-                                        size: 20),
-                                    label: Text(
-                                      'تصفح أحدث الملابس',
-                                      style: TextStyle(
-                                        color: themeFlag
-                                            ? AppColors.mirage
-                                            : Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pushNamedAndRemoveUntil(
-                                        AppRouter.customerHomeRoute,
-                                        (route) => false,
-                                      );
-                                    },
                                   ),
                                 ],
                               ),

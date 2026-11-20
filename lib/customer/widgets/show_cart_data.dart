@@ -8,6 +8,9 @@ import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 
 Widget showCartData({
   required dynamic snapshot,
@@ -51,7 +54,7 @@ Widget showCartData({
               Expanded(
                 child: Text(
                   cartNotifier.isFreeShipping
-                      ? 'تهانينا! حصلت على توصيل مجاني لطلبك 🚚'
+                      ? 'تهانينا! حصلت على توصيل مجاني لطلبك'
                       : 'أضف منتجات بقيمة ${(cartNotifier.freeShippingLimit - cartNotifier.subtotal).toStringAsFixed(0)} ر.س إضافية للحصول على شحن مجاني!',
                   style: TextStyle(
                     fontSize: 12,
@@ -101,28 +104,14 @@ Widget _buildCartItemCard({
   required bool themeFlag,
   required CartNotifier cartNotifier,
 }) {
-  final cardBg = themeFlag ? AppColors.mirage : Colors.white;
-  final imgBg = themeFlag ? Colors.white.withOpacity(0.06) : const Color(0xfff5f5f5);
+  final imgBg = themeFlag ? Colors.white.withValues(alpha: 0.06) : const Color(0xfff5f5f5);
 
-  return Container(
-    decoration: BoxDecoration(
-      color: cardBg,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(
-        color: !item.isStockSufficient
-            ? Colors.redAccent.withOpacity(0.5)
-            : (themeFlag ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04)),
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: themeFlag ? Colors.black.withOpacity(0.25) : const Color(0xfff0f0f0),
-          blurRadius: 10,
-          spreadRadius: 1,
-          offset: const Offset(0, 3),
-        ),
-      ],
-    ),
-    padding: const EdgeInsets.all(12),
+  return AppCard(
+    borderRadius: AppSpacing.radiusLg,
+    padding: AppSpacing.paddingAllMd,
+    borderColor: !item.isStockSufficient
+        ? Colors.redAccent.withValues(alpha: 0.5)
+        : null,
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -138,15 +127,12 @@ Widget _buildCartItemCard({
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            SizedBox(
+            AppNetworkImage.thumbnail(
+              url: item.productImage,
               width: 72,
               height: 72,
-              child: AppNetworkImage(
-                url: item.productImage,
-                fit: BoxFit.contain,
-                borderRadius: 12,
-                cacheWidth: 200,
-              ),
+              borderRadius: 12,
+              fit: BoxFit.contain,
             ),
           ],
         ),
@@ -327,7 +313,7 @@ Widget _buildCartSummary({
             ),
             TitleText(
               text: cartNotifier.actualShippingFee == 0
-                  ? 'مجاناً 🎉'
+                  ? 'مجاناً '
                   : '${cartNotifier.actualShippingFee.toStringAsFixed(0)} ر.س',
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -354,36 +340,20 @@ Widget _buildCartSummary({
             ),
           ],
         ),
-        const SizedBox(height: 14),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 4,
-            ),
-            onPressed: () {
-              AuthGuard.requireAuth(
-                context: context,
-                returnRoute: AppRouter.checkoutRoute,
-                customMessage:
-                    'لإتمام الطلب ومتابعة الشراء، يرجى تسجيل الدخول برقم الهاتف',
-                onAuthenticated: () {
-                  Navigator.of(context).pushNamed(AppRouter.checkoutRoute);
-                },
-              );
-            },
-            child: TitleText(
-              text: 'متابعة الشراء وإتمام الطلب 🛍️',
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: themeFlag ? AppColors.mirage : Colors.white,
-            ),
-          ),
+        AppSpacing.gapH16,
+        AppPrimaryButton(
+          text: 'متابعة الشراء وإتمام الطلب 🛍️',
+          onPressed: () {
+            AuthGuard.requireAuth(
+              context: context,
+              returnRoute: AppRouter.checkoutRoute,
+              customMessage:
+                  'لإتمام الطلب ومتابعة الشراء، يرجى تسجيل الدخول برقم الهاتف',
+              onAuthenticated: () {
+                Navigator.of(context).pushNamed(AppRouter.checkoutRoute);
+              },
+            );
+          },
         ),
       ],
     ),
@@ -411,18 +381,16 @@ void _confirmDeleteDialog(
           onPressed: () => Navigator.of(ctx).pop(),
           child: const Text('إلغاء'),
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+        SizedBox(
+          width: 80,
+          child: AppDangerButton(
+            text: 'حذف',
+            height: 38,
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              cartNotifier.deleteCartItem(item.id, context: context);
+            },
           ),
-          onPressed: () {
-            Navigator.of(ctx).pop();
-            cartNotifier.deleteCartItem(item.id, context: context);
-          },
-          child: const Text('حذف', style: TextStyle(color: Colors.white)),
         ),
       ],
     ),

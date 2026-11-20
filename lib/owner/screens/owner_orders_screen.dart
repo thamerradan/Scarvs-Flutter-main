@@ -2,11 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/order_model.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OwnerOrdersScreen extends StatefulWidget {
@@ -253,21 +256,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
     final dateStr =
         '${order.createdAt.year}/${order.createdAt.month.toString().padLeft(2, '0')}/${order.createdAt.day.toString().padLeft(2, '0')}';
 
-    return Container(
-      decoration: BoxDecoration(
-        color: themeFlag ? AppColors.mirage : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: themeFlag ? Colors.white12 : Colors.black.withOpacity(0.08),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+    return AppCard(
+      borderRadius: AppSpacing.radiusLg,
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -383,17 +374,10 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      side: BorderSide(
-                        color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                            .withOpacity(0.3),
-                      ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    icon: const Icon(Icons.remove_red_eye_outlined, size: 18),
-                    label: const Text('تفاصيل الطلب'),
+                  child: AppOutlinedButton(
+                    text: 'تفاصيل الطلب',
+                    height: 40,
+                    icon: Icons.remove_red_eye_outlined,
                     onPressed: () {
                       Navigator.of(context).pushNamed(
                         AppRouter.orderDetailRoute,
@@ -402,22 +386,12 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 10),
+                AppSpacing.gapW12,
                 Expanded(
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-                      foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    icon: Icon(Icons.edit_note,
-                        size: 20, color: themeFlag ? AppColors.mirage : Colors.white),
-                    label: Text(
-                      'تعديل الحالة',
-                      style: TextStyle(
-                          color: themeFlag ? AppColors.mirage : Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
+                  child: AppPrimaryButton(
+                    text: 'تعديل الحالة',
+                    height: 40,
+                    icon: Icons.edit_note,
                     onPressed: () => _showChangeStatusDialog(context, order),
                   ),
                 ),

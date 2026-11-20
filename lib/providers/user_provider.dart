@@ -53,7 +53,6 @@ class UserProvider with ChangeNotifier {
 
   /// جلب بيانات المستخدم الحالية من Supabase
   Future<void> getUserData({
-    String? token,
     required BuildContext context,
   }) async {
     if (!_authService.isAuthenticated || _isLoading) return;

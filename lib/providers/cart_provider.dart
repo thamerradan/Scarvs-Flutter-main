@@ -86,10 +86,8 @@ class CartNotifier with ChangeNotifier {
 
   /// إضافة منتج إلى السلة مع تحديث فوري للواجهة ومزامنة في الخلفية (Optimistic Update)
   Future<bool> addToCart({
-    String? useremail,
     required String productPrice,
     required String productName,
-    required String productCategory,
     required String productImage,
     required BuildContext context,
     required String productSize,

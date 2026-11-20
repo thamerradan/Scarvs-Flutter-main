@@ -2,11 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
@@ -43,13 +46,11 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+          AppDangerButton(
+            text: 'تسجيل خروج',
+            height: 40,
+            width: 110,
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text(
-              'تسجيل خروج',
-              style: TextStyle(color: Colors.white),
-            ),
           ),
         ],
       ),
@@ -275,21 +276,10 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     required bool themeFlag,
     required VoidCallback onTap,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: themeFlag ? AppColors.mirage : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: themeFlag ? Colors.white10 : Colors.black.withOpacity(0.06),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return AppCard(
+      borderRadius: AppSpacing.radiusLg,
+      padding: EdgeInsets.zero,
+      onTap: onTap,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         leading: Container(
@@ -349,7 +339,6 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           Icons.chevron_left,
           color: themeFlag ? AppColors.creamColor : AppColors.mirage,
         ),
-        onTap: onTap,
       ),
     );
   }

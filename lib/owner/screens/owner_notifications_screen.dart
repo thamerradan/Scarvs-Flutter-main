@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OwnerNotificationsScreen extends StatefulWidget {
@@ -176,8 +178,19 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
 
     final isOrderNotification = notif.type == 'order';
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
+    return AppCard(
+      padding: const EdgeInsets.all(14),
+      borderRadius: AppSpacing.radiusLg,
+      color: notif.isRead
+          ? (themeFlag ? AppColors.mirage : Colors.white)
+          : (themeFlag
+              ? Colors.white12
+              : AppColors.rawSienna.withValues(alpha: 0.08)),
+      borderColor: notif.isRead
+          ? null
+          : (themeFlag
+              ? Colors.white38
+              : AppColors.rawSienna.withValues(alpha: 0.4)),
       onTap: () {
         if (!notif.isRead) {
           notifNotifier.markAsRead(notif.id);
@@ -187,29 +200,9 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
           Navigator.of(context).pushNamed(AppRouter.ownerOrdersRoute);
         }
       },
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: notif.isRead
-              ? (themeFlag ? AppColors.mirage : Colors.white)
-              : (themeFlag
-                  ? Colors.white12
-                  : AppColors.rawSienna.withValues(alpha: 0.08)),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: notif.isRead
-                ? (themeFlag
-                    ? Colors.white10
-                    : Colors.black.withValues(alpha: 0.06))
-                : (themeFlag
-                    ? Colors.white38
-                    : AppColors.rawSienna.withValues(alpha: 0.4)),
-            width: notif.isRead ? 1 : 1.5,
-          ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -315,7 +308,6 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 }

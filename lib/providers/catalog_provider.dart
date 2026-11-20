@@ -13,6 +13,8 @@ class CatalogProvider with ChangeNotifier {
 
   static const String _cachedCategoriesKey = 'cached_categories_json';
   static const String _cachedProductsKey = 'cached_products_json';
+  static const String _cachedCatalogTimeKey = 'cached_catalog_timestamp';
+  static const Duration _cacheTtl = Duration(minutes: 10);
 
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
@@ -31,10 +33,11 @@ class CatalogProvider with ChangeNotifier {
     _hasLoaded = false;
   }
 
-  /// استرجاع البيانات المخزنة محلياً للعرض الفوري
-  Future<void> _loadFromCache() async {
+  /// استرجاع البيانات المخزنة محلياً للعرض الفوري وفحص عمر الكاش
+  Future<bool> _loadFromCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final lastTimeMs = prefs.getInt(_cachedCatalogTimeKey) ?? 0;
       final cachedCatsRaw = prefs.getString(_cachedCategoriesKey);
       final cachedProdsRaw = prefs.getString(_cachedProductsKey);
 
@@ -56,15 +59,22 @@ class CatalogProvider with ChangeNotifier {
       if (updated) {
         notifyListeners();
       }
+
+      final isFresh = (DateTime.now().millisecondsSinceEpoch - lastTimeMs) <
+          _cacheTtl.inMilliseconds;
+      return updated && isFresh;
     } catch (e) {
       debugPrint('Error loading cached catalog: $e');
+      return false;
     }
   }
 
-  /// حفظ البيانات محلياً للاستخدام عند بطء أو انقطاع الإنترنت
+  /// حفظ البيانات محلياً مع ختم الوقت
   Future<void> _saveToCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(
+          _cachedCatalogTimeKey, DateTime.now().millisecondsSinceEpoch);
       await prefs.setString(
         _cachedCategoriesKey,
         jsonEncode(_categories.map((c) => c.toJson()).toList()),
@@ -81,13 +91,20 @@ class CatalogProvider with ChangeNotifier {
   /// تحميل البيانات الأولية للرئيسية (التصنيفات والمنتجات) مع التخزين المؤقت والعرض اللحظي
   Future<void> loadInitialData({bool refresh = false, BuildContext? context}) async {
     if (_isLoading) return;
-    if (_hasLoaded && !refresh && _products.isNotEmpty && _categories.isNotEmpty) {
+
+    // 1. عرض البيانات من الكاش المحلي فوراً إن وجدت
+    bool cacheIsFresh = false;
+    if (_products.isEmpty || _categories.isEmpty) {
+      cacheIsFresh = await _loadFromCache();
+    }
+
+    // إذا كان الكاش حديثاً ولم يُطلب تحديث صريح، نكتفي به لتوفير الاستعلامات
+    if (cacheIsFresh && !refresh && _hasLoaded) {
       return;
     }
 
-    // 1. عرض البيانات من الكاش المحلي فوراً إن وجدت
-    if (_products.isEmpty || _categories.isEmpty) {
-      await _loadFromCache();
+    if (_hasLoaded && !refresh && _products.isNotEmpty && _categories.isNotEmpty) {
+      return;
     }
 
     // 2. إذا توفرت بيانات من الكاش، لا نعيق المستخدم بمؤشر تحميل
@@ -106,7 +123,7 @@ class CatalogProvider with ChangeNotifier {
       _products = results[1] as List<ProductItem>;
       _hasLoaded = true;
 
-      // حفظ أحدث نسخة محلية
+      // حفظ أحدث نسخة محلية مجمعة
       _saveToCache();
     } on SocketException catch (_) {
       if (context != null && context.mounted && _products.isEmpty) {
@@ -154,7 +171,7 @@ class CatalogProvider with ChangeNotifier {
     }
   }
 
-  /// تحديث قائمة الأصناف تلقائياً (صامتاً أو مع مؤشر)
+  /// تحديث قائمة الأصناف تلقائياً
   Future<List<CategoryModel>> refreshCategories({
     bool silent = true,
     BuildContext? context,
@@ -162,7 +179,6 @@ class CatalogProvider with ChangeNotifier {
     try {
       final list = await _productService.fetchCategories();
       _categories = list;
-      _saveToCache();
       notifyListeners();
       return list;
     } catch (e) {
@@ -184,7 +200,6 @@ class CatalogProvider with ChangeNotifier {
     if (_categories.isNotEmpty) return _categories;
     try {
       _categories = await _productService.fetchCategories();
-      _saveToCache();
       notifyListeners();
       return _categories;
     } catch (_) {
@@ -207,7 +222,6 @@ class CatalogProvider with ChangeNotifier {
       );
       if (categoryId == null && categoryName == null && featuredOnly == null) {
         _products = list;
-        _saveToCache();
         notifyListeners();
       }
       return list;

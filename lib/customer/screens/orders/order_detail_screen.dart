@@ -2,12 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/order_model.dart';
 import 'package:scarvs/models/order_item_model.dart';
 import 'package:scarvs/providers/order_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
@@ -45,16 +48,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('تراجع'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          AppDangerButton(
+            text: 'تأكيد الإلغاء',
+            height: 40,
+            width: 120,
             onPressed: () async {
               Navigator.of(ctx).pop();
               final orderNotifier =
                   Provider.of<OrderNotifier>(context, listen: false);
               await orderNotifier.cancelOrder(order.id, context: context);
             },
-            child: const Text('تأكيد الإلغاء',
-                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -188,26 +191,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     // زر إلغاء الطلب إن كان قيد المراجعة
                     if (order.canCancel) ...[
                       vSizedBox3,
-                      SizedBox(
-                        width: double.infinity,
+                      AppDangerButton(
+                        text: 'إلغاء الطلب',
                         height: 48,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            side: const BorderSide(color: Colors.red),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () => _showCancelConfirmation(order),
-                          child: const Text(
-                            'إلغاء الطلب',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        onPressed: () => _showCancelConfirmation(order),
                       ),
                     ],
                   ],
@@ -262,28 +249,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildOrderItemTile(OrderItemModel item, bool themeFlag) {
-    return Container(
+    return AppCard(
+      borderRadius: AppSpacing.radiusMd,
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: themeFlag ? Colors.white.withOpacity(0.06) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: themeFlag ? Colors.white10 : Colors.grey.shade200,
-        ),
-      ),
       child: Row(
         children: [
-          SizedBox(
+          AppNetworkImage.thumbnail(
+            url: item.productImage ?? '',
             width: 55,
             height: 55,
-            child: AppNetworkImage(
-              url: item.productImage ?? '',
-              fit: BoxFit.cover,
-              borderRadius: 8,
-              cacheWidth: 150,
-            ),
+            borderRadius: AppSpacing.radiusSm,
           ),
-          const SizedBox(width: 10),
+          AppSpacing.gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,15 +309,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     required String title,
     required List<Widget> children,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: themeFlag ? Colors.white.withOpacity(0.06) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: themeFlag ? Colors.white12 : Colors.grey.shade200,
-        ),
-      ),
+    return AppCard(
+      borderRadius: AppSpacing.radiusLg,
+      padding: AppSpacing.paddingCard,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -351,7 +322,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
+          AppSpacing.gapH12,
           ...children,
         ],
       ),

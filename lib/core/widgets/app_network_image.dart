@@ -25,6 +25,48 @@ class AppNetworkImage extends StatelessWidget {
     this.errorWidget,
   });
 
+  /// صور البطاقات في قوائم وشبكة المنتجات
+  const AppNetworkImage.card({
+    super.key,
+    required this.url,
+    this.width,
+    this.height,
+    this.fit = BoxFit.contain,
+    this.cacheWidth = 400,
+    this.cacheHeight,
+    this.borderRadius = 14.0,
+    this.placeholder,
+    this.errorWidget,
+  });
+
+  /// صور مصغرة للقوائم والسلة وعناصر الطلبات
+  const AppNetworkImage.thumbnail({
+    super.key,
+    required this.url,
+    this.width = 52.0,
+    this.height = 52.0,
+    this.fit = BoxFit.cover,
+    this.cacheWidth = 150,
+    this.cacheHeight,
+    this.borderRadius = 8.0,
+    this.placeholder,
+    this.errorWidget,
+  });
+
+  /// صور كبيرة لشاشة تفاصيل المنتج ومعرض الصور
+  const AppNetworkImage.detail({
+    super.key,
+    required this.url,
+    this.width,
+    this.height = 200.0,
+    this.fit = BoxFit.contain,
+    this.cacheWidth = 800,
+    this.cacheHeight,
+    this.borderRadius = 0.0,
+    this.placeholder,
+    this.errorWidget,
+  });
+
   @override
   Widget build(BuildContext context) {
     if (url.trim().isEmpty) {
@@ -45,19 +87,15 @@ class AppNetworkImage extends StatelessWidget {
             Container(
               width: width,
               height: height,
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
               alignment: Alignment.center,
-              color: Colors.grey.withValues(alpha: 0.05),
-              child: SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                  color: Colors.grey.shade400,
-                ),
+              child: Icon(
+                Icons.image_outlined,
+                size: (height != null && height! < 50) ? 16 : 28,
+                color: Colors.grey.withValues(alpha: 0.35),
               ),
             );
       },
@@ -81,11 +119,14 @@ class AppNetworkImage extends StatelessWidget {
           width: width,
           height: height,
           alignment: Alignment.center,
-          color: Colors.grey.withValues(alpha: 0.08),
-          child: const Icon(
+          decoration: BoxDecoration(
+            color: Colors.grey.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          child: Icon(
             Icons.image_not_supported_outlined,
-            size: 32,
-            color: Colors.grey,
+            size: (height != null && height! < 50) ? 16 : 28,
+            color: Colors.grey.shade400,
           ),
         );
   }

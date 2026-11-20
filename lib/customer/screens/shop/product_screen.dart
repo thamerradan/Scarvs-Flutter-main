@@ -11,6 +11,9 @@ import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/customer/widgets/product_card.dart';
 import 'package:scarvs/customer/widgets/product_icon.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
+import 'package:scarvs/core/widgets/app_squircle_button.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class ProductScreen extends StatefulWidget {
   const ProductScreen({Key? key}) : super(key: key);
@@ -31,53 +34,6 @@ class _ProductScreenState extends State<ProductScreen> {
     });
   }
 
-  Widget _buildSquircleIcon({
-    required IconData icon,
-    required bool themeFlag,
-    required VoidCallback onTap,
-    Color? color,
-    Widget? badge,
-    String? tooltip,
-  }) {
-    final defaultColor =
-        themeFlag ? AppColors.creamColor : AppColors.mirage;
-
-    return Tooltip(
-      message: tooltip ?? '',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(13),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(13),
-              color: themeFlag ? Colors.white.withOpacity(0.08) : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: themeFlag
-                      ? Colors.black.withOpacity(0.25)
-                      : const Color(0xfff0f0f0),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                Icon(icon, color: color ?? defaultColor, size: 22),
-                if (badge != null) badge,
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildAppBar(BuildContext context, bool themeFlag) {
     return Container(
@@ -97,7 +53,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 color: themeFlag ? AppColors.creamColor : AppColors.mirage,
               ),
               TitleText(
-                text: 'المميزة ✨',
+                text: 'المميزة',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: themeFlag ? Colors.white : AppColors.rawSienna,
@@ -108,7 +64,7 @@ class _ProductScreenState extends State<ProductScreen> {
           // أيقونة الإشعارات مع الشارة
           Consumer<NotificationNotifier>(
             builder: (context, notif, _) {
-              return _buildSquircleIcon(
+              return AppSquircleButton(
                 icon: Icons.notifications_none_rounded,
                 themeFlag: themeFlag,
                 tooltip: 'الإشعارات',
@@ -204,7 +160,7 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          _buildSquircleIcon(
+          AppSquircleButton(
             icon: Icons.filter_list_rounded,
             themeFlag: themeFlag,
             tooltip: 'تصفية المنتجات',
@@ -321,30 +277,23 @@ class _ProductScreenState extends State<ProductScreen> {
               if (catalogNotifier.isLoading && allProducts.isEmpty)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: AppSpacing.paddingAllMd,
                     child: ShimmerEffects.loadShimmer(context: context),
                   ),
                 )
               else if (filteredProducts.isEmpty)
-                SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 40),
-                      child: Text(
-                        'لا توجد منتجات في هذا القسم حالياً',
-                        style: TextStyle(
-                          color: themeFlag
-                              ? AppColors.creamColor
-                              : AppColors.mirage,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
+                const SliverToBoxAdapter(
+                  child: AppStateView(
+                    isLoading: false,
+                    isEmpty: true,
+                    emptyMessage: 'لا توجد منتجات في هذا القسم حالياً',
+                    emptyIcon: Icons.checkroom_outlined,
+                    child: SizedBox.shrink(),
                   ),
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: AppSpacing.paddingScreen,
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,

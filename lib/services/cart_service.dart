@@ -146,22 +146,6 @@ class CartService {
     }
   }
 
-  /// تفريغ السلة بالكامل
-  Future<bool> clearCart() async {
-    final uid = _client.auth.currentUser?.id;
-    if (uid == null) return false;
-
-    try {
-      await _client
-          .from(SupabaseTables.cartItems)
-          .delete()
-          .eq('user_id', uid);
-
-      return true;
-    } catch (e) {
-      throw 'حدث خطأ أثناء تفريغ السلة: $e';
-    }
-  }
 
   /// جلب إعدادات رسوم التوصيل والحد الأدنى للشحن المجاني
   Future<Map<String, double>> fetchShippingConfig() async {

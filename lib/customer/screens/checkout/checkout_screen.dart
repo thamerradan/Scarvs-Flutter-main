@@ -2,13 +2,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
+import 'package:scarvs/core/utils/app_message.dart';
 import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/providers/order_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_text_field.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
@@ -58,9 +62,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     final cartNotifier = Provider.of<CartNotifier>(context, listen: false);
     if (cartNotifier.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('السلة فارغة!', textAlign: TextAlign.right)),
-      );
+      AppMessage.error(context, 'السلة فارغة!');
       return;
     }
 
@@ -89,44 +91,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
 
       // إظهار إشعار فوري أنيق بنجاح استلام الطلب ورقم الطلب
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color(0xff1E232A),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 28),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'تم استلام طلبك بنجاح! 🎉',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
-                    if (orderNumber.isNotEmpty)
-                      Text(
-                        'رقم الطلب: #$orderNumber',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+      AppMessage.success(
+        context,
+        orderNumber.isNotEmpty
+            ? 'تم استلام طلبك بنجاح! 🎉\nرقم الطلب: #$orderNumber'
+            : 'تم استلام طلبك بنجاح! 🎉',
       );
     }
   }
@@ -227,16 +196,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 vSizedBox1,
                 // طريقة الدفع الحصرية: الدفع عند الاستلام
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: themeFlag ? Colors.white10 : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: themeFlag ? Colors.white : AppColors.rawSienna,
-                      width: 1.5,
-                    ),
-                  ),
+                AppCard(
+                  padding: AppSpacing.paddingCard,
+                  borderRadius: AppSpacing.radiusLg,
+                  borderColor: themeFlag ? Colors.white54 : AppColors.rawSienna,
                   child: Row(
                     children: [
                       Icon(
@@ -244,7 +207,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         color: themeFlag ? Colors.white : AppColors.rawSienna,
                         size: 28,
                       ),
-                      const SizedBox(width: 12),
+                      AppSpacing.gapW12,
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,15 +254,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 vSizedBox1,
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: themeFlag ? Colors.white.withOpacity(0.06) : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: themeFlag ? Colors.white12 : Colors.grey.shade200,
-                    ),
-                  ),
+                AppCard(
+                  padding: AppSpacing.paddingCard,
+                  borderRadius: AppSpacing.radiusLg,
                   child: Column(
                     children: [
                       Row(
@@ -309,7 +266,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Text('${cartNotifier.totalItemsCount} قطعة'),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      AppSpacing.gapH8,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -317,7 +274,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Text('${cartNotifier.subtotal.toStringAsFixed(0)} ر.س'),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      AppSpacing.gapH8,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -363,36 +320,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 vSizedBox3,
 
                 // زر تأكيد الطلب
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 3,
-                    ),
-                    onPressed: orderNotifier.isLoading ? null : _submitOrder,
-                    child: orderNotifier.isLoading
-                        ? SizedBox(
-                            height: 22,
-                            width: 22,
-                            child: CircularProgressIndicator(
-                              color: themeFlag ? AppColors.mirage : Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                        : Text(
-                            'تأكيد الطلب الآن 📦',
-                            style: TextStyle(
-                              color: themeFlag ? AppColors.mirage : Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
+                AppPrimaryButton(
+                  text: 'تأكيد الطلب الآن 📦',
+                  isLoading: orderNotifier.isLoading,
+                  onPressed: _submitOrder,
                 ),
               ],
             ),

@@ -21,7 +21,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeAndNavigate() async {
-    final minDelay = Future.delayed(const Duration(milliseconds: 4000));
+    final minDelay = Future.delayed(const Duration(milliseconds: 3000));
 
     Future<void> initAuth() async {
       if (SupabaseConfig.isConfigured && AppSupabase.isAuthenticated) {

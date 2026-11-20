@@ -34,9 +34,6 @@ class EcommerceCategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeBg = themeFlag
-        ? AppColors.mirage
-        : Colors.white;
     final inactiveBorder = themeFlag
         ? Colors.white.withOpacity(0.12)
         : Colors.grey.shade300;

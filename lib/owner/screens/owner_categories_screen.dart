@@ -5,11 +5,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
+import 'package:scarvs/core/utils/app_message.dart';
 import 'package:scarvs/models/category_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
@@ -152,19 +156,14 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                 onPressed: () => Navigator.of(ctx).pop(),
                 child: const Text('إلغاء'),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
-                  foregroundColor: isDark ? AppColors.mirage : Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                ),
+              AppPrimaryButton(
+                text: isEditing ? 'حفظ التعديلات' : 'إضافة التصنيف',
+                height: 42,
+                width: 130,
                 onPressed: () async {
                   final name = nameCtrl.text.trim();
                   if (name.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('يرجى كتابة اسم التصنيف')),
-                    );
+                    AppMessage.error(context, 'يرجى كتابة اسم التصنيف');
                     return;
                   }
 
@@ -195,10 +194,6 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                         .refreshCategories(silent: true);
                   }
                 },
-                child: Text(
-                  isEditing ? 'حفظ التعديلات ✅' : 'إضافة التصنيف ➕',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
               ),
             ],
           );
@@ -224,8 +219,10 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          AppDangerButton(
+            text: 'حذف',
+            height: 40,
+            width: 80,
             onPressed: () async {
               Navigator.of(ctx).pop();
               final ok = await ownerNotifier.deleteCategory(category.id, context: context);
@@ -234,7 +231,6 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                     .refreshCategories(silent: true);
               }
             },
-            child: const Text('حذف', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -336,26 +332,17 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                           separatorBuilder: (_, __) => const SizedBox(height: 10),
                           itemBuilder: (context, index) {
                             final cat = ownerNotifier.categories[index];
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: themeFlag ? AppColors.mirage : Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: themeFlag ? Colors.white10 : Colors.black.withOpacity(0.06),
-                                ),
-                              ),
+                            return AppCard(
+                              borderRadius: AppSpacing.radiusMd,
+                              padding: EdgeInsets.zero,
+                              onTap: () => _showCategoryDialog(context, category: cat),
                               child: ListTile(
-                                onTap: () => _showCategoryDialog(context, category: cat),
-                                leading: SizedBox(
+                                leading: AppNetworkImage.thumbnail(
+                                  url: cat.imageUrl ?? '',
                                   width: 48,
                                   height: 48,
-                                  child: AppNetworkImage(
-                                    url: cat.imageUrl ?? '',
-                                    fit: BoxFit.cover,
-                                    borderRadius: 10,
-                                    cacheWidth: 150,
-                                    errorWidget: const Icon(Icons.category, color: Colors.grey),
-                                  ),
+                                  borderRadius: AppSpacing.radiusSm,
+                                  errorWidget: const Icon(Icons.category, color: Colors.grey),
                                 ),
                                 title: Text(
                                   cat.name,

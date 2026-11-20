@@ -10,6 +10,7 @@ import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class _ProductImageEntry {
@@ -707,40 +708,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     const SizedBox(height: 30),
 
                     // زر الحفظ
-                    SizedBox(
-                      height: 52,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              themeFlag ? Colors.white : AppColors.rawSienna,
-                          foregroundColor:
-                              themeFlag ? AppColors.mirage : Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          elevation: 3,
-                        ),
-                        onPressed: ownerNotifier.isSaving ? null : _submitForm,
-                        child: ownerNotifier.isSaving
-                            ? SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: themeFlag
-                                      ? AppColors.mirage
-                                      : Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : Text(
-                                isEditing ? 'حفظ التعديلات ✅' : 'إضافة المنتج للمتجر 🚀',
-                                style: TextStyle(
-                                  color: themeFlag
-                                      ? AppColors.mirage
-                                      : Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
+                    AppPrimaryButton(
+                      text: isEditing ? 'حفظ التعديلات ✅' : 'إضافة المنتج للمتجر 🚀',
+                      isLoading: ownerNotifier.isSaving,
+                      onPressed: _submitForm,
                     ),
                     const SizedBox(height: 20),
                   ],

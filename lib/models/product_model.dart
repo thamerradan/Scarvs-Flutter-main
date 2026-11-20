@@ -108,9 +108,12 @@ class ProductItem {
       'price': price,
       'old_price': oldPrice,
       'category_id': categoryId,
+      'category_name': categoryName,
       'main_image_url': mainImageUrl,
       'is_active': isActive,
       'is_featured': isFeatured,
+      'product_images': images.map((url) => {'image_url': url}).toList(),
+      'product_variants': variants.map((v) => v.toJson()).toList(),
     };
   }
 }

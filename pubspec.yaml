@@ -52,8 +52,3 @@ flutter:
     - assets/images/shoes/
     - assets/images/logo/
     - .env
-
-  fonts:
-    - family: Contax
-      fonts:
-        - asset: assets/fonts/contax.ttf

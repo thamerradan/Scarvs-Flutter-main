@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
-import 'package:scarvs/providers/owner_provider.dart';
-import 'package:scarvs/providers/theme_provider.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/providers/owner_provider.dart';
+import 'package:scarvs/providers/theme_provider.dart';
 
 class OwnerInventoryScreen extends StatefulWidget {
   const OwnerInventoryScreen({Key? key}) : super(key: key);
@@ -29,7 +32,6 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
   }
 
   void _showSetStockDialog(BuildContext context, String variantId, int currentStock) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final ownerNotifier = Provider.of<OwnerNotifier>(context, listen: false);
     final ctrl = TextEditingController(text: currentStock.toString());
 
@@ -50,11 +52,10 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
-              foregroundColor: isDark ? AppColors.mirage : Colors.white,
-            ),
+          AppPrimaryButton(
+            text: 'تحديث',
+            height: 40,
+            width: 90,
             onPressed: () async {
               final newStock = int.tryParse(ctrl.text.trim());
               if (newStock != null && newStock >= 0) {
@@ -62,9 +63,6 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                 await ownerNotifier.updateStock(variantId, newStock, context: context);
               }
             },
-            child: Text('تحديث',
-                style: TextStyle(
-                    color: isDark ? AppColors.mirage : Colors.white)),
           ),
         ],
       ),
@@ -229,30 +227,20 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
       tagText = 'قارب على النفاد';
     }
 
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: themeFlag ? AppColors.mirage : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: themeFlag ? Colors.white10 : Colors.black.withOpacity(0.06),
-        ),
-      ),
+      borderRadius: AppSpacing.radiusLg,
       child: Row(
         children: [
           // صورة مصغرة
-          SizedBox(
+          AppNetworkImage.thumbnail(
+            url: imageUrl ?? '',
             width: 50,
             height: 50,
-            child: AppNetworkImage(
-              url: imageUrl ?? '',
-              fit: BoxFit.cover,
-              borderRadius: 8,
-              cacheWidth: 150,
-              errorWidget: const Icon(Icons.image, color: Colors.grey),
-            ),
+            borderRadius: AppSpacing.radiusSm,
+            errorWidget: const Icon(Icons.image, color: Colors.grey),
           ),
-          const SizedBox(width: 12),
+          AppSpacing.gapW12,
 
           // الاسم والمقاس
           Expanded(

@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/order_model.dart';
 import 'package:scarvs/providers/order_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -139,115 +141,101 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final dateStr =
         '${order.createdAt.year}/${order.createdAt.month.toString().padLeft(2, '0')}/${order.createdAt.day.toString().padLeft(2, '0')}';
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: themeFlag
-              ? Colors.white.withOpacity(0.08)
-              : Colors.grey.withOpacity(0.2),
-        ),
-      ),
-      elevation: 3,
-      color: themeFlag ? AppColors.mirage : Colors.white,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          Navigator.of(context).pushNamed(
-            AppRouter.orderDetailRoute,
-            arguments: order.id,
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return AppCard(
+      borderRadius: AppSpacing.radiusLg,
+      padding: AppSpacing.paddingCard,
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          AppRouter.orderDetailRoute,
+          arguments: order.id,
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    order.orderNumber,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: order.statusColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: order.statusColor.withOpacity(0.4),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(order.statusIcon,
-                            size: 14, color: order.statusColor),
-                        const SizedBox(width: 4),
-                        Text(
-                          order.orderStatusArabic,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: order.statusColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
               Text(
-                'تاريخ الطلب: $dateStr',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                      .withOpacity(0.6),
+                order.orderNumber,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
                 ),
               ),
-              const Divider(height: 20),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: order.statusColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: order.statusColor.withOpacity(0.4),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(order.statusIcon,
+                        size: 14, color: order.statusColor),
+                    const SizedBox(width: 4),
+                    Text(
+                      order.orderStatusArabic,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: order.statusColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'تاريخ الطلب: $dateStr',
+            style: TextStyle(
+              fontSize: 12,
+              color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                  .withOpacity(0.6),
+            ),
+          ),
+          const Divider(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${order.items.length} قطع في الطلب',
+                style: const TextStyle(fontSize: 13),
+              ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${order.items.length} قطع في الطلب',
-                    style: const TextStyle(fontSize: 13),
+                    'الإجمالي: ',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: (themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage)
+                          .withOpacity(0.7),
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        'الإجمالي: ',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: (themeFlag
-                                  ? AppColors.creamColor
-                                  : AppColors.mirage)
-                              .withOpacity(0.7),
-                        ),
-                      ),
-                      Text(
-                        '${order.total.toStringAsFixed(0)} ر.س',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: themeFlag ? Colors.white : AppColors.rawSienna,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.chevron_left, size: 20),
-                    ],
+                  Text(
+                    '${order.total.toStringAsFixed(0)} ر.س',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
+                    ),
                   ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chevron_left, size: 20),
                 ],
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

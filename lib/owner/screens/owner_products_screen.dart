@@ -2,12 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
@@ -54,8 +57,9 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          AppDangerButton(
+            text: 'حذف نهائي',
+            height: 40,
             onPressed: () async {
               Navigator.of(ctx).pop();
               final ok = await ownerNotifier.deleteProduct(product.id, context: context);
@@ -63,7 +67,6 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                 Provider.of<CatalogProvider>(context, listen: false).invalidate();
               }
             },
-            child: const Text('حذف نهائي', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -225,38 +228,21 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
       totalStock += v.stock;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: themeFlag ? AppColors.mirage : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: themeFlag ? Colors.white12 : Colors.black.withOpacity(0.08),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+    return AppCard(
+      padding: AppSpacing.paddingCard,
+      borderRadius: AppSpacing.radiusLg,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // صورة المنتج
-          SizedBox(
+          AppNetworkImage.thumbnail(
+            url: product.mainImageUrl,
             width: 80,
             height: 80,
-            child: AppNetworkImage(
-              url: product.mainImageUrl,
-              fit: BoxFit.cover,
-              borderRadius: 12,
-              cacheWidth: 200,
-              errorWidget: const Icon(Icons.image_outlined, size: 36, color: Colors.grey),
-            ),
+            borderRadius: AppSpacing.radiusMd,
+            errorWidget: const Icon(Icons.image_outlined, size: 36, color: Colors.grey),
           ),
-          const SizedBox(width: 12),
+          AppSpacing.gapW12,
 
           // تفاصيل المنتج
           Expanded(

@@ -5,17 +5,17 @@ import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
-import 'package:scarvs/core/utils/snackbar_util.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/models/product_variant_model.dart';
 import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/size_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/core/widgets/app_squircle_button.dart';
+import 'package:scarvs/core/utils/app_message.dart';
 
 class ProductDetail extends StatefulWidget {
   final ProductDetailsArgs productDetailsArguements;
@@ -102,59 +102,6 @@ class _ProductDetailState extends State<ProductDetail>
     return fetched ?? _product;
   }
 
-  Widget _buildSquircleIcon({
-    required IconData icon,
-    required bool themeFlag,
-    required VoidCallback onTap,
-    Color? color,
-    bool isOutLine = false,
-  }) {
-    final defaultColor = themeFlag ? AppColors.creamColor : AppColors.mirage;
-    final bgColor = themeFlag ? AppColors.mirage : Colors.white;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(13),
-        onTap: onTap,
-        child: Container(
-          width: 42,
-          height: 42,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: isOutLine
-                  ? (themeFlag ? Colors.white24 : Colors.grey.shade400)
-                  : Colors.transparent,
-              width: 1.2,
-            ),
-            borderRadius: BorderRadius.circular(13),
-            color: isOutLine ? Colors.transparent : bgColor,
-            boxShadow: isOutLine
-                ? null
-                : [
-                    BoxShadow(
-                      color: themeFlag
-                          ? Colors.black.withOpacity(0.25)
-                          : const Color(0xfff0f0f0),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-          ),
-          child: Center(
-            child: Icon(
-              icon,
-              color: color ?? defaultColor,
-              size: 20,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildAppBar(BuildContext context, bool themeFlag) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -162,7 +109,7 @@ class _ProductDetailState extends State<ProductDetail>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // زر الرجوع (يشير لليمين في اتجاه اللغة العربية)
-          _buildSquircleIcon(
+          AppSquircleButton(
             icon: Icons.arrow_forward_ios_rounded,
             themeFlag: themeFlag,
             isOutLine: true,
@@ -179,7 +126,7 @@ class _ProductDetailState extends State<ProductDetail>
           Row(
             children: [
               if (AuthGuard.isOwner && _product != null) ...[
-                _buildSquircleIcon(
+                AppSquircleButton(
                   icon: Icons.edit_note_rounded,
                   color: themeFlag ? Colors.white : AppColors.rawSienna,
                   themeFlag: themeFlag,
@@ -192,7 +139,7 @@ class _ProductDetailState extends State<ProductDetail>
                 ),
                 const SizedBox(width: 10),
               ],
-              _buildSquircleIcon(
+              AppSquircleButton(
                 icon: _isLiked ? Icons.favorite : Icons.favorite_border,
                 color: _isLiked ? Colors.redAccent : Colors.grey.shade600,
                 themeFlag: themeFlag,
@@ -240,18 +187,12 @@ class _ProductDetailState extends State<ProductDetail>
                       widget.productDetailsArguements.heroTag!.isNotEmpty
                   ? Hero(
                       tag: widget.productDetailsArguements.heroTag!,
-                      child: AppNetworkImage(
+                      child: AppNetworkImage.detail(
                         url: currentImage,
-                        height: 200,
-                        fit: BoxFit.contain,
-                        cacheWidth: 600,
                       ),
                     )
-                  : AppNetworkImage(
+                  : AppNetworkImage.detail(
                       url: currentImage,
-                      height: 200,
-                      fit: BoxFit.contain,
-                      cacheWidth: 600,
                     ),
             ],
           ),
@@ -301,11 +242,10 @@ class _ProductDetailState extends State<ProductDetail>
                           : null,
                     ),
                     padding: const EdgeInsets.all(4),
-                    child: AppNetworkImage(
+                    child: AppNetworkImage.thumbnail(
                       url: allImages[index],
                       fit: BoxFit.contain,
                       borderRadius: 9,
-                      cacheWidth: 200,
                     ),
                   ),
                 );
@@ -603,17 +543,11 @@ class _ProductDetailState extends State<ProductDetail>
   void _handleAddToCart(
       BuildContext context, ProductItem product, SizeNotifier sizeNotifier) {
     if (AuthGuard.isOwner) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackUtil.stylishSnackBar(
-          text: 'أنت في وضع معاينة المالك، لا يمكنك إنشاء طلبات',
-          context: context,
-        ),
-      );
+      AppMessage.info(context, 'أنت في وضع معاينة المالك، لا يمكنك إنشاء طلبات');
       return;
     }
 
     final cartNotifier = Provider.of<CartNotifier>(context, listen: false);
-    final userNotifier = Provider.of<UserProvider>(context, listen: false);
 
     AuthGuard.requireAuth(
       context: context,
@@ -626,29 +560,17 @@ class _ProductDetailState extends State<ProductDetail>
           variantId: product.variants.isNotEmpty
               ? sizeNotifier.selectedVariant?.id
               : null,
-          useremail: userNotifier.getUserEmail ?? '',
           productPrice: product.price.toStringAsFixed(0),
           productName: product.name,
-          productCategory: product.categoryName ?? '',
           productImage: product.mainImageUrl,
           context: context,
           productSize: product.variants.isNotEmpty ? sizeNotifier.size : '',
         )
             .then((value) {
           if (value) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackUtil.stylishSnackBar(
-                text: 'تمت إضافة المنتج إلى السلة بنجاح 🛍️',
-                context: context,
-              ),
-            );
+            AppMessage.success(context, 'تمت إضافة المنتج إلى السلة بنجاح 🛍️');
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackUtil.stylishSnackBar(
-                text: 'حدث خطأ أثناء الإضافة إلى السلة',
-                context: context,
-              ),
-            );
+            AppMessage.error(context, 'حدث خطأ أثناء الإضافة إلى السلة');
           }
         });
       },

@@ -6,6 +6,7 @@ import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_text_field.dart';
 import 'package:scarvs/core/widgets/custom_text_style.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
@@ -128,59 +129,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             : null,
                       ),
                       vSizedBox3,
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                themeFlag ? Colors.white : AppColors.rawSienna,
-                            foregroundColor:
-                                themeFlag ? AppColors.mirage : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: userNotifier.isLoading
-                              ? null
-                              : () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    final success =
-                                        await userNotifier.updateUserDetails(
-                                      fullName: nameController.text.trim(),
-                                      userEmail: emailController.text.trim(),
-                                      city: cityController.text.trim(),
-                                      userAddress:
-                                          addressController.text.trim(),
-                                      context: context,
-                                    );
-                                    if (success && context.mounted) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  }
-                                },
-                          child: userNotifier.isLoading
-                              ? SizedBox(
-                                  height: 22,
-                                  width: 22,
-                                  child: CircularProgressIndicator(
-                                    color: themeFlag
-                                        ? AppColors.mirage
-                                        : Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              : Text(
-                                  'حفظ التعديلات',
-                                  style: TextStyle(
-                                    color: themeFlag
-                                        ? AppColors.mirage
-                                        : Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
+                      AppPrimaryButton(
+                        text: 'حفظ التعديلات',
+                        isLoading: userNotifier.isLoading,
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final success =
+                                await userNotifier.updateUserDetails(
+                              fullName: nameController.text.trim(),
+                              userEmail: emailController.text.trim(),
+                              city: cityController.text.trim(),
+                              userAddress:
+                                  addressController.text.trim(),
+                              context: context,
+                            );
+                            if (success && context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),

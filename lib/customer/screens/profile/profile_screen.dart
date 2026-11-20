@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -106,10 +108,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .pushNamed(AppRouter.appSettingsRoute);
                         },
                       ),
-                      const SizedBox(height: 24),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () async {
+                      AppSpacing.gapH24,
+                      AppDangerButton(
+                        text: 'تسجيل الخروج',
+                        icon: Icons.power_settings_new,
+                        onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
@@ -127,14 +130,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   onPressed: () => Navigator.of(ctx).pop(false),
                                   child: const Text('إلغاء'),
                                 ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 7, 7, 7),
-                                  ),
+                                AppDangerButton(
+                                  text: 'خروج',
+                                  height: 38,
+                                  width: 80,
                                   onPressed: () => Navigator.of(ctx).pop(true),
-                                  child: const Text('خروج',
-                                      style: TextStyle(color: Colors.white)),
                                 ),
                               ],
                             ),
@@ -143,32 +143,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             await authNotifier.signOut(context: context);
                           }
                         },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 14, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(12),
-                            border:
-                                Border.all(color: Colors.red.withOpacity(0.3)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.power_settings_new,
-                                  color: Colors.red, size: 22),
-                              SizedBox(width: 8),
-                              Text(
-                                'تسجيل الخروج',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
                     ],
                   ),
