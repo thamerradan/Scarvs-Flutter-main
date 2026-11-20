@@ -23,10 +23,39 @@ class OwnerNotifier with ChangeNotifier {
   final OwnerSettingsService _settingsService = OwnerSettingsService();
 
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool _isDashboardLoading = false;
+  bool get isDashboardLoading => _isDashboardLoading;
+
+  bool _isOrdersLoading = false;
+  bool get isOrdersLoading => _isOrdersLoading;
+
+  bool _isProductsLoading = false;
+  bool get isProductsLoading => _isProductsLoading;
+
+  bool _isInventoryLoading = false;
+  bool get isInventoryLoading => _isInventoryLoading;
+
+  bool _isCategoriesLoading = false;
+  bool get isCategoriesLoading => _isCategoriesLoading;
+
+  bool _isSettingsLoading = false;
+  bool get isSettingsLoading => _isSettingsLoading;
+
+  bool get isLoading =>
+      _isLoading ||
+      _isDashboardLoading ||
+      _isOrdersLoading ||
+      _isProductsLoading ||
+      _isInventoryLoading ||
+      _isCategoriesLoading ||
+      _isSettingsLoading;
 
   bool _isSaving = false;
   bool get isSaving => _isSaving;
+
+  // معرفات عناصر المخزون الجاري تحديثها لمنع السباق وتكرار الطلبات
+  final Set<String> _updatingVariantIds = {};
+  bool isVariantUpdating(String id) => _updatingVariantIds.contains(id);
 
   // 1. الإحصائيات
   DashboardStatsModel _stats = DashboardStatsModel();
@@ -54,11 +83,6 @@ class OwnerNotifier with ChangeNotifier {
   StoreSettingsModel? _storeSettings;
   StoreSettingsModel? get storeSettings => _storeSettings;
 
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
   void _setSaving(bool value) {
     _isSaving = value;
     notifyListeners();
@@ -69,7 +93,9 @@ class OwnerNotifier with ChangeNotifier {
   // ===========================================================================
 
   Future<void> fetchDashboard({BuildContext? context}) async {
-    _setLoading(true);
+    if (_isDashboardLoading) return;
+    _isDashboardLoading = true;
+    notifyListeners();
     try {
       _stats = await _dashboardService.fetchDashboardStats();
     } catch (e) {
@@ -79,7 +105,8 @@ class OwnerNotifier with ChangeNotifier {
         );
       }
     } finally {
-      _setLoading(false);
+      _isDashboardLoading = false;
+      notifyListeners();
     }
   }
 
@@ -89,7 +116,9 @@ class OwnerNotifier with ChangeNotifier {
 
   Future<void> fetchOrders(
       {String? statusFilter, BuildContext? context}) async {
-    _setLoading(true);
+    if (_isOrdersLoading) return;
+    _isOrdersLoading = true;
+    notifyListeners();
     if (statusFilter != null) {
       _selectedStatus = statusFilter;
     }
@@ -103,7 +132,8 @@ class OwnerNotifier with ChangeNotifier {
         );
       }
     } finally {
-      _setLoading(false);
+      _isOrdersLoading = false;
+      notifyListeners();
     }
   }
 
@@ -166,7 +196,9 @@ class OwnerNotifier with ChangeNotifier {
   // ===========================================================================
 
   Future<void> fetchProducts({BuildContext? context}) async {
-    _setLoading(true);
+    if (_isProductsLoading) return;
+    _isProductsLoading = true;
+    notifyListeners();
     try {
       _products = await _productsService.fetchAllOwnerProducts();
     } catch (e) {
@@ -176,7 +208,8 @@ class OwnerNotifier with ChangeNotifier {
         );
       }
     } finally {
-      _setLoading(false);
+      _isProductsLoading = false;
+      notifyListeners();
     }
   }
 
@@ -304,7 +337,9 @@ class OwnerNotifier with ChangeNotifier {
   // ===========================================================================
 
   Future<void> fetchInventory({BuildContext? context}) async {
-    _setLoading(true);
+    if (_isInventoryLoading) return;
+    _isInventoryLoading = true;
+    notifyListeners();
     try {
       _inventory = await _inventoryService.fetchInventoryList();
     } catch (e) {
@@ -314,7 +349,8 @@ class OwnerNotifier with ChangeNotifier {
         );
       }
     } finally {
-      _setLoading(false);
+      _isInventoryLoading = false;
+      notifyListeners();
     }
   }
 
@@ -323,6 +359,10 @@ class OwnerNotifier with ChangeNotifier {
     int newStock, {
     required BuildContext context,
   }) async {
+    if (_updatingVariantIds.contains(variantId)) return;
+    _updatingVariantIds.add(variantId);
+    notifyListeners();
+
     try {
       await _inventoryService.updateVariantStock(variantId, newStock);
       final idx = _inventory.indexWhere((v) => v['id'] == variantId);
@@ -345,6 +385,9 @@ class OwnerNotifier with ChangeNotifier {
           SnackUtil.stylishSnackBar(text: e.toString(), context: context),
         );
       }
+    } finally {
+      _updatingVariantIds.remove(variantId);
+      notifyListeners();
     }
   }
 
@@ -353,7 +396,9 @@ class OwnerNotifier with ChangeNotifier {
   // ===========================================================================
 
   Future<void> fetchCategories({BuildContext? context}) async {
-    _setLoading(true);
+    if (_isCategoriesLoading) return;
+    _isCategoriesLoading = true;
+    notifyListeners();
     try {
       _categories = await _categoriesService.fetchAllCategories();
     } catch (e) {
@@ -363,7 +408,8 @@ class OwnerNotifier with ChangeNotifier {
         );
       }
     } finally {
-      _setLoading(false);
+      _isCategoriesLoading = false;
+      notifyListeners();
     }
   }
 
@@ -477,7 +523,9 @@ class OwnerNotifier with ChangeNotifier {
   // ===========================================================================
 
   Future<void> fetchStoreSettings({BuildContext? context}) async {
-    _setLoading(true);
+    if (_isSettingsLoading) return;
+    _isSettingsLoading = true;
+    notifyListeners();
     try {
       _storeSettings = await _settingsService.fetchStoreSettings();
     } catch (e) {
@@ -487,7 +535,8 @@ class OwnerNotifier with ChangeNotifier {
         );
       }
     } finally {
-      _setLoading(false);
+      _isSettingsLoading = false;
+      notifyListeners();
     }
   }
 
@@ -531,7 +580,14 @@ class OwnerNotifier with ChangeNotifier {
     _categories = [];
     _storeSettings = null;
     _isLoading = false;
+    _isDashboardLoading = false;
+    _isOrdersLoading = false;
+    _isProductsLoading = false;
+    _isInventoryLoading = false;
+    _isCategoriesLoading = false;
+    _isSettingsLoading = false;
     _isSaving = false;
+    _updatingVariantIds.clear();
     notifyListeners();
   }
 }

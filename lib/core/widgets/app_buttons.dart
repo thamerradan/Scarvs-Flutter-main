@@ -1,4 +1,4 @@
-// أزرار موحدة للتطبيق تدعم حالات التحميل والوضع الليلي والأيقونات.
+// أزرار موحدة للتطبيق تدعم حالات التحميل والوضع الليلي والأيقونات مع حماية تامة ضد الـ Overflow.
 import 'package:flutter/material.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/theme/app_spacing.dart';
@@ -11,6 +11,8 @@ class AppPrimaryButton extends StatelessWidget {
   final double height;
   final double? width;
   final double borderRadius;
+  final double fontSize;
+  final EdgeInsetsGeometry? padding;
   final Color? backgroundColor;
   final Color? textColor;
 
@@ -23,6 +25,8 @@ class AppPrimaryButton extends StatelessWidget {
     this.height = 50.0,
     this.width,
     this.borderRadius = AppSpacing.radiusMd,
+    this.fontSize = 15.0,
+    this.padding,
     this.backgroundColor,
     this.textColor,
   }) : super(key: key);
@@ -47,7 +51,7 @@ class AppPrimaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 12),
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
@@ -64,15 +68,19 @@ class AppPrimaryButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: fg),
+                    Icon(icon, size: 18, color: fg),
                     AppSpacing.gapW8,
                   ],
-                  Text(
-                    text,
-                    style: TextStyle(
-                      color: fg,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                  Flexible(
+                    child: Text(
+                      text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: fg,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -90,6 +98,8 @@ class AppOutlinedButton extends StatelessWidget {
   final double height;
   final double? width;
   final double borderRadius;
+  final double fontSize;
+  final EdgeInsetsGeometry? padding;
   final Color? borderColor;
   final Color? textColor;
 
@@ -102,6 +112,8 @@ class AppOutlinedButton extends StatelessWidget {
     this.height = 50.0,
     this.width,
     this.borderRadius = AppSpacing.radiusMd,
+    this.fontSize = 14.0,
+    this.padding,
     this.borderColor,
     this.textColor,
   }) : super(key: key);
@@ -125,7 +137,7 @@ class AppOutlinedButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 10),
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
@@ -142,15 +154,19 @@ class AppOutlinedButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: fg),
+                    Icon(icon, size: 18, color: fg),
                     AppSpacing.gapW8,
                   ],
-                  Text(
-                    text,
-                    style: TextStyle(
-                      color: fg,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                  Flexible(
+                    child: Text(
+                      text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: fg,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -168,6 +184,8 @@ class AppDangerButton extends StatelessWidget {
   final double height;
   final double? width;
   final double borderRadius;
+  final double fontSize;
+  final EdgeInsetsGeometry? padding;
 
   const AppDangerButton({
     Key? key,
@@ -178,6 +196,8 @@ class AppDangerButton extends StatelessWidget {
     this.height = 46.0,
     this.width,
     this.borderRadius = AppSpacing.radiusMd,
+    this.fontSize = 14.0,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -193,7 +213,7 @@ class AppDangerButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 12),
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
@@ -213,12 +233,16 @@ class AppDangerButton extends StatelessWidget {
                     Icon(icon, size: 18, color: Colors.white),
                     AppSpacing.gapW8,
                   ],
-                  Text(
-                    text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                  Flexible(
+                    child: Text(
+                      text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

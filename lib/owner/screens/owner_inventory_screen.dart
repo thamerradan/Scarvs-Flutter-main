@@ -1,14 +1,13 @@
-// تعرض مخزون المتجر وتتيح للمالك متابعة الكميات.
+// تعرض مخزون المتجر وتتيح للمالك متابعة الكميات بدقة وسرعة.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/theme/app_spacing.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 
@@ -87,34 +86,17 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerDashboardRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'إدارة المخزون 📊',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    onPressed: () => ownerNotifier.fetchInventory(context: context),
-                  ),
-                ],
-              ),
+            // شريط العنوان الموحد
+            AppPageHeader(
+              title: 'إدارة المخزون',
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'تحديث',
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  onPressed: () => ownerNotifier.fetchInventory(context: context),
+                ),
+              ],
             ),
 
             // فلاتر الحالة
@@ -124,59 +106,42 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
               child: Row(
                 children: [
                   _buildFilterChip('الكل', 'all', themeFlag),
-                  const SizedBox(width: 8),
+                  AppSpacing.gapW8,
                   _buildFilterChip('قريب من النفاد ⚠️', 'low', themeFlag),
-                  const SizedBox(width: 8),
+                  AppSpacing.gapW8,
                   _buildFilterChip('نفذ تماماً ❌', 'out', themeFlag),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.gapH8,
 
-            // قائمة عناصر المخزون
+            // قائمة عناصر المخزون بحالات التحميل الموحدة
             Expanded(
-              child: ownerNotifier.isLoading
-                  ? AppLoader(themeFlag: themeFlag)
-                  : filteredList.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline,
-                                size: 64,
-                                color: Colors.green.withOpacity(0.5),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لا توجد منتجات ضمن هذا الفلتر',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => ownerNotifier.fetchInventory(context: context),
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: filteredList.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              final item = filteredList[index];
-                              return _buildInventoryCard(
-                                context: context,
-                                item: item,
-                                themeFlag: themeFlag,
-                                ownerNotifier: ownerNotifier,
-                              );
-                            },
-                          ),
-                        ),
+              child: AppStateView(
+                isLoading: ownerNotifier.isInventoryLoading,
+                isEmpty: filteredList.isEmpty,
+                emptyMessage: 'لا توجد منتجات ضمن هذا الفلتر',
+                emptyIcon: Icons.check_circle_outline,
+                onRetry: () => ownerNotifier.fetchInventory(context: context),
+                child: RefreshIndicator(
+                  onRefresh: () => ownerNotifier.fetchInventory(context: context),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: filteredList.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final item = filteredList[index];
+                      return _buildInventoryCard(
+                        context: context,
+                        item: item,
+                        themeFlag: themeFlag,
+                        ownerNotifier: ownerNotifier,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -216,6 +181,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
     final product = item['products'] as Map<String, dynamic>?;
     final productName = product?['name']?.toString() ?? 'منتج بدون اسم';
     final imageUrl = product?['main_image_url']?.toString();
+    final isUpdating = ownerNotifier.isVariantUpdating(variantId);
 
     Color tagColor = Colors.green;
     String tagText = 'متوفر';
@@ -266,8 +232,8 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: themeFlag
-                            ? Colors.white.withOpacity(0.15)
-                            : AppColors.rawSienna.withOpacity(0.15),
+                            ? Colors.white.withValues(alpha: 0.15)
+                            : AppColors.rawSienna.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -282,7 +248,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: tagColor.withOpacity(0.15),
+                        color: tagColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -301,7 +267,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
           ),
           const SizedBox(width: 8),
 
-          // وحدة التحكم بالكمية (+ / -)
+          // وحدة التحكم بالكمية (+ / -) مع حماية ضد السباق والضغط المتكرر
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -309,27 +275,41 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(4),
                 icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent, size: 22),
-                onPressed: stock > 0
+                onPressed: (!isUpdating && stock > 0)
                     ? () => ownerNotifier.updateStock(variantId, stock - 1, context: context)
                     : null,
               ),
               const SizedBox(width: 4),
               InkWell(
-                onTap: () => _showSetStockDialog(context, variantId, stock),
+                onTap: isUpdating
+                    ? null
+                    : () => _showSetStockDialog(context, variantId, stock),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.08),
+                    color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                        .withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    '$stock',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
+                  child: isUpdating
+                      ? SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              themeFlag ? AppColors.creamColor : AppColors.mirage,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          '$stock',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(width: 4),
@@ -337,8 +317,9 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(4),
                 icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 22),
-                onPressed: () =>
-                    ownerNotifier.updateStock(variantId, stock + 1, context: context),
+                onPressed: !isUpdating
+                    ? () => ownerNotifier.updateStock(variantId, stock + 1, context: context)
+                    : null,
               ),
             ],
           ),

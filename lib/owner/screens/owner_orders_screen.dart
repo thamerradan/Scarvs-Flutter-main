@@ -7,10 +7,10 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/order_model.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class OwnerOrdersScreen extends StatefulWidget {
   const OwnerOrdersScreen({Key? key}) : super(key: key);
@@ -137,34 +137,17 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerDashboardRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'إدارة الطلبات 📦',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    onPressed: () => ownerNotifier.fetchOrders(context: context),
-                  ),
-                ],
-              ),
+            // شريط العنوان الموحد
+            AppPageHeader(
+              title: 'إدارة الطلبات',
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'تحديث',
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  onPressed: () => ownerNotifier.fetchOrders(context: context),
+                ),
+              ],
             ),
 
             // شريط فلاتر الحالات
@@ -203,48 +186,30 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.gapH8,
 
-            // قائمة الطلبات
+            // قائمة الطلبات بحالات التحميل الموحدة
             Expanded(
-              child: ownerNotifier.isLoading
-                  ? AppLoader(themeFlag: themeFlag)
-                  : ownerNotifier.orders.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.inbox_outlined,
-                                size: 64,
-                                color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                    .withOpacity(0.3),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لا توجد طلبات في هذا القسم حالياً',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => ownerNotifier.fetchOrders(context: context),
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: ownerNotifier.orders.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 14),
-                            itemBuilder: (context, index) {
-                              final order = ownerNotifier.orders[index];
-                              return _buildOwnerOrderCard(order, themeFlag);
-                            },
-                          ),
-                        ),
+              child: AppStateView(
+                isLoading: ownerNotifier.isOrdersLoading,
+                isEmpty: ownerNotifier.orders.isEmpty,
+                emptyMessage: 'لا توجد طلبات في هذا القسم حالياً',
+                emptyIcon: Icons.inbox_outlined,
+                onRetry: () => ownerNotifier.fetchOrders(context: context),
+                child: RefreshIndicator(
+                  onRefresh: () => ownerNotifier.fetchOrders(context: context),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: ownerNotifier.orders.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 14),
+                    itemBuilder: (context, index) {
+                      final order = ownerNotifier.orders[index];
+                      return _buildOwnerOrderCard(order, themeFlag);
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -377,6 +342,8 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                   child: AppOutlinedButton(
                     text: 'تفاصيل الطلب',
                     height: 40,
+                    fontSize: 13,
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     icon: Icons.remove_red_eye_outlined,
                     onPressed: () {
                       Navigator.of(context).pushNamed(
@@ -386,11 +353,13 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     },
                   ),
                 ),
-                AppSpacing.gapW12,
+                AppSpacing.gapW8,
                 Expanded(
                   child: AppPrimaryButton(
                     text: 'تعديل الحالة',
                     height: 40,
+                    fontSize: 13,
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     icon: Icons.edit_note,
                     onPressed: () => _showChangeStatusDialog(context, order),
                   ),

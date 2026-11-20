@@ -1,4 +1,4 @@
-// تعرض منتجات المتجر وتتيح للمالك إدارتها.
+// تعرض منتجات المتجر وتتيح للمالك إدارتها بكفاءة وسرعة.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
@@ -8,11 +8,11 @@ import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class OwnerProductsScreen extends StatefulWidget {
   const OwnerProductsScreen({Key? key}) : super(key: key);
@@ -60,6 +60,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
           AppDangerButton(
             text: 'حذف نهائي',
             height: 40,
+            width: 100,
             onPressed: () async {
               Navigator.of(ctx).pop();
               final ok = await ownerNotifier.deleteProduct(product.id, context: context);
@@ -79,10 +80,11 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
     final themeFlag = themeNotifier.darkTheme;
     final ownerNotifier = Provider.of<OwnerNotifier>(context);
 
+    final normalizedQuery = _searchQuery.toLowerCase();
     final filteredProducts = ownerNotifier.products.where((p) {
-      if (_searchQuery.isEmpty) return true;
-      return p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (p.categoryName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+      if (normalizedQuery.isEmpty) return true;
+      return p.name.toLowerCase().contains(normalizedQuery) ||
+          (p.categoryName?.toLowerCase().contains(normalizedQuery) ?? false);
     }).toList();
 
     return SafeArea(
@@ -104,34 +106,17 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
         ),
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerDashboardRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'إدارة المنتجات 👟',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    onPressed: () => ownerNotifier.fetchProducts(context: context),
-                  ),
-                ],
-              ),
+            // شريط العنوان الموحد
+            AppPageHeader(
+              title: 'إدارة المنتجات',
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'تحديث',
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  onPressed: () => ownerNotifier.fetchProducts(context: context),
+                ),
+              ],
             ),
 
             // شريط البحث
@@ -162,53 +147,37 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.gapH8,
 
-            // قائمة المنتجات
+            // قائمة المنتجات بحالات التحميل والفراغ الموحدة
             Expanded(
-              child: ownerNotifier.isLoading
-                  ? AppLoader(themeFlag: themeFlag)
-                  : filteredProducts.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.inventory_2_outlined,
-                                size: 64,
-                                color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                    .withOpacity(0.3),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لا توجد منتجات مسجلة تطابق البحث',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => ownerNotifier.fetchProducts(context: context),
-                          child: ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: filteredProducts.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final product = filteredProducts[index];
-                              return _buildProductCard(
-                                context: context,
-                                product: product,
-                                themeFlag: themeFlag,
-                                ownerNotifier: ownerNotifier,
-                              );
-                            },
-                          ),
-                        ),
+              child: AppStateView(
+                isLoading: ownerNotifier.isProductsLoading,
+                isEmpty: filteredProducts.isEmpty,
+                emptyMessage: _searchQuery.isNotEmpty
+                    ? 'لا توجد منتجات تطابق البحث'
+                    : 'لا توجد منتجات مسجلة في المتجر حالياً',
+                emptyIcon: Icons.inventory_2_outlined,
+                onRetry: () => ownerNotifier.fetchProducts(context: context),
+                child: RefreshIndicator(
+                  onRefresh: () => ownerNotifier.fetchProducts(context: context),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: filteredProducts.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final product = filteredProducts[index];
+                      return _buildProductCard(
+                        context: context,
+                        product: product,
+                        themeFlag: themeFlag,
+                        ownerNotifier: ownerNotifier,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -318,8 +287,8 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: product.variants.isEmpty || totalStock > 0
-                            ? Colors.green.withOpacity(0.12)
-                            : Colors.red.withOpacity(0.12),
+                            ? Colors.green.withValues(alpha: 0.12)
+                            : Colors.red.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -354,8 +323,8 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: themeFlag
-                              ? Colors.white.withOpacity(0.12)
-                              : AppColors.rawSienna.withOpacity(0.08),
+                              ? Colors.white.withValues(alpha: 0.12)
+                              : AppColors.rawSienna.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -382,7 +351,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
+                          color: Colors.red.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(

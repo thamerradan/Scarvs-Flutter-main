@@ -11,6 +11,7 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
   final VoidCallback? onSwitchToStore;
@@ -30,7 +31,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           .fetchDashboard(context: context);
       final notifNotifier =
           Provider.of<NotificationNotifier>(context, listen: false);
-      notifNotifier.fetchNotifications(context: context);
+      // الاكتفاء بعدد الإشعارات غير المقروءة فقط لتحسين سرعة فتح اللوحة
+      notifNotifier.fetchUnreadCountOnly();
       notifNotifier.initRealtime(context);
     });
   }
@@ -39,8 +41,12 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('تسجيل الخروج'),
-        content: const Text('هل أنت متأكد من تسجيل الخروج من لوحة التحكم؟'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('تسجيل الخروج', textAlign: TextAlign.right),
+        content: const Text(
+          'هل أنت متأكد من تسجيل الخروج من لوحة التحكم؟',
+          textAlign: TextAlign.right,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -77,110 +83,84 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
             await ownerNotifier.fetchDashboard(context: context);
             if (context.mounted) {
               await Provider.of<NotificationNotifier>(context, listen: false)
-                  .fetchNotifications(context: context);
+                  .fetchUnreadCountOnly();
             }
           },
           child: Column(
             children: [
-              // الهيدر
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              // شريط العنوان الموحد
+              AppPageHeader(
+                title: 'لوحة التحكم',
+                showBackButton: false,
+                actions: [
+                  Consumer<NotificationNotifier>(
+                    builder: (context, notifNotifier, _) {
+                      return Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  'لوحة التحكم ',
-                                  style: TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.bold,
-                                    color: themeFlag
-                                        ? AppColors.creamColor
-                                        : AppColors.mirage,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                          IconButton(
+                            icon: const Icon(Icons.notifications_outlined),
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                            tooltip: 'إشعارات المتجر',
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                AppRouter.ownerNotificationsRoute,
+                              );
+                            },
                           ),
-                        ],
-                      ),
-                    ),
-                    Consumer<NotificationNotifier>(
-                      builder: (context, notifNotifier, _) {
-                        return Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.notifications_outlined),
-                              color: themeFlag
-                                  ? AppColors.creamColor
-                                  : AppColors.mirage,
-                              tooltip: 'إشعارات المتجر',
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  AppRouter.ownerNotificationsRoute,
-                                );
-                              },
-                            ),
-                            if (notifNotifier.unreadCount > 0)
-                              Positioned(
-                                top: 6,
-                                right: 6,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: themeFlag
-                                          ? AppColors.mirage
-                                          : AppColors.creamColor,
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 18,
-                                    minHeight: 18,
-                                  ),
-                                  child: Text(
-                                    notifNotifier.unreadCount > 99
-                                        ? '99+'
-                                        : '${notifNotifier.unreadCount}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
+                          if (notifNotifier.unreadCount > 0)
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: themeFlag
+                                        ? AppColors.mirage
+                                        : AppColors.creamColor,
+                                    width: 1.5,
                                   ),
                                 ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
+                                child: Text(
+                                  notifNotifier.unreadCount > 99
+                                      ? '99+'
+                                      : '${notifNotifier.unreadCount}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                          ],
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.redAccent),
-                      tooltip: 'تسجيل الخروج',
-                      onPressed: () => _confirmSignOut(context),
-                    ),
-                  ],
-                ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout, color: Colors.redAccent),
+                    tooltip: 'تسجيل الخروج',
+                    onPressed: () => _confirmSignOut(context),
+                  ),
+                ],
               ),
 
               // المحتوى الرئيسي
               Expanded(
-                child: ownerNotifier.isLoading
+                child: ownerNotifier.isDashboardLoading
                     ? AppLoader(themeFlag: themeFlag)
                     : SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
@@ -217,7 +197,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           onTap: () =>
               Navigator.of(context).pushNamed(AppRouter.ownerOrdersRoute),
         ),
-        const SizedBox(height: 12),
+        AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
           title: 'إدارة المنتجات',
@@ -228,7 +208,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           onTap: () =>
               Navigator.of(context).pushNamed(AppRouter.ownerProductsRoute),
         ),
-        const SizedBox(height: 12),
+        AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
           title: 'إدارة المخزون والكميات',
@@ -240,7 +220,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           onTap: () =>
               Navigator.of(context).pushNamed(AppRouter.ownerInventoryRoute),
         ),
-        const SizedBox(height: 12),
+        AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
           title: 'إدارة التصنيفات',
@@ -251,7 +231,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           onTap: () =>
               Navigator.of(context).pushNamed(AppRouter.ownerCategoriesRoute),
         ),
-        const SizedBox(height: 12),
+        AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
           title: 'إعدادات المتجر والشحن',
@@ -287,8 +267,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           height: 48,
           decoration: BoxDecoration(
             color: themeFlag
-                ? Colors.white.withOpacity(0.12)
-                : color.withOpacity(0.08),
+                ? Colors.white.withValues(alpha: 0.12)
+                : color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -332,7 +312,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           style: TextStyle(
             fontSize: 12,
             color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                .withOpacity(0.6),
+                .withValues(alpha: 0.6),
           ),
         ),
         trailing: Icon(

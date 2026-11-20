@@ -8,6 +8,7 @@ class AppPageHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
   final bool showBackButton;
+  final String? fallbackRoute;
   final VoidCallback? onBackPressed;
   final List<Widget>? actions;
   final Widget? leading;
@@ -17,6 +18,7 @@ class AppPageHeader extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.showBackButton = true,
+    this.fallbackRoute,
     this.onBackPressed,
     this.actions,
     this.leading,
@@ -40,12 +42,19 @@ class AppPageHeader extends StatelessWidget {
               if (leading != null) ...[
                 leading!,
                 AppSpacing.gapW12,
-              ] else if (showBackButton && canPop) ...[
+              ] else if (showBackButton && (canPop || fallbackRoute != null)) ...[
                 AppSquircleButton(
                   icon: Icons.arrow_forward_ios_rounded,
                   themeFlag: isDark,
                   isOutLine: true,
-                  onTap: onBackPressed ?? () => Navigator.of(context).pop(),
+                  onTap: onBackPressed ??
+                      () {
+                        if (canPop) {
+                          Navigator.of(context).pop();
+                        } else if (fallbackRoute != null) {
+                          Navigator.of(context).pushReplacementNamed(fallbackRoute!);
+                        }
+                      },
                 ),
                 AppSpacing.gapW12,
               ],

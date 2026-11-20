@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/utils/app_message.dart';
@@ -11,11 +10,11 @@ import 'package:scarvs/models/category_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class OwnerCategoriesScreen extends StatefulWidget {
   const OwnerCategoriesScreen({Key? key}) : super(key: key);
@@ -53,7 +52,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             backgroundColor: isDark ? const Color(0xFF222831) : Colors.white,
             title: Text(
-              isEditing ? 'تعديل التصنيف ✏️' : 'إضافة ماركة / تصنيف جديد ➕',
+              isEditing ? 'تعديل التصنيف' : 'إضافة تصنيف جديد',
               textAlign: TextAlign.right,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
@@ -68,12 +67,12 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.12),
+                        color: Colors.grey.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                             color: isDark
                                 ? Colors.white30
-                                : AppColors.rawSienna.withOpacity(0.3)),
+                                : AppColors.rawSienna.withValues(alpha: 0.3)),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
@@ -88,7 +87,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapH16,
 
                   // حقل اسم التصنيف
                   TextField(
@@ -96,12 +95,12 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                     textAlign: TextAlign.right,
                     decoration: InputDecoration(
                       labelText: 'اسم التصنيف / الماركة *',
-                      hintText: 'مثال: نيو بالانس',
+                      hintText: 'مثال: رسمي، كاجوال، شتوي',
                       prefixIcon: const Icon(Icons.label_outline),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  AppSpacing.gapH12,
 
                   // حقل رابط الصورة المباشر
                   TextField(
@@ -114,7 +113,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  AppSpacing.gapH12,
 
                   // زر اختيار صورة من معرض الجهاز
                   SizedBox(
@@ -127,7 +126,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       icon: const Icon(Icons.photo_library_outlined),
                       label: Text(
                         localImageFile != null
-                            ? 'تم اختيار صورة جديدة ✅'
+                            ? 'تم اختيار صورة جديدة'
                             : isEditing && (category.imageUrl?.isNotEmpty ?? false)
                                 ? 'تغيير صورة الشعار'
                                 : 'اختيار صورة من الجهاز',
@@ -172,7 +171,6 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                   final finalUrl = urlCtrl.text.trim().isNotEmpty ? urlCtrl.text.trim() : null;
 
                   if (isEditing) {
-                    // تعديل التصنيف الحالي
                     await ownerNotifier.updateCategory(
                       id: category.id,
                       name: name,
@@ -181,7 +179,6 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                       context: context,
                     );
                   } else {
-                    // إضافة تصنيف جديد
                     await ownerNotifier.addCategory(
                       name: name,
                       imageUrl: finalUrl,
@@ -190,8 +187,8 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                     );
                   }
                   if (context.mounted) {
-                    Provider.of<CatalogProvider>(context, listen: false)
-                        .refreshCategories(silent: true);
+                    // إبطال كاش الكتالوج دون إطلاق طلب شبكة فوري أثناء وجود المالك هنا
+                    Provider.of<CatalogProvider>(context, listen: false).invalidate();
                   }
                 },
               ),
@@ -209,7 +206,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('حذف التصنيف 🗑️', textAlign: TextAlign.right),
+        title: const Text('حذف التصنيف', textAlign: TextAlign.right),
         content: Text(
           'هل أنت متأكد من حذف تصنيف "${category.name}"؟\n(ملاحظة: المنتجات التابعة له لن تُحذف وستبقى بدون تصنيف).',
           textAlign: TextAlign.right,
@@ -227,8 +224,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
               Navigator.of(ctx).pop();
               final ok = await ownerNotifier.deleteCategory(category.id, context: context);
               if (ok && context.mounted) {
-                Provider.of<CatalogProvider>(context, listen: false)
-                    .refreshCategories(silent: true);
+                Provider.of<CatalogProvider>(context, listen: false).invalidate();
               }
             },
           ),
@@ -258,131 +254,83 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
         ),
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerDashboardRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'إدارة التصنيفات 🏷️',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    onPressed: () => ownerNotifier.fetchCategories(context: context),
-                  ),
-                ],
-              ),
+            // شريط العنوان الموحد
+            AppPageHeader(
+              title: 'إدارة التصنيفات',
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'تحديث',
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  onPressed: () => ownerNotifier.fetchCategories(context: context),
+                ),
+              ],
             ),
 
-            // قائمة التصنيفات
+            // قائمة التصنيفات بحالات التحميل والفراغ الموحدة
             Expanded(
-              child: ownerNotifier.isLoading
-                  ? AppLoader(themeFlag: themeFlag)
-                  : ownerNotifier.categories.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.category_outlined,
-                                size: 64,
-                                color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                    .withOpacity(0.3),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لا توجد تصنيفات حالياً',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-                                  foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
-                                ),
-                                icon: Icon(Icons.add, color: themeFlag ? AppColors.mirage : Colors.white),
-                                label: Text('إضافة أول تصنيف للمتجر',
-                                    style: TextStyle(color: themeFlag ? AppColors.mirage : Colors.white)),
-                                onPressed: () => _showCategoryDialog(context),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-                          itemCount: ownerNotifier.categories.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            final cat = ownerNotifier.categories[index];
-                            return AppCard(
-                              borderRadius: AppSpacing.radiusMd,
-                              padding: EdgeInsets.zero,
-                              onTap: () => _showCategoryDialog(context, category: cat),
-                              child: ListTile(
-                                leading: AppNetworkImage.thumbnail(
-                                  url: cat.imageUrl ?? '',
-                                  width: 48,
-                                  height: 48,
-                                  borderRadius: AppSpacing.radiusSm,
-                                  errorWidget: const Icon(Icons.category, color: Colors.grey),
-                                ),
-                                title: Text(
-                                  cat.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  cat.imageUrl != null && cat.imageUrl!.isNotEmpty
-                                      ? 'شعار مخصص متوفر ✅'
-                                      : 'بدون شعار',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                        .withOpacity(0.5),
-                                  ),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // زر تعديل التصنيف
-                                    IconButton(
-                                      icon: Icon(Icons.edit_outlined,
-                                          color: themeFlag ? Colors.white : AppColors.rawSienna),
-                                      tooltip: 'تعديل التصنيف',
-                                      onPressed: () => _showCategoryDialog(context, category: cat),
-                                    ),
-                                    // زر حذف التصنيف
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                                      tooltip: 'حذف التصنيف',
-                                      onPressed: () => _confirmDelete(context, cat),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+              child: AppStateView(
+                isLoading: ownerNotifier.isCategoriesLoading,
+                isEmpty: ownerNotifier.categories.isEmpty,
+                emptyMessage: 'لا توجد تصنيفات حالياً في المتجر',
+                emptyIcon: Icons.category_outlined,
+                onRetry: () => ownerNotifier.fetchCategories(context: context),
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                  itemCount: ownerNotifier.categories.length,
+                  separatorBuilder: (_, __) => AppSpacing.gapH8,
+                  itemBuilder: (context, index) {
+                    final cat = ownerNotifier.categories[index];
+                    return AppCard(
+                      borderRadius: AppSpacing.radiusMd,
+                      padding: EdgeInsets.zero,
+                      onTap: () => _showCategoryDialog(context, category: cat),
+                      child: ListTile(
+                        leading: AppNetworkImage.thumbnail(
+                          url: cat.imageUrl ?? '',
+                          width: 48,
+                          height: 48,
+                          borderRadius: AppSpacing.radiusSm,
+                          errorWidget: const Icon(Icons.category, color: Colors.grey),
                         ),
+                        title: Text(
+                          cat.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                          ),
+                        ),
+                        subtitle: Text(
+                          cat.imageUrl != null && cat.imageUrl!.isNotEmpty
+                              ? 'شعار مخصص متوفر'
+                              : 'بدون شعار',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                                .withValues(alpha: 0.5),
+                          ),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit_outlined,
+                                  color: themeFlag ? Colors.white : AppColors.rawSienna),
+                              tooltip: 'تعديل التصنيف',
+                              onPressed: () => _showCategoryDialog(context, category: cat),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                              tooltip: 'حذف التصنيف',
+                              onPressed: () => _confirmDelete(context, cat),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ),

@@ -7,9 +7,9 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class OwnerNotificationsScreen extends StatefulWidget {
   const OwnerNotificationsScreen({super.key});
@@ -41,125 +41,53 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerDashboardRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'إشعارات المتجر 🔔',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            // شريط العنوان الموحد
+            AppPageHeader(
+              title: 'إشعارات المتجر',
+              subtitle: notifNotifier.unreadCount > 0
+                  ? '${notifNotifier.unreadCount} إشعار جديد'
+                  : null,
+              actions: [
+                if (notifNotifier.notifications.isNotEmpty)
+                  TextButton(
+                    onPressed: () => notifNotifier.markAllAsRead(),
+                    child: const Text(
+                      'تحديد الكل كمقروء',
+                      style: TextStyle(fontSize: 12),
                     ),
                   ),
-                  if (notifNotifier.unreadCount > 0) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${notifNotifier.unreadCount}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  if (notifNotifier.notifications.isNotEmpty)
-                    TextButton(
-                      onPressed: () => notifNotifier.markAllAsRead(),
-                      child: const Text(
-                        'تحديد الكل كمقروء',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
 
-            // قائمة الإشعارات
+            // قائمة الإشعارات بحالات التحميل والفراغ الموحدة
             Expanded(
-              child: notifNotifier.isLoading
-                  ? AppLoader(themeFlag: themeFlag)
-                  : notifNotifier.notifications.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.notifications_none_outlined,
-                                size: 64,
-                                color: (themeFlag
-                                        ? AppColors.creamColor
-                                        : AppColors.mirage)
-                                    .withValues(alpha: 0.3),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لا توجد إشعارات جديدة للمتجر حالياً',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: (themeFlag
-                                          ? AppColors.creamColor
-                                          : AppColors.mirage)
-                                      .withValues(alpha: 0.7),
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 32),
-                                child: Text(
-                                  'ستظهر هنا إشعارات الطلبات الجديدة وإلغاءات الطلبات فور حدوثها.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: (themeFlag
-                                            ? AppColors.creamColor
-                                            : AppColors.mirage)
-                                        .withValues(alpha: 0.5),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => notifNotifier.fetchNotifications(
-                              context: context),
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: notifNotifier.notifications.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              final notif = notifNotifier.notifications[index];
-                              return _buildNotificationCard(
-                                context: context,
-                                notif: notif,
-                                themeFlag: themeFlag,
-                                notifNotifier: notifNotifier,
-                              );
-                            },
-                          ),
-                        ),
+              child: AppStateView(
+                isLoading: notifNotifier.isLoading,
+                isEmpty: notifNotifier.notifications.isEmpty,
+                emptyMessage: 'لا توجد إشعارات جديدة للمتجر حالياً',
+                emptyIcon: Icons.notifications_none_outlined,
+                onRetry: () =>
+                    notifNotifier.fetchNotifications(context: context),
+                child: RefreshIndicator(
+                  onRefresh: () =>
+                      notifNotifier.fetchNotifications(context: context),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: notifNotifier.notifications.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final notif = notifNotifier.notifications[index];
+                      return _buildNotificationCard(
+                        context: context,
+                        notif: notif,
+                        themeFlag: themeFlag,
+                        notifNotifier: notifNotifier,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),

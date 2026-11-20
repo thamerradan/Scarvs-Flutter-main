@@ -9,7 +9,7 @@ import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
@@ -410,8 +410,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     );
 
     if (success && mounted) {
-      Provider.of<CatalogProvider>(context, listen: false)
-          .refreshAll(silent: true);
+      Provider.of<CatalogProvider>(context, listen: false).invalidate();
       Navigator.of(context).pop();
     }
   }
@@ -428,26 +427,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerProductsRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    isEditing ? 'تعديل المنتج ✏️' : 'إضافة منتج جديد ➕',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                ],
-              ),
+            AppPageHeader(
+              title: isEditing ? 'تعديل المنتج' : 'إضافة منتج جديد',
+              fallbackRoute: AppRouter.ownerProductsRoute,
             ),
 
             // النموذج

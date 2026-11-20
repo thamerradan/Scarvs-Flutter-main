@@ -2,13 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
-import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/store_settings_model.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 
 class OwnerSettingsScreen extends StatefulWidget {
   const OwnerSettingsScreen({Key? key}) : super(key: key);
@@ -100,34 +99,14 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.ownerDashboardRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'إعدادات المتجر ⚙️',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
+            // شريط العنوان الموحد
+            const AppPageHeader(
+              title: 'إعدادات المتجر',
             ),
 
             // النموذج
             Expanded(
-              child: ownerNotifier.isLoading
+              child: ownerNotifier.isSettingsLoading
                   ? AppLoader(themeFlag: themeFlag)
                   : Form(
                       key: _formKey,
