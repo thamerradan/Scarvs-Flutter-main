@@ -7,8 +7,9 @@ import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -39,97 +40,57 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            // الهيدر
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.customerHomeRoute,
+            // شريط العنوان الموحد
+            AppPageHeader(
+              title: 'الإشعارات',
+              subtitle: notifNotifier.unreadCount > 0
+                  ? '${notifNotifier.unreadCount} إشعار جديد'
+                  : null,
+              fallbackRoute: AppRouter.customerHomeRoute,
+              actions: [
+                if (notifNotifier.notifications.isNotEmpty)
+                  TextButton(
+                    onPressed: () => notifNotifier.markAllAsRead(),
+                    child: const Text('تحديد الكل كمقروء',
+                        style: TextStyle(fontSize: 12)),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'الإشعارات',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                  if (notifNotifier.unreadCount > 0) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${notifNotifier.unreadCount}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  if (notifNotifier.notifications.isNotEmpty)
-                    TextButton(
-                      onPressed: () => notifNotifier.markAllAsRead(),
-                      child: const Text('تحديد الكل كمقروء', style: TextStyle(fontSize: 12)),
-                    ),
-                ],
-              ),
+                AppRefreshButton(
+                  onPressed: () =>
+                      notifNotifier.fetchNotifications(context: context),
+                  isLoading: notifNotifier.isLoading,
+                ),
+              ],
             ),
 
-            // قائمة الإشعارات
+            // قائمة الإشعارات بحالات التحميل والفراغ الموحدة
             Expanded(
-              child: notifNotifier.isLoading
-                  ? AppLoader(themeFlag: themeFlag)
-                  : notifNotifier.notifications.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.notifications_none_outlined,
-                                size: 64,
-                                color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                    .withOpacity(0.3),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لا توجد إشعارات جديدة حالياً',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => notifNotifier.fetchNotifications(context: context),
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: notifNotifier.notifications.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              final notif = notifNotifier.notifications[index];
-                              return _buildNotificationCard(
-                                context: context,
-                                notif: notif,
-                                themeFlag: themeFlag,
-                                notifNotifier: notifNotifier,
-                              );
-                            },
-                          ),
-                        ),
+              child: AppStateView(
+                isLoading: notifNotifier.isLoading,
+                isEmpty: notifNotifier.notifications.isEmpty,
+                emptyMessage: 'لا توجد إشعارات جديدة حالياً',
+                emptyIcon: Icons.notifications_none_outlined,
+                onRetry: () =>
+                    notifNotifier.fetchNotifications(context: context),
+                child: RefreshIndicator(
+                  onRefresh: () =>
+                      notifNotifier.fetchNotifications(context: context),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: notifNotifier.notifications.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final notif = notifNotifier.notifications[index];
+                      return _buildNotificationCard(
+                        context: context,
+                        notif: notif,
+                        themeFlag: themeFlag,
+                        notifNotifier: notifNotifier,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),

@@ -8,6 +8,7 @@ import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
+import 'package:scarvs/core/widgets/app_status_badge.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 
@@ -90,11 +91,9 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
             AppPageHeader(
               title: 'إدارة المخزون',
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'تحديث',
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                AppRefreshButton(
                   onPressed: () => ownerNotifier.fetchInventory(context: context),
+                  isLoading: ownerNotifier.isInventoryLoading,
                 ),
               ],
             ),
@@ -245,20 +244,12 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                         ),
                       ),
                     ),
-                    Container(
+                    AppStatusBadge(
+                      text: tagText,
+                      color: tagColor,
+                      fontSize: 10,
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: tagColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        tagText,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: tagColor,
-                        ),
-                      ),
+                      borderRadius: 6,
                     ),
                   ],
                 ),

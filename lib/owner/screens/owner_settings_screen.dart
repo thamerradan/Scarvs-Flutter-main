@@ -100,8 +100,14 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
         body: Column(
           children: [
             // شريط العنوان الموحد
-            const AppPageHeader(
+            AppPageHeader(
               title: 'إعدادات المتجر',
+              actions: [
+                AppRefreshButton(
+                  onPressed: () => ownerNotifier.fetchStoreSettings(context: context),
+                  isLoading: ownerNotifier.isSettingsLoading,
+                ),
+              ],
             ),
 
             // النموذج

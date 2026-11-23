@@ -9,8 +9,10 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
+import 'package:scarvs/core/widgets/app_info_row.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
+import 'package:scarvs/core/widgets/app_status_badge.dart';
 
 class OwnerOrdersScreen extends StatefulWidget {
   const OwnerOrdersScreen({Key? key}) : super(key: key);
@@ -141,11 +143,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
             AppPageHeader(
               title: 'إدارة الطلبات',
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'تحديث',
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                AppRefreshButton(
                   onPressed: () => ownerNotifier.fetchOrders(context: context),
+                  isLoading: ownerNotifier.isOrdersLoading,
                 ),
               ],
             ),
@@ -255,21 +255,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: order.statusColor.withOpacity(0.14),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: order.statusColor.withOpacity(0.4)),
-                  ),
-                  child: Text(
-                    order.statusArabic,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: order.statusColor,
-                    ),
-                  ),
+                AppStatusBadge(
+                  text: order.statusArabic,
+                  color: order.statusColor,
                 ),
               ],
             ),
@@ -282,28 +270,25 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow(
+                AppInfoRow(
                   icon: Icons.person_outline,
                   label: 'العميل',
                   value: order.customerName != null && order.customerName!.isNotEmpty
                       ? '${order.customerName!} (${order.phone})'
                       : (order.phone.isNotEmpty ? '${order.city} - ${order.phone}' : order.city),
-                  themeFlag: themeFlag,
                 ),
                 const SizedBox(height: 6),
-                _buildInfoRow(
+                AppInfoRow(
                   icon: Icons.location_on_outlined,
                   label: 'العنوان',
                   value: order.shippingAddress,
-                  themeFlag: themeFlag,
                 ),
                 if (order.notes != null && order.notes!.isNotEmpty) ...[
                   const SizedBox(height: 6),
-                  _buildInfoRow(
+                  AppInfoRow(
                     icon: Icons.notes_outlined,
                     label: 'ملاحظات',
                     value: order.notes!,
-                    themeFlag: themeFlag,
                   ),
                 ],
                 const SizedBox(height: 10),
@@ -369,42 +354,6 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    required bool themeFlag,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.6),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.7),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: 12,
-              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/models/notification_model.dart';
 import 'package:scarvs/providers/notification_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
+import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
@@ -56,6 +57,11 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
+                AppRefreshButton(
+                  onPressed: () =>
+                      notifNotifier.fetchNotifications(context: context),
+                  isLoading: notifNotifier.isLoading,
+                ),
               ],
             ),
 

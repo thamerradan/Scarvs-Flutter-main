@@ -9,11 +9,11 @@ class LinearPointCurve extends Curve {
   const LinearPointCurve(this.pIn, this.pOut);
 
   @override
-  double transform(double x) {
+  double transform(double t) {
     final lowerScale = pOut / pIn;
     final upperScale = (1.0 - pOut) / (1.0 - pIn);
     final upperOffset = 1.0 - upperScale;
-    return x < pIn ? x * lowerScale : x * upperScale + upperOffset;
+    return t < pIn ? t * lowerScale : t * upperScale + upperOffset;
   }
 }
 
@@ -30,17 +30,15 @@ class BackgroundCurvePainter extends CustomPainter {
   static const _bottomDistance = 10.0;
 
   final double _x;
-  final double _normalizedY;
   final Color _color;
 
-  BackgroundCurvePainter(double x, double normalizedY, Color color)
+  BackgroundCurvePainter(double x, Color color)
       : _x = x,
-        _normalizedY = normalizedY,
         _color = color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final norm = const LinearPointCurve(0.5, 2.0).transform(_normalizedY) / 5;
+    const norm = 0.2;
 
     final radius =
         Tween<double>(begin: _radiusTop, end: _radiusBottom).transform(norm);
@@ -76,9 +74,7 @@ class BackgroundCurvePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(BackgroundCurvePainter oldPainter) {
-    return _x != oldPainter._x ||
-        _normalizedY != oldPainter._normalizedY ||
-        _color != oldPainter._color;
+    return _x != oldPainter._x || _color != oldPainter._color;
   }
 }
 
@@ -116,9 +112,9 @@ class EcommerceBottomNavigationBar extends StatefulWidget {
 }
 
 class _EcommerceBottomNavigationBarState
-    extends State<EcommerceBottomNavigationBar> with TickerProviderStateMixin {
+    extends State<EcommerceBottomNavigationBar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _xController;
-  late AnimationController _yController;
 
   @override
   void initState() {
@@ -127,14 +123,6 @@ class _EcommerceBottomNavigationBarState
       vsync: this,
       animationBehavior: AnimationBehavior.preserve,
     );
-    _yController = AnimationController(
-      vsync: this,
-      animationBehavior: AnimationBehavior.preserve,
-    );
-
-    Listenable.merge([_xController, _yController]).addListener(() {
-      setState(() {});
-    });
   }
 
   @override
@@ -142,7 +130,6 @@ class _EcommerceBottomNavigationBarState
     super.didChangeDependencies();
     _xController.value = _indexToPosition(widget.selectedIndex) /
         MediaQuery.of(context).size.width;
-    _yController.value = 1.0;
   }
 
   @override
@@ -156,7 +143,6 @@ class _EcommerceBottomNavigationBarState
   @override
   void dispose() {
     _xController.dispose();
-    _yController.dispose();
     super.dispose();
   }
 
@@ -183,45 +169,26 @@ class _EcommerceBottomNavigationBarState
   }
 
   void _animateTo(int index) {
-    _yController.value = 1.0;
+    final target = _indexToPosition(index) / MediaQuery.of(context).size.width;
     _xController.animateTo(
-      _indexToPosition(index) / MediaQuery.of(context).size.width,
-      duration: const Duration(milliseconds: 500),
+      target,
+      duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
-    );
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) {
-        _yController.animateTo(
-          1.0,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.elasticOut,
-        );
-      }
-    });
-    _yController.animateTo(
-      0.0,
-      duration: const Duration(milliseconds: 1000),
-      curve: Curves.easeIn,
     );
   }
 
   void _handlePressed(int index) {
-    if (widget.selectedIndex == index || _xController.isAnimating) return;
+    if (widget.selectedIndex == index) return;
     widget.onItemSelected(index);
     _animateTo(index);
   }
 
   Widget _buildBackground() {
     final barColor = widget.themeFlag ? AppColors.mirage : Colors.white;
-    const inCurve = ElasticOutCurve(0.38);
 
     return CustomPaint(
       painter: BackgroundCurvePainter(
         _xController.value * MediaQuery.of(context).size.width,
-        Tween<double>(
-          begin: Curves.easeInExpo.transform(_yController.value),
-          end: inCurve.transform(_yController.value),
-        ).transform(_yController.velocity.sign * 0.5 + 0.5),
         barColor,
       ),
     );
@@ -233,7 +200,7 @@ class _EcommerceBottomNavigationBarState
         borderRadius: BorderRadius.circular(50),
         onTap: () => _handlePressed(index),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 220),
           alignment: isSelected ? Alignment.topCenter : Alignment.center,
           child: Stack(
             clipBehavior: Clip.none,
@@ -242,7 +209,7 @@ class _EcommerceBottomNavigationBarState
               AnimatedContainer(
                 height: isSelected ? 46 : 26,
                 width: isSelected ? 46 : 26,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 220),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: isSelected
@@ -251,28 +218,26 @@ class _EcommerceBottomNavigationBarState
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: (widget.themeFlag ? Colors.white : AppColors.rawSienna)
-                                .withOpacity(0.35),
-                            blurRadius: 12,
-                            spreadRadius: 2,
-                            offset: const Offset(0, 4),
+                            color: (widget.themeFlag
+                                    ? Colors.white
+                                    : AppColors.rawSienna)
+                                .withValues(alpha: 0.25),
+                            blurRadius: 5,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
                           ),
                         ]
                       : null,
                   shape: BoxShape.circle,
                 ),
-                child: Opacity(
-                  opacity:
-                      isSelected ? _yController.value.clamp(0.0, 1.0) : 1.0,
-                  child: Icon(
-                    isSelected ? item.activeIcon : item.icon,
-                    size: isSelected ? 22 : 24,
-                    color: isSelected
-                        ? (widget.themeFlag ? AppColors.mirage : Colors.white)
-                        : (widget.themeFlag
-                            ? Colors.white70
-                            : const Color(0xff797878)),
-                  ),
+                child: Icon(
+                  isSelected ? item.activeIcon : item.icon,
+                  size: isSelected ? 22 : 24,
+                  color: isSelected
+                      ? (widget.themeFlag ? AppColors.mirage : Colors.white)
+                      : (widget.themeFlag
+                          ? Colors.white70
+                          : const Color(0xff797878)),
                 ),
               ),
               if (item.badgeCount != null && item.badgeCount! > 0)
@@ -312,37 +277,42 @@ class _EcommerceBottomNavigationBarState
     final appSize = MediaQuery.of(context).size;
     const height = 65.0;
 
-    return SizedBox(
-      width: appSize.width,
-      height: height,
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            bottom: 0,
-            width: appSize.width,
-            height: height - 10,
-            child: _buildBackground(),
-          ),
-          Positioned(
-            left: (appSize.width - _getButtonContainerWidth()) / 2,
-            top: 0,
-            width: _getButtonContainerWidth(),
-            height: height,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(
-                widget.items.length,
-                (i) => _buildIcon(
-                  widget.items[i],
-                  widget.selectedIndex == i,
-                  i,
+    return AnimatedBuilder(
+      animation: _xController,
+      builder: (context, _) {
+        return SizedBox(
+          width: appSize.width,
+          height: height,
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                bottom: 0,
+                width: appSize.width,
+                height: height - 10,
+                child: _buildBackground(),
+              ),
+              Positioned(
+                left: (appSize.width - _getButtonContainerWidth()) / 2,
+                top: 0,
+                width: _getButtonContainerWidth(),
+                height: height,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: List.generate(
+                    widget.items.length,
+                    (i) => _buildIcon(
+                      widget.items[i],
+                      widget.selectedIndex == i,
+                      i,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -252,3 +252,85 @@ class AppDangerButton extends StatelessWidget {
   }
 }
 
+/// زر تحديث موحد لأشرطة العناوين والإجراءات يدعم حالة التحميل والوضع الليلي
+class AppRefreshButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String tooltip;
+  final bool isLoading;
+
+  const AppRefreshButton({
+    super.key,
+    required this.onPressed,
+    this.tooltip = 'تحديث',
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDark ? AppColors.creamColor : AppColors.mirage;
+
+    return Tooltip(
+      message: tooltip,
+      child: IconButton(
+        icon: isLoading
+            ? SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                ),
+              )
+            : const Icon(Icons.refresh_rounded),
+        color: color,
+        onPressed: isLoading ? null : onPressed,
+      ),
+    );
+  }
+}
+
+/// زر إضافة عائم موحد (FloatingActionButton) بأسلوب التطبيق الموحد
+class AppFloatingAddButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final Object? heroTag;
+
+  const AppFloatingAddButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon = Icons.add,
+    this.heroTag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? Colors.white : AppColors.rawSienna;
+    final fg = isDark ? AppColors.mirage : Colors.white;
+
+    return FloatingActionButton.extended(
+      heroTag: heroTag,
+      elevation: 4,
+      backgroundColor: bg,
+      foregroundColor: fg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      ),
+      icon: Icon(icon, color: fg, size: 20),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: fg,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      onPressed: onPressed,
+    );
+  }
+}
+
+

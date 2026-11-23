@@ -90,16 +90,8 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-          elevation: 4,
-          icon: Icon(Icons.add, color: themeFlag ? AppColors.mirage : Colors.white),
-          label: Text(
-            'إضافة منتج جديد',
-            style: TextStyle(
-                color: themeFlag ? AppColors.mirage : Colors.white,
-                fontWeight: FontWeight.bold),
-          ),
+        floatingActionButton: AppFloatingAddButton(
+          label: 'إضافة منتج جديد',
           onPressed: () {
             Navigator.of(context).pushNamed(AppRouter.ownerProductFormRoute);
           },
@@ -110,11 +102,9 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
             AppPageHeader(
               title: 'إدارة المنتجات',
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'تحديث',
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                AppRefreshButton(
                   onPressed: () => ownerNotifier.fetchProducts(context: context),
+                  isLoading: ownerNotifier.isProductsLoading,
                 ),
               ],
             ),

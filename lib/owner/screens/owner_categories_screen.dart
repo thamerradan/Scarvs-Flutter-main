@@ -242,14 +242,8 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-          elevation: 4,
-          icon: Icon(Icons.add, color: themeFlag ? AppColors.mirage : Colors.white),
-          label: Text('إضافة تصنيف',
-              style: TextStyle(
-                  color: themeFlag ? AppColors.mirage : Colors.white,
-                  fontWeight: FontWeight.bold)),
+        floatingActionButton: AppFloatingAddButton(
+          label: 'إضافة تصنيف',
           onPressed: () => _showCategoryDialog(context),
         ),
         body: Column(
@@ -258,11 +252,9 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             AppPageHeader(
               title: 'إدارة التصنيفات',
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'تحديث',
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                AppRefreshButton(
                   onPressed: () => ownerNotifier.fetchCategories(context: context),
+                  isLoading: ownerNotifier.isCategoriesLoading,
                 ),
               ],
             ),
