@@ -17,7 +17,7 @@ class AppStateView extends StatelessWidget {
   final Widget child;
 
   const AppStateView({
-    Key? key,
+    super.key,
     required this.isLoading,
     this.isEmpty = false,
     this.hasError = false,
@@ -28,7 +28,7 @@ class AppStateView extends StatelessWidget {
     this.loadingWidget,
     this.emptyWidget,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

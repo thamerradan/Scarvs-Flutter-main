@@ -10,7 +10,7 @@ import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/custom_text_style.dart';
 
 class AccountInformationScreen extends StatefulWidget {
-  const AccountInformationScreen({Key? key}) : super(key: key);
+  const AccountInformationScreen({super.key});
 
   @override
   State<AccountInformationScreen> createState() =>
@@ -71,7 +71,7 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
                         radius: profilePictureSize,
                         child: ClipOval(
                           child: SvgPicture.network(
-                            'https://api.dicebear.com/9.x/big-smile/svg?seed=${userNotifier.getUserName ?? "user"}',
+                            'https://api.dicebear.com/9.x/big-smile/svg?seed=${userNotifier.getUserName}',
                             semanticsLabel: 'avatar',
                             alignment: Alignment.center,
                           ),
@@ -80,7 +80,7 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      userNotifier.getUserName ?? '',
+                      userNotifier.getUserName,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -94,13 +94,13 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
                           horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
                         color: themeFlag
-                            ? Colors.white.withOpacity(0.12)
-                            : AppColors.rawSienna.withOpacity(0.08),
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : AppColors.rawSienna.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: themeFlag
-                              ? Colors.white.withOpacity(0.3)
-                              : AppColors.rawSienna.withOpacity(0.2),
+                              ? Colors.white.withValues(alpha: 0.3)
+                              : AppColors.rawSienna.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -161,13 +161,13 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: themeFlag
-            ? Colors.white.withOpacity(0.05)
-            : Colors.black.withOpacity(0.03),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.black.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: themeFlag
-              ? Colors.white.withOpacity(0.1)
-              : Colors.black.withOpacity(0.06),
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.06),
         ),
       ),
       child: Row(
@@ -187,7 +187,7 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
                   style: TextStyle(
                     fontSize: 12,
                     color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 4),

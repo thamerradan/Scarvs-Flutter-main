@@ -25,7 +25,7 @@ class _ProductImageEntry {
 class OwnerProductFormScreen extends StatefulWidget {
   final ProductItem? product;
 
-  const OwnerProductFormScreen({Key? key, this.product}) : super(key: key);
+  const OwnerProductFormScreen({super.key, this.product});
 
   @override
   State<OwnerProductFormScreen> createState() => _OwnerProductFormScreenState();
@@ -125,7 +125,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.3),
+                      color: Colors.grey.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -145,8 +145,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     dense: true,
                     leading: CircleAvatar(
                       backgroundColor: isDark
-                          ? Colors.white.withOpacity(0.12)
-                          : AppColors.rawSienna.withOpacity(0.12),
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : AppColors.rawSienna.withValues(alpha: 0.12),
                       child: Icon(Icons.photo_library,
                           color: isDark ? Colors.white : AppColors.rawSienna),
                     ),
@@ -161,8 +161,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     dense: true,
                     leading: CircleAvatar(
                       backgroundColor: isDark
-                          ? Colors.white.withOpacity(0.12)
-                          : AppColors.rawSienna.withOpacity(0.12),
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : AppColors.rawSienna.withValues(alpha: 0.12),
                       child: Icon(Icons.camera_alt,
                           color: isDark ? Colors.white : AppColors.rawSienna),
                     ),
@@ -177,8 +177,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     dense: true,
                     leading: CircleAvatar(
                       backgroundColor: isDark
-                          ? Colors.white.withOpacity(0.12)
-                          : AppColors.rawSienna.withOpacity(0.12),
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : AppColors.rawSienna.withValues(alpha: 0.12),
                       child: Icon(Icons.link,
                           color: isDark ? Colors.white : AppColors.rawSienna),
                     ),
@@ -215,6 +215,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('تعذر اختيار الصور: $e')),
       );
@@ -236,6 +237,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('تعذر التقاط الصورة: $e')),
       );
@@ -509,7 +511,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
 
                     // التصنيف (الماركة)
                     DropdownButtonFormField<String>(
-                      value: _selectedCategoryId,
+                      initialValue: _selectedCategoryId,
                       dropdownColor: themeFlag ? AppColors.mirage : Colors.white,
                       decoration: _inputDecoration(
                         label: 'التصنيف / الماركة',
@@ -563,7 +565,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                              .withOpacity(0.6),
+                              .withValues(alpha: 0.6),
                         ),
                       ),
                       value: _hasSizes,
@@ -602,7 +604,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                         ),
                       ),
                       child: _variants.isEmpty
@@ -617,7 +619,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                     color: (themeFlag
                                             ? AppColors.creamColor
                                             : AppColors.mirage)
-                                        .withOpacity(0.3),
+                                        .withValues(alpha: 0.3),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -628,7 +630,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                       color: (themeFlag
                                               ? AppColors.creamColor
                                               : AppColors.mirage)
-                                          .withOpacity(0.7),
+                                          .withValues(alpha: 0.7),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -640,7 +642,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                       color: (themeFlag
                                               ? AppColors.creamColor
                                               : AppColors.mirage)
-                                          .withOpacity(0.45),
+                                          .withValues(alpha: 0.45),
                                     ),
                                   ),
                                 ],
@@ -655,8 +657,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                   dense: true,
                                   leading: CircleAvatar(
                                     backgroundColor: themeFlag
-                                        ? Colors.white.withOpacity(0.2)
-                                        : AppColors.rawSienna.withOpacity(0.2),
+                                        ? Colors.white.withValues(alpha: 0.2)
+                                        : AppColors.rawSienna.withValues(alpha: 0.2),
                                     radius: 16,
                                     child: Text(
                                       '${item['size']}',
@@ -711,10 +713,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: themeFlag ? Colors.white.withOpacity(0.05) : Colors.white,
+        color: themeFlag ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.12),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.12),
         ),
       ),
       child: Column(
@@ -757,7 +759,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
             'الصورة الأولى ستكون هي الغلاف الرئيسي للمنتج، ويمكنك تعيين أي صورة كغلاف بالنقر عليها',
             style: TextStyle(
               fontSize: 11,
-              color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.6),
+              color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 14),
@@ -770,12 +772,12 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                 width: double.infinity,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.08),
+                  color: Colors.grey.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: themeFlag
                         ? Colors.white30
-                        : AppColors.rawSienna.withOpacity(0.4),
+                        : AppColors.rawSienna.withValues(alpha: 0.4),
                     style: BorderStyle.solid,
                     width: 1.5,
                   ),
@@ -812,12 +814,12 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       child: Container(
                         width: 110,
                         decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                               color: themeFlag
                                   ? Colors.white24
-                                  : AppColors.rawSienna.withOpacity(0.3)),
+                                  : AppColors.rawSienna.withValues(alpha: 0.3)),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -852,7 +854,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                       border: Border.all(
                         color: isMain
                             ? (themeFlag ? Colors.white : AppColors.rawSienna)
-                            : Colors.grey.withOpacity(0.3),
+                            : Colors.grey.withValues(alpha: 0.3),
                         width: isMain ? 2.5 : 1,
                       ),
                     ),
@@ -907,7 +909,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.75),
+                                  color: Colors.black.withValues(alpha: 0.75),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Text(
@@ -960,13 +962,13 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
         ),
       ),
     );

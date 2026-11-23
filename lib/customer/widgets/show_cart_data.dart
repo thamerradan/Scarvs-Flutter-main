@@ -30,13 +30,13 @@ Widget showCartData({
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: cartNotifier.isFreeShipping
-                ? Colors.green.withOpacity(0.12)
-                : (themeFlag ? Colors.white.withOpacity(0.08) : AppColors.rawSienna.withOpacity(0.08)),
+                ? Colors.green.withValues(alpha: 0.12)
+                : (themeFlag ? Colors.white.withValues(alpha: 0.08) : AppColors.rawSienna.withValues(alpha: 0.08)),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: cartNotifier.isFreeShipping
-                  ? Colors.green.withOpacity(0.3)
-                  : (themeFlag ? Colors.white.withOpacity(0.2) : AppColors.rawSienna.withOpacity(0.2)),
+                  ? Colors.green.withValues(alpha: 0.3)
+                  : (themeFlag ? Colors.white.withValues(alpha: 0.2) : AppColors.rawSienna.withValues(alpha: 0.2)),
             ),
           ),
           child: Row(
@@ -157,8 +157,8 @@ Widget _buildCartItemCard({
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: themeFlag
-                        ? Colors.white.withOpacity(0.12)
-                        : AppColors.rawSienna.withOpacity(0.08),
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : AppColors.rawSienna.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -206,7 +206,7 @@ Widget _buildCartItemCard({
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withOpacity(0.1),
+                  color: Colors.redAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -219,7 +219,7 @@ Widget _buildCartItemCard({
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: themeFlag ? Colors.white.withOpacity(0.08) : Colors.grey.shade100,
+                color: themeFlag ? Colors.white.withValues(alpha: 0.08) : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: themeFlag ? Colors.white12 : Colors.grey.shade300,
@@ -276,7 +276,7 @@ Widget _buildCartSummary({
       borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.06),
+          color: Colors.black.withValues(alpha: 0.06),
           blurRadius: 15,
           offset: const Offset(0, -4),
         ),

@@ -17,7 +17,7 @@ import 'package:scarvs/core/widgets/app_text_field.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({super.key});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -227,7 +227,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 color: (themeFlag
                                         ? AppColors.creamColor
                                         : AppColors.mirage)
-                                    .withOpacity(0.6),
+                                    .withValues(alpha: 0.6),
                               ),
                             ),
                           ],

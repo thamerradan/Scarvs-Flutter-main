@@ -13,7 +13,7 @@ import 'package:scarvs/core/supabase/supabase_config.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

@@ -17,8 +17,7 @@ import 'package:scarvs/core/widgets/shimmer_effects.dart';
 class CategoryScreen extends StatefulWidget {
   final CategoryScreenArgs categoryScreenArgs;
 
-  const CategoryScreen({Key? key, required this.categoryScreenArgs})
-      : super(key: key);
+  const CategoryScreen({super.key, required this.categoryScreenArgs});
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();

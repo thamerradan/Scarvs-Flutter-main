@@ -20,9 +20,9 @@ import 'package:scarvs/core/utils/app_message.dart';
 class ProductDetail extends StatefulWidget {
   final ProductDetailsArgs productDetailsArguements;
   const ProductDetail({
-    Key? key,
+    super.key,
     required this.productDetailsArguements,
-  }) : super(key: key);
+  });
 
   @override
   State<ProductDetail> createState() => _ProductDetailState();
@@ -220,8 +220,8 @@ class _ProductDetailState extends State<ProductDetail>
                       borderRadius: BorderRadius.circular(13),
                       color: themeFlag
                           ? (isSelected
-                              ? Colors.white.withOpacity(0.25)
-                              : Colors.white.withOpacity(0.05))
+                              ? Colors.white.withValues(alpha: 0.25)
+                              : Colors.white.withValues(alpha: 0.05))
                           : (isSelected ? Colors.white : Colors.grey.shade100),
                       border: Border.all(
                         color: isSelected
@@ -234,7 +234,7 @@ class _ProductDetailState extends State<ProductDetail>
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: (themeFlag ? Colors.white : AppColors.rawSienna).withOpacity(0.2),
+                                color: (themeFlag ? Colors.white : AppColors.rawSienna).withValues(alpha: 0.2),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),
@@ -285,12 +285,12 @@ class _ProductDetailState extends State<ProductDetail>
                 : (!isAvailable
                     ? (themeFlag ? Colors.white10 : Colors.grey.shade200)
                     : (themeFlag
-                        ? Colors.white.withOpacity(0.06)
+                        ? Colors.white.withValues(alpha: 0.06)
                         : Colors.grey.shade50)),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: (themeFlag ? Colors.white : AppColors.rawSienna).withOpacity(0.3),
+                      color: (themeFlag ? Colors.white : AppColors.rawSienna).withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -343,7 +343,7 @@ class _ProductDetailState extends State<ProductDetail>
             color: themeFlag ? AppColors.mirage : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 20,
                 spreadRadius: 2,
                 offset: const Offset(0, -4),
@@ -489,7 +489,7 @@ class _ProductDetailState extends State<ProductDetail>
                       height: 1.6,
                       color:
                           (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                              .withOpacity(0.8),
+                              .withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(height: 22),
@@ -503,13 +503,13 @@ class _ProductDetailState extends State<ProductDetail>
                         horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: themeFlag
-                          ? Colors.white.withOpacity(0.08)
-                          : AppColors.rawSienna.withOpacity(0.08),
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : AppColors.rawSienna.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                           color: themeFlag
-                              ? Colors.white.withOpacity(0.2)
-                              : AppColors.rawSienna.withOpacity(0.2)),
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : AppColors.rawSienna.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       children: [
@@ -553,9 +553,8 @@ class _ProductDetailState extends State<ProductDetail>
       context: context,
       returnRoute: AppRouter.prodDetailRoute,
       customMessage: 'لإضافة منتجات إلى السلة، يرجى تسجيل الدخول برقم هاتفك',
-      onAuthenticated: () {
-        cartNotifier
-            .addToCart(
+      onAuthenticated: () async {
+        final value = await cartNotifier.addToCart(
           productId: product.id,
           variantId: product.variants.isNotEmpty
               ? sizeNotifier.selectedVariant?.id
@@ -565,14 +564,13 @@ class _ProductDetailState extends State<ProductDetail>
           productImage: product.mainImageUrl,
           context: context,
           productSize: product.variants.isNotEmpty ? sizeNotifier.size : '',
-        )
-            .then((value) {
-          if (value) {
-            AppMessage.success(context, 'تمت إضافة المنتج إلى السلة بنجاح 🛍️');
-          } else {
-            AppMessage.error(context, 'حدث خطأ أثناء الإضافة إلى السلة');
-          }
-        });
+        );
+        if (!context.mounted) return;
+        if (value) {
+          AppMessage.success(context, 'تمت إضافة المنتج إلى السلة بنجاح 🛍️');
+        } else {
+          AppMessage.error(context, 'حدث خطأ أثناء الإضافة إلى السلة');
+        }
       },
     );
   }

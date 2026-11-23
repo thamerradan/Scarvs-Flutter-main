@@ -10,6 +10,7 @@ class AppInfoRow extends StatelessWidget {
   final Color? valueColor;
   final bool isBoldValue;
   final double fontSize;
+  final bool isBetween;
 
   const AppInfoRow({
     super.key,
@@ -19,6 +20,7 @@ class AppInfoRow extends StatelessWidget {
     this.valueColor,
     this.isBoldValue = false,
     this.fontSize = 12.0,
+    this.isBetween = false,
   });
 
   @override
@@ -26,6 +28,41 @@ class AppInfoRow extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? AppColors.creamColor : AppColors.mirage;
     final mutedColor = defaultTextColor.withValues(alpha: 0.65);
+
+    if (isBetween) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, size: fontSize + 4, color: mutedColor),
+                  AppSpacing.gapW8,
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    color: mutedColor,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: isBoldValue ? FontWeight.bold : FontWeight.w600,
+                color: valueColor ?? defaultTextColor,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

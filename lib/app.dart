@@ -8,7 +8,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_theme.dart';
 
 class Lava extends StatelessWidget {
-  const Lava({Key? key}) : super(key: key);
+  const Lava({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class Lava extends StatelessWidget {
 }
 
 class Core extends StatelessWidget {
-  const Core({Key? key}) : super(key: key);
+  const Core({super.key});
 
   @override
   Widget build(BuildContext context) {

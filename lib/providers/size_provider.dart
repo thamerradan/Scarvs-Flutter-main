@@ -7,7 +7,6 @@ class SizeNotifier with ChangeNotifier {
   ProductVariant? _selectedVariant;
 
   String get size => _size;
-  String get getSize => _size;
   ProductVariant? get selectedVariant => _selectedVariant;
 
   void selectVariant(ProductVariant variant) {

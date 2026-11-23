@@ -13,7 +13,7 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 
 class OwnerInventoryScreen extends StatefulWidget {
-  const OwnerInventoryScreen({Key? key}) : super(key: key);
+  const OwnerInventoryScreen({super.key});
 
   @override
   State<OwnerInventoryScreen> createState() => _OwnerInventoryScreenState();

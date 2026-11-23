@@ -13,7 +13,7 @@ class AppCard extends StatelessWidget {
   final bool hasShadow;
 
   const AppCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding = AppSpacing.paddingCard,
     this.margin,
@@ -22,7 +22,7 @@ class AppCard extends StatelessWidget {
     this.borderColor,
     this.onTap,
     this.hasShadow = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

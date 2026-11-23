@@ -35,7 +35,7 @@ class EcommerceCategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inactiveBorder = themeFlag
-        ? Colors.white.withOpacity(0.12)
+        ? Colors.white.withValues(alpha: 0.12)
         : Colors.grey.shade300;
 
     return Container(
@@ -53,7 +53,7 @@ class EcommerceCategoryChip extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               color: isSelected
                   ? (themeFlag ? Colors.white : AppColors.rawSienna)
-                  : (themeFlag ? Colors.white.withOpacity(0.04) : Colors.transparent),
+                  : (themeFlag ? Colors.white.withValues(alpha: 0.04) : Colors.transparent),
               border: Border.all(
                 color: isSelected
                     ? (themeFlag ? Colors.white : AppColors.rawSienna)
@@ -64,7 +64,7 @@ class EcommerceCategoryChip extends StatelessWidget {
                   ? [
                       BoxShadow(
                         color: (themeFlag ? Colors.white : AppColors.rawSienna)
-                            .withOpacity(themeFlag ? 0.25 : 0.2),
+                            .withValues(alpha: themeFlag ? 0.25 : 0.2),
                         blurRadius: 10,
                         spreadRadius: 2,
                         offset: const Offset(0, 3),

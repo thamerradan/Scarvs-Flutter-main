@@ -14,7 +14,7 @@ class AppPageHeader extends StatelessWidget {
   final Widget? leading;
 
   const AppPageHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.showBackButton = true,
@@ -22,7 +22,7 @@ class AppPageHeader extends StatelessWidget {
     this.onBackPressed,
     this.actions,
     this.leading,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -15,7 +15,7 @@ import 'package:scarvs/core/widgets/app_state_view.dart';
 import 'package:scarvs/core/widgets/app_status_badge.dart';
 
 class OwnerOrdersScreen extends StatefulWidget {
-  const OwnerOrdersScreen({Key? key}) : super(key: key);
+  const OwnerOrdersScreen({super.key});
 
   @override
   State<OwnerOrdersScreen> createState() => _OwnerOrdersScreenState();
@@ -88,13 +88,13 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                        color: isCurrent ? color : Colors.grey.withOpacity(0.2),
+                        color: isCurrent ? color : Colors.grey.withValues(alpha: 0.2),
                         width: isCurrent ? 2 : 1,
                       ),
                     ),
-                    tileColor: isCurrent ? color.withOpacity(0.08) : null,
+                    tileColor: isCurrent ? color.withValues(alpha: 0.08) : null,
                     leading: CircleAvatar(
-                      backgroundColor: color.withOpacity(0.2),
+                      backgroundColor: color.withValues(alpha: 0.2),
                       radius: 12,
                       child: isCurrent ? Icon(Icons.check, size: 14, color: color) : null,
                     ),
@@ -120,7 +120,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     },
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -250,7 +250,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                            .withOpacity(0.6),
+                            .withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -300,7 +300,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                       style: TextStyle(
                         fontSize: 13,
                         color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                            .withOpacity(0.7),
+                            .withValues(alpha: 0.7),
                       ),
                     ),
                     Text(

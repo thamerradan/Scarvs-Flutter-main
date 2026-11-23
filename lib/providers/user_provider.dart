@@ -29,7 +29,7 @@ class UserProvider with ChangeNotifier {
     }
     return null;
   }
-  String? get getUserName =>
+  String get getUserName =>
       _profile?.fullName.isNotEmpty == true ? _profile!.fullName : 'عميل';
   String get getuserAddress => _profile?.address.isNotEmpty == true
       ? _profile!.address

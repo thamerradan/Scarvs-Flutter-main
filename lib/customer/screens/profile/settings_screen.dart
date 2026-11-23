@@ -81,7 +81,7 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: themeFlag
-                    ? Colors.white.withOpacity(0.12)
+                    ? Colors.white.withValues(alpha: 0.12)
                     : AppColors.rawSienna.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),

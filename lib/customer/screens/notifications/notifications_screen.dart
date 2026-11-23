@@ -12,7 +12,7 @@ import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -130,12 +130,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         decoration: BoxDecoration(
           color: notif.isRead
               ? (themeFlag ? AppColors.mirage : Colors.white)
-              : (themeFlag ? Colors.white12 : AppColors.rawSienna.withOpacity(0.08)),
+              : (themeFlag ? Colors.white12 : AppColors.rawSienna.withValues(alpha: 0.08)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: notif.isRead
-                ? (themeFlag ? Colors.white10 : Colors.black.withOpacity(0.06))
-                : (themeFlag ? Colors.white38 : AppColors.rawSienna.withOpacity(0.4)),
+                ? (themeFlag ? Colors.white10 : Colors.black.withValues(alpha: 0.06))
+                : (themeFlag ? Colors.white38 : AppColors.rawSienna.withValues(alpha: 0.4)),
             width: notif.isRead ? 1 : 1.5,
           ),
         ),
@@ -146,8 +146,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: notif.isRead
-                    ? (themeFlag ? Colors.white10 : Colors.grey.withOpacity(0.12))
-                    : (themeFlag ? Colors.white24 : AppColors.rawSienna.withOpacity(0.2)),
+                    ? (themeFlag ? Colors.white10 : Colors.grey.withValues(alpha: 0.12))
+                    : (themeFlag ? Colors.white24 : AppColors.rawSienna.withValues(alpha: 0.2)),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -190,7 +190,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     notif.message,
                     style: TextStyle(
                       fontSize: 13,
-                      color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.7),
+                      color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -198,7 +198,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     dateStr,
                     style: TextStyle(
                       fontSize: 11,
-                      color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.45),
+                      color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.45),
                     ),
                   ),
                 ],

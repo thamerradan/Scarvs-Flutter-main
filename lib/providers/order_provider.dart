@@ -27,7 +27,6 @@ class OrderNotifier with ChangeNotifier {
     _setLoading(true);
     try {
       _orders = await _orderService.fetchUserOrders();
-      notifyListeners();
       return _orders;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {
@@ -93,7 +92,7 @@ class OrderNotifier with ChangeNotifier {
       );
 
       // إعادة تحميل قائمة الطلبات
-      await fetchUserOrders(context: context);
+      await fetchUserOrders();
       return res;
     } on SocketException catch (_) {
       if (context.mounted) {
@@ -137,10 +136,11 @@ class OrderNotifier with ChangeNotifier {
             ),
           );
         }
-        await fetchUserOrders(context: context);
-        if (_currentOrder?.id == orderId) {
-          await fetchOrderDetail(orderId, context: context);
-        }
+        await Future.wait([
+          fetchUserOrders(),
+          if (_currentOrder?.id == orderId)
+            fetchOrderDetail(orderId),
+        ]);
       }
       return success;
     } catch (e) {

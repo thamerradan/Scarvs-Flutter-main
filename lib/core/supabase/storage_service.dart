@@ -64,16 +64,4 @@ class StorageService {
       path: path,
     );
   }
-
-  /// حذف ملف من الحاوية
-  Future<void> deleteFile({
-    required String bucket,
-    required String path,
-  }) async {
-    try {
-      await _client.storage.from(bucket).remove([path]);
-    } catch (e) {
-      throw 'حدث خطأ أثناء حذف الصورة: $e';
-    }
-  }
 }

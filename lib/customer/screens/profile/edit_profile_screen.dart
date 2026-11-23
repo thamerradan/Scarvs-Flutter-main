@@ -30,7 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     final userNotifier = Provider.of<UserProvider>(context, listen: false);
     nameController =
-        TextEditingController(text: userNotifier.getUserName ?? '');
+        TextEditingController(text: userNotifier.getUserName);
     emailController =
         TextEditingController(text: userNotifier.getUserEmail ?? '');
     addressController = TextEditingController(

@@ -24,6 +24,7 @@ class AppSupabase {
 
     await Supabase.initialize(
       url: effectiveUrl,
+      // ignore: deprecated_member_use
       anonKey: effectiveAnonKey,
       authOptions: const FlutterAuthClientOptions(
         authFlowType: AuthFlowType.pkce,

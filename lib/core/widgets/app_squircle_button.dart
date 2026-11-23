@@ -13,7 +13,7 @@ class AppSquircleButton extends StatelessWidget {
   final double size;
 
   const AppSquircleButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.themeFlag,
     required this.onTap,
@@ -22,14 +22,14 @@ class AppSquircleButton extends StatelessWidget {
     this.tooltip,
     this.isOutLine = false,
     this.size = 42,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final defaultColor = themeFlag ? AppColors.creamColor : AppColors.mirage;
     final bgColor = isOutLine
         ? Colors.transparent
-        : (themeFlag ? Colors.white.withOpacity(0.08) : Colors.white);
+        : (themeFlag ? Colors.white.withValues(alpha: 0.08) : Colors.white);
 
     Widget button = Material(
       color: Colors.transparent,
@@ -54,7 +54,7 @@ class AppSquircleButton extends StatelessWidget {
                 : [
                     BoxShadow(
                       color: themeFlag
-                          ? Colors.black.withOpacity(0.25)
+                          ? Colors.black.withValues(alpha: 0.25)
                           : const Color(0xfff0f0f0),
                       blurRadius: 10,
                       spreadRadius: 2,

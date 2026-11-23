@@ -11,7 +11,7 @@ import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({super.key});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -59,11 +59,11 @@ class _SearchScreenState extends State<SearchScreen> {
               vSizedBox1,
               Container(
                 decoration: BoxDecoration(
-                  color: themeFlag ? Colors.white.withOpacity(0.08) : Colors.white,
+                  color: themeFlag ? Colors.white.withValues(alpha: 0.08) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -93,7 +93,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             color: (themeFlag
                                     ? AppColors.creamColor
                                     : AppColors.mirage)
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.5),
                             fontSize: 14,
                           ),
                         ),
@@ -134,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               color: (themeFlag
                                       ? AppColors.creamColor
                                       : AppColors.mirage)
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -144,7 +144,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 color: (themeFlag
                                         ? AppColors.creamColor
                                         : AppColors.mirage)
-                                    .withOpacity(0.6),
+                                    .withValues(alpha: 0.6),
                               ),
                             ),
                           ],

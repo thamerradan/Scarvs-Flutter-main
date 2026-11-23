@@ -10,7 +10,7 @@ import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 
 class OwnerSettingsScreen extends StatefulWidget {
-  const OwnerSettingsScreen({Key? key}) : super(key: key);
+  const OwnerSettingsScreen({super.key});
 
   @override
   State<OwnerSettingsScreen> createState() => _OwnerSettingsScreenState();
@@ -229,7 +229,7 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
       style: TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.bold,
-        color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.8),
+        color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.8),
       ),
     );
   }
@@ -247,13 +247,13 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withOpacity(0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
         ),
       ),
     );

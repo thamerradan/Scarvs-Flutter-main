@@ -11,13 +11,14 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
+import 'package:scarvs/core/widgets/app_info_row.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
 
-  const OrderDetailScreen({Key? key, required this.orderId}) : super(key: key);
+  const OrderDetailScreen({super.key, required this.orderId});
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
@@ -138,11 +139,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       themeFlag: themeFlag,
                       title: 'بيانات التوصيل 📍',
                       children: [
-                        _buildInfoRow('المدينة', order.city),
-                        _buildInfoRow('العنوان', order.shippingAddress),
-                        _buildInfoRow('رقم الهاتف', order.phone),
+                        AppInfoRow(label: 'المدينة', value: order.city, isBetween: true, fontSize: 13),
+                        AppInfoRow(label: 'العنوان', value: order.shippingAddress, isBetween: true, fontSize: 13),
+                        AppInfoRow(label: 'رقم الهاتف', value: order.phone, isBetween: true, fontSize: 13),
                         if (order.notes != null && order.notes!.isNotEmpty)
-                          _buildInfoRow('ملاحظات', order.notes!),
+                          AppInfoRow(label: 'ملاحظات', value: order.notes!, isBetween: true, fontSize: 13),
                       ],
                     ),
 
@@ -153,16 +154,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       themeFlag: themeFlag,
                       title: 'تفاصيل الدفع والحساب 🧾',
                       children: [
-                        _buildInfoRow('طريقة الدفع', order.paymentMethodArabic),
-                        _buildInfoRow('حالة الدفع', order.paymentStatusArabic),
+                        AppInfoRow(label: 'طريقة الدفع', value: order.paymentMethodArabic, isBetween: true, fontSize: 13),
+                        AppInfoRow(label: 'حالة الدفع', value: order.paymentStatusArabic, isBetween: true, fontSize: 13),
                         const Divider(height: 16),
-                        _buildInfoRow('المجموع الفرعي',
-                            '${order.subtotal.toStringAsFixed(0)} ر.س'),
-                        _buildInfoRow(
-                          'رسوم التوصيل',
-                          order.shippingFee == 0
+                        AppInfoRow(
+                          label: 'المجموع الفرعي',
+                          value: '${order.subtotal.toStringAsFixed(0)} ر.س',
+                          isBetween: true,
+                          fontSize: 13,
+                        ),
+                        AppInfoRow(
+                          label: 'رسوم التوصيل',
+                          value: order.shippingFee == 0
                               ? 'مجاناً 🎉'
                               : '${order.shippingFee.toStringAsFixed(0)} ر.س',
+                          isBetween: true,
+                          fontSize: 13,
                         ),
                         const Divider(height: 16),
                         Row(
@@ -211,9 +218,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: order.statusColor.withOpacity(0.08),
+        color: order.statusColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: order.statusColor.withOpacity(0.3)),
+        border: Border.all(color: order.statusColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -324,25 +331,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
           AppSpacing.gapH12,
           ...children,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
-          ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-          ),
         ],
       ),
     );

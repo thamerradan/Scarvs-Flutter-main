@@ -16,7 +16,7 @@ import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class ProductScreen extends StatefulWidget {
-  const ProductScreen({Key? key}) : super(key: key);
+  const ProductScreen({super.key});
 
   @override
   State<ProductScreen> createState() => _ProductScreenState();
@@ -123,12 +123,12 @@ class _ProductScreenState extends State<ProductScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
                     color: themeFlag
-                        ? Colors.white.withOpacity(0.06)
+                        ? Colors.white.withValues(alpha: 0.06)
                         : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(13),
                     border: Border.all(
                       color: themeFlag
-                          ? Colors.white.withOpacity(0.08)
+                          ? Colors.white.withValues(alpha: 0.08)
                           : Colors.grey.shade200,
                     ),
                   ),

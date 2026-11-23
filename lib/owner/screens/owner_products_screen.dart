@@ -15,7 +15,7 @@ import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class OwnerProductsScreen extends StatefulWidget {
-  const OwnerProductsScreen({Key? key}) : super(key: key);
+  const OwnerProductsScreen({super.key});
 
   @override
   State<OwnerProductsScreen> createState() => _OwnerProductsScreenState();

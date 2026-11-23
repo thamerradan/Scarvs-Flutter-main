@@ -56,11 +56,15 @@ class CartNotifier with ChangeNotifier {
       notifyListeners();
     }
     try {
-      final shippingConfig = await _cartService.fetchShippingConfig();
+      final results = await Future.wait([
+        _cartService.fetchShippingConfig(),
+        _cartService.fetchCartItems(),
+      ]);
+      final shippingConfig = results[0] as Map<String, double>;
+      final items = results[1] as List<CartItemModel>;
+
       _shippingFee = shippingConfig['shipping_fee'] ?? 25.0;
       _freeShippingLimit = shippingConfig['free_shipping_limit'] ?? 300.0;
-
-      final items = await _cartService.fetchCartItems();
       _cartItems = items;
       _hasLoaded = true;
       return _cartItems;
@@ -203,8 +207,9 @@ class CartNotifier with ChangeNotifier {
         cartItemId: item.id,
         newQuantity: newQty,
       );
-      await loadCart(silent: true);
     } catch (_) {
+      // Ignore
+    } finally {
       await loadCart(silent: true);
     }
   }
@@ -231,8 +236,9 @@ class CartNotifier with ChangeNotifier {
         cartItemId: item.id,
         newQuantity: newQty,
       );
-      await loadCart(silent: true);
     } catch (_) {
+      // Ignore
+    } finally {
       await loadCart(silent: true);
     }
   }

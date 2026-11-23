@@ -15,8 +15,7 @@ import 'package:scarvs/core/widgets/app_page_header.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
   final VoidCallback? onSwitchToStore;
-  const OwnerDashboardScreen({Key? key, this.onSwitchToStore})
-      : super(key: key);
+  const OwnerDashboardScreen({super.key, this.onSwitchToStore});
 
   @override
   State<OwnerDashboardScreen> createState() => _OwnerDashboardScreenState();

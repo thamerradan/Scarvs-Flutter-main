@@ -17,7 +17,7 @@ class AppPrimaryButton extends StatelessWidget {
   final Color? textColor;
 
   const AppPrimaryButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
@@ -29,7 +29,7 @@ class AppPrimaryButton extends StatelessWidget {
     this.padding,
     this.backgroundColor,
     this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,7 @@ class AppOutlinedButton extends StatelessWidget {
   final Color? textColor;
 
   const AppOutlinedButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
@@ -116,7 +116,7 @@ class AppOutlinedButton extends StatelessWidget {
     this.padding,
     this.borderColor,
     this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +188,7 @@ class AppDangerButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const AppDangerButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
@@ -198,7 +198,7 @@ class AppDangerButton extends StatelessWidget {
     this.borderRadius = AppSpacing.radiusMd,
     this.fontSize = 14.0,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

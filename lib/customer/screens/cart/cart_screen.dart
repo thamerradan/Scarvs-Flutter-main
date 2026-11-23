@@ -15,7 +15,7 @@ import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/theme/app_spacing.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -83,8 +83,8 @@ class _CartScreenState extends State<CartScreen> {
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: themeFlag
-                                  ? Colors.white.withOpacity(0.12)
-                                  : AppColors.rawSienna.withOpacity(0.12),
+                                  ? Colors.white.withValues(alpha: 0.12)
+                                  : AppColors.rawSienna.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -143,7 +143,7 @@ class _CartScreenState extends State<CartScreen> {
                                       color: (themeFlag
                                               ? AppColors.creamColor
                                               : AppColors.mirage)
-                                          .withOpacity(0.7),
+                                          .withValues(alpha: 0.7),
                                       fontSize: 14,
                                     ),
                                   ),

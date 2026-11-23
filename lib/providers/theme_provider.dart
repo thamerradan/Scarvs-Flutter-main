@@ -11,19 +11,19 @@ class ThemeNotifier with ChangeNotifier {
     _loadFromPrefs();
   }
 
-  toggleTheme() {
+  void toggleTheme() {
     _darktheme = !_darktheme;
     _saveToPrefs();
     notifyListeners();
   }
 
-  _loadFromPrefs() async {
+  Future<void> _loadFromPrefs() async {
     var val = await getDarkMode();
     _darktheme = val ?? false;
     notifyListeners();
   }
 
-  _saveToPrefs() async {
+  Future<void> _saveToPrefs() async {
     await saveDarkMode(_darktheme);
   }
 

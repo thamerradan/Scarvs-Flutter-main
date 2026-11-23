@@ -15,7 +15,7 @@ import 'package:scarvs/core/widgets/app_state_view.dart';
 import 'package:scarvs/core/widgets/app_status_badge.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({Key? key}) : super(key: key);
+  const OrdersScreen({super.key});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -134,7 +134,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             style: TextStyle(
               fontSize: 12,
               color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                  .withOpacity(0.6),
+                  .withValues(alpha: 0.6),
             ),
           ),
           const Divider(height: 20),
@@ -154,7 +154,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       color: (themeFlag
                               ? AppColors.creamColor
                               : AppColors.mirage)
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                     ),
                   ),
                   Text(

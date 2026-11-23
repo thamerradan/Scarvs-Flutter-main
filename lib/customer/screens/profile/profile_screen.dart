@@ -13,7 +13,7 @@ import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -94,8 +94,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () {
                           Navigator.of(context)
                               .pushNamed(AppRouter.editProfileRoute)
-                              .then((_) =>
-                                  userNotifier.getUserData(context: context));
+                              .then((_) {
+                            if (context.mounted) {
+                              userNotifier.getUserData(context: context);
+                            }
+                          });
                         },
                       ),
                       _buildMenuItem(
@@ -139,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             ),
                           );
-                          if (confirm == true && mounted) {
+                          if (confirm == true && context.mounted) {
                             await authNotifier.signOut(context: context);
                           }
                         },
@@ -204,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required bool themeFlag,
     required UserProvider userNotifier,
   }) {
-    final userName = userNotifier.getUserName ?? 'عميل تمنى';
+    final userName = userNotifier.getUserName;
     final roleName = userNotifier.isOwner ? 'مالك المتجر' : 'عميل';
     final double profilePictureSize = MediaQuery.of(context).size.width / 4.5;
 
@@ -260,13 +263,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
                         color: themeFlag
-                            ? Colors.white.withOpacity(0.12)
-                            : AppColors.rawSienna.withOpacity(0.08),
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : AppColors.rawSienna.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: themeFlag
-                              ? Colors.white.withOpacity(0.3)
-                              : AppColors.rawSienna.withOpacity(0.2),
+                              ? Colors.white.withValues(alpha: 0.3)
+                              : AppColors.rawSienna.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -287,7 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: (themeFlag
                                   ? AppColors.creamColor
                                   : AppColors.mirage)
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -307,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: (themeFlag
                                   ? AppColors.creamColor
                                   : AppColors.mirage)
-                              .withOpacity(0.8),
+                              .withValues(alpha: 0.8),
                         ),
                       ),
                       const SizedBox(width: 4),
