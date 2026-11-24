@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
+import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/customer/widgets/category_widget.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchProductController = TextEditingController();
   bool isExecuted = false;
+  Future<List<ProductItem>>? _searchFuture;
 
   @override
   void dispose() {
@@ -28,9 +30,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _executeSearch() {
-    if (searchProductController.text.trim().isNotEmpty) {
+    final query = searchProductController.text.trim();
+    if (query.isNotEmpty) {
       setState(() {
         isExecuted = true;
+        _searchFuture = Provider.of<CatalogProvider>(context, listen: false)
+            .searchProduct(
+          context: context,
+          productName: query,
+        );
       });
     }
   }
@@ -49,17 +57,19 @@ class _SearchScreenState extends State<SearchScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'البحث عن المنتجات 🔍',
+                'البحث عن المنتجات',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                 ),
               ),
-              vSizedBox1,
+              AppSpacing.gapH8,
               Container(
                 decoration: BoxDecoration(
-                  color: themeFlag ? Colors.white.withValues(alpha: 0.08) : Colors.white,
+                  color: themeFlag
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -82,8 +92,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             themeFlag ? Colors.white : AppColors.rawSienna,
                         onSubmitted: (_) => _executeSearch(),
                         style: TextStyle(
-                          color:
-                              themeFlag ? AppColors.creamColor : AppColors.mirage,
+                          color: themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
                           fontSize: 15,
                         ),
                         decoration: InputDecoration(
@@ -107,6 +118,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           searchProductController.clear();
                           setState(() {
                             isExecuted = false;
+                            _searchFuture = null;
                           });
                         },
                       ),
@@ -120,7 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ],
                 ),
               ),
-              vSizedBox2,
+              AppSpacing.gapH16,
               Expanded(
                 child: isExecuted
                     ? searchData(themeFlag: themeFlag)
@@ -159,28 +171,22 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget searchData({required bool themeFlag}) {
-    return Consumer<CatalogProvider>(
-      builder: (context, notifier, _) {
-        return FutureBuilder(
-          future: notifier.searchProduct(
-            context: context,
-            productName: searchProductController.text.trim(),
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return ShimmerEffects.buildCategoryShimmer(context: context);
-            }
-            if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-              return AppLoader(themeFlag: themeFlag, text: 'لم يتم العثور على نتائج للبحث!', lottieAsset: AppAssets.error);
-            }
-            final list = snapshot.data as List;
-            return showDataInGrid(
-              height: 120,
-              snapshot: list,
-              themeFlag: themeFlag,
-              context: context,
-            );
-          },
+    return FutureBuilder<List<ProductItem>>(
+      future: _searchFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return ShimmerEffects.buildCategoryShimmer(context: context);
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return AppLoader(
+            themeFlag: themeFlag,
+            text: 'لم يتم العثور على نتائج للبحث!',
+            lottieAsset: AppAssets.error,
+          );
+        }
+        return showDataInGrid(
+          snapshot: snapshot.data!,
+          themeFlag: themeFlag,
         );
       },
     );

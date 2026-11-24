@@ -31,7 +31,7 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#42a5f5"
-  image: assets/splash.png
+  image: assets/images/logo/logo.png
   android: true
   ios: true
   web: true
@@ -49,6 +49,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/animations/
-    - assets/images/shoes/
     - assets/images/logo/
     - .env

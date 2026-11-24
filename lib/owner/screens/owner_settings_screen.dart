@@ -79,7 +79,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
       phone: _phoneController.text.trim(),
       whatsapp: _whatsappController.text.trim(),
       shippingFee: double.tryParse(_shippingFeeController.text.trim()) ?? 25.0,
-      freeShippingLimit: double.tryParse(_freeShippingController.text.trim()) ?? 300.0,
+      freeShippingLimit:
+          double.tryParse(_freeShippingController.text.trim()) ?? 300.0,
       cashOnDeliveryEnabled: _codEnabled,
       onlinePaymentEnabled: _onlinePaymentEnabled,
       maintenanceMode: _maintenanceMode,
@@ -104,7 +105,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
               title: 'إعدادات المتجر',
               actions: [
                 AppRefreshButton(
-                  onPressed: () => ownerNotifier.fetchStoreSettings(context: context),
+                  onPressed: () =>
+                      ownerNotifier.fetchStoreSettings(context: context),
                   isLoading: ownerNotifier.isSettingsLoading,
                 ),
               ],
@@ -123,7 +125,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: _nameController,
-                            validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
+                            validator: (v) =>
+                                v == null || v.isEmpty ? 'مطلوب' : null,
                             decoration: _inputDecoration(
                               label: 'اسم المتجر',
                               icon: Icons.store,
@@ -158,7 +161,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                                 child: TextFormField(
                                   controller: _shippingFeeController,
                                   keyboardType: TextInputType.number,
-                                  validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
+                                  validator: (v) =>
+                                      v == null || v.isEmpty ? 'مطلوب' : null,
                                   decoration: _inputDecoration(
                                     label: 'رسوم الشحن الافتراضية (ر.س)',
                                     icon: Icons.local_shipping,
@@ -171,7 +175,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                                 child: TextFormField(
                                   controller: _freeShippingController,
                                   keyboardType: TextInputType.number,
-                                  validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
+                                  validator: (v) =>
+                                      v == null || v.isEmpty ? 'مطلوب' : null,
                                   decoration: _inputDecoration(
                                     label: 'الحد الأدنى للشحن المجاني (ر.س)',
                                     icon: Icons.card_giftcard,
@@ -183,26 +188,36 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                           ),
                           const SizedBox(height: 24),
 
-                          _buildSectionTitle('طرق الدفع وحالة النظام', themeFlag),
+                          _buildSectionTitle(
+                              'طرق الدفع وحالة النظام', themeFlag),
                           const SizedBox(height: 8),
                           SwitchListTile(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            tileColor: themeFlag ? Colors.white10 : Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            tileColor:
+                                themeFlag ? Colors.white10 : Colors.white,
                             title: const Text('تفعيل الدفع عند الاستلام (COD)'),
-                            subtitle: const Text('إتاحة الدفع كاش عند استلام الشحنة'),
+                            subtitle:
+                                const Text('إتاحة الدفع كاش عند استلام الشحنة'),
                             value: _codEnabled,
-                            activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
-                            onChanged: (val) => setState(() => _codEnabled = val),
+                            activeThumbColor:
+                                themeFlag ? Colors.white : AppColors.rawSienna,
+                            onChanged: (val) =>
+                                setState(() => _codEnabled = val),
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            tileColor: themeFlag ? Colors.white10 : Colors.white,
-                            title: const Text('وضع الصيانة المؤقت 🛑'),
-                            subtitle: const Text('إيقاف استقبال طلبات جديدة مؤقتاً'),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            tileColor:
+                                themeFlag ? Colors.white10 : Colors.white,
+                            title: const Text('وضع الصيانة المؤقت'),
+                            subtitle:
+                                const Text('إيقاف استقبال طلبات جديدة مؤقتاً'),
                             value: _maintenanceMode,
                             activeThumbColor: Colors.red,
-                            onChanged: (val) => setState(() => _maintenanceMode = val),
+                            onChanged: (val) =>
+                                setState(() => _maintenanceMode = val),
                           ),
                           const SizedBox(height: 32),
 
@@ -229,7 +244,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
       style: TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.bold,
-        color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.8),
+        color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+            .withValues(alpha: 0.8),
       ),
     );
   }
@@ -247,13 +263,15 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+              .withValues(alpha: 0.15),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+              .withValues(alpha: 0.15),
         ),
       ),
     );

@@ -12,7 +12,6 @@ import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_info_row.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 
 class OrderDetailScreen extends StatefulWidget {
@@ -105,12 +104,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                       ],
                     ),
-                    vSizedBox2,
+                    AppSpacing.gapH16,
 
                     // 1. حالة الطلب والمخطط الزمني
                     _buildStatusTimeline(order, themeFlag),
 
-                    vSizedBox2,
+                    AppSpacing.gapH16,
 
                     // 2. قائمة المنتجات المشتراة
                     Text(
@@ -120,7 +119,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    vSizedBox1,
+                    AppSpacing.gapH8,
                     ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -132,30 +131,54 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       },
                     ),
 
-                    vSizedBox2,
+                    AppSpacing.gapH16,
 
                     // 3. بيانات الشحن والتوصيل
                     _buildSectionCard(
                       themeFlag: themeFlag,
-                      title: 'بيانات التوصيل 📍',
+                      title: 'بيانات التوصيل',
                       children: [
-                        AppInfoRow(label: 'المدينة', value: order.city, isBetween: true, fontSize: 13),
-                        AppInfoRow(label: 'العنوان', value: order.shippingAddress, isBetween: true, fontSize: 13),
-                        AppInfoRow(label: 'رقم الهاتف', value: order.phone, isBetween: true, fontSize: 13),
+                        AppInfoRow(
+                            label: 'المدينة',
+                            value: order.city,
+                            isBetween: true,
+                            fontSize: 13),
+                        AppInfoRow(
+                            label: 'العنوان',
+                            value: order.shippingAddress,
+                            isBetween: true,
+                            fontSize: 13),
+                        AppInfoRow(
+                            label: 'رقم الهاتف',
+                            value: order.phone,
+                            isBetween: true,
+                            fontSize: 13),
                         if (order.notes != null && order.notes!.isNotEmpty)
-                          AppInfoRow(label: 'ملاحظات', value: order.notes!, isBetween: true, fontSize: 13),
+                          AppInfoRow(
+                              label: 'ملاحظات',
+                              value: order.notes!,
+                              isBetween: true,
+                              fontSize: 13),
                       ],
                     ),
 
-                    vSizedBox2,
+                    AppSpacing.gapH16,
 
                     // 4. الدفع والحساب
                     _buildSectionCard(
                       themeFlag: themeFlag,
                       title: 'تفاصيل الدفع والحساب 🧾',
                       children: [
-                        AppInfoRow(label: 'طريقة الدفع', value: order.paymentMethodArabic, isBetween: true, fontSize: 13),
-                        AppInfoRow(label: 'حالة الدفع', value: order.paymentStatusArabic, isBetween: true, fontSize: 13),
+                        AppInfoRow(
+                            label: 'طريقة الدفع',
+                            value: order.paymentMethodArabic,
+                            isBetween: true,
+                            fontSize: 13),
+                        AppInfoRow(
+                            label: 'حالة الدفع',
+                            value: order.paymentStatusArabic,
+                            isBetween: true,
+                            fontSize: 13),
                         const Divider(height: 16),
                         AppInfoRow(
                           label: 'المجموع الفرعي',
@@ -166,7 +189,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         AppInfoRow(
                           label: 'رسوم التوصيل',
                           value: order.shippingFee == 0
-                              ? 'مجاناً 🎉'
+                              ? 'مجاناً'
                               : '${order.shippingFee.toStringAsFixed(0)} ر.س',
                           isBetween: true,
                           fontSize: 13,
@@ -187,7 +210,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: themeFlag ? Colors.white : AppColors.rawSienna,
+                                color: themeFlag
+                                    ? Colors.white
+                                    : AppColors.rawSienna,
                               ),
                             ),
                           ],
@@ -197,7 +222,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
                     // زر إلغاء الطلب إن كان قيد المراجعة
                     if (order.canCancel) ...[
-                      vSizedBox3,
+                      AppSpacing.gapH32,
                       AppDangerButton(
                         text: 'إلغاء الطلب',
                         height: 48,
@@ -287,7 +312,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     if (item.size != null && item.size!.isNotEmpty)
                       Text(
                         'مقاس: ${item.size}   |   ',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                     Text(
                       'الكمية: ${item.quantity}',

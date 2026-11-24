@@ -52,7 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final themeFlag = themeNotifier.darkTheme;
     final isOwner = AuthGuard.isOwner;
-    final cartNotifier = Provider.of<CartNotifier>(context);
+    final cartItemsCount =
+        context.select<CartNotifier, int>((c) => c.totalItemsCount);
 
     final navItems = [
       const NavItemData(
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: Icons.shopping_bag_outlined,
           activeIcon: Icons.shopping_bag_rounded,
           label: "السلة",
-          badgeCount: cartNotifier.totalItemsCount,
+          badgeCount: cartItemsCount,
         ),
       const NavItemData(
         icon: Icons.person_outline_rounded,

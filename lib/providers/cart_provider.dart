@@ -70,12 +70,7 @@ class CartNotifier with ChangeNotifier {
       return _cartItems;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
+        SnackUtil.showNetworkError(context);
       }
       return [];
     } catch (_) {
@@ -154,26 +149,12 @@ class CartNotifier with ChangeNotifier {
     } on SocketException catch (_) {
       _cartItems = previousItems;
       notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.showNetworkError(context);
       return false;
     } catch (e) {
       _cartItems = previousItems;
       notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     }
   }
@@ -184,14 +165,10 @@ class CartNotifier with ChangeNotifier {
     BuildContext? context,
   }) async {
     if (item.quantity >= item.stockQuantity) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'عذراً، وصلت إلى الحد الأقصى المتوفر بالمخزون (${item.stockQuantity})',
-            context: context,
-          ),
-        );
-      }
+      SnackUtil.show(
+        context,
+        'عذراً، وصلت إلى الحد الأقصى المتوفر بالمخزون (${item.stockQuantity})',
+      );
       return;
     }
 
@@ -255,12 +232,7 @@ class CartNotifier with ChangeNotifier {
     try {
       final success = await _cartService.deleteFromCart(cartItemId);
       if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم حذف المنتج من السلة',
-            context: context,
-          ),
-        );
+        SnackUtil.show(context, 'تم حذف المنتج من السلة');
       }
       await loadCart(silent: true);
       return success;

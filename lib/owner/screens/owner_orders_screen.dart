@@ -24,11 +24,11 @@ class OwnerOrdersScreen extends StatefulWidget {
 class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
   final List<Map<String, String>> _statusFilters = [
     {'key': 'all', 'label': 'الكل'},
-    {'key': 'pending', 'label': 'قيد الانتظار ⏳'},
-    {'key': 'preparing', 'label': 'جاري التجهيز 📦'},
-    {'key': 'shipped', 'label': 'قيد التوصيل 🚚'},
-    {'key': 'delivered', 'label': 'تم التوصيل ✅'},
-    {'key': 'cancelled', 'label': 'ملغي ❌'},
+    {'key': 'pending', 'label': 'قيد الانتظار'},
+    {'key': 'preparing', 'label': 'جاري التجهيز'},
+    {'key': 'shipped', 'label': 'قيد التوصيل'},
+    {'key': 'delivered', 'label': 'تم التوصيل'},
+    {'key': 'cancelled', 'label': 'ملغي'},
   ];
 
   @override
@@ -61,7 +61,8 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                   Expanded(
                     child: Text(
                       'تعديل حالة الطلب #${order.orderNumber}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -73,11 +74,31 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
               ),
               const SizedBox(height: 16),
               ...[
-                {'key': 'pending', 'label': 'قيد الانتظار', 'color': Colors.amber},
-                {'key': 'preparing', 'label': 'جاري التجهيز', 'color': Colors.blue},
-                {'key': 'shipped', 'label': 'قيد التوصيل', 'color': Colors.purple},
-                {'key': 'delivered', 'label': 'تم التوصيل بنجاح', 'color': Colors.green},
-                {'key': 'cancelled', 'label': 'إلغاء الطلب', 'color': Colors.red},
+                {
+                  'key': 'pending',
+                  'label': 'قيد الانتظار',
+                  'color': Colors.amber
+                },
+                {
+                  'key': 'preparing',
+                  'label': 'جاري التجهيز',
+                  'color': Colors.blue
+                },
+                {
+                  'key': 'shipped',
+                  'label': 'قيد التوصيل',
+                  'color': Colors.purple
+                },
+                {
+                  'key': 'delivered',
+                  'label': 'تم التوصيل بنجاح',
+                  'color': Colors.green
+                },
+                {
+                  'key': 'cancelled',
+                  'label': 'إلغاء الطلب',
+                  'color': Colors.red
+                },
               ].map((item) {
                 final isCurrent = order.orderStatus == item['key'];
                 final color = item['color'] as Color;
@@ -88,7 +109,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                        color: isCurrent ? color : Colors.grey.withValues(alpha: 0.2),
+                        color: isCurrent
+                            ? color
+                            : Colors.grey.withValues(alpha: 0.2),
                         width: isCurrent ? 2 : 1,
                       ),
                     ),
@@ -96,17 +119,21 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     leading: CircleAvatar(
                       backgroundColor: color.withValues(alpha: 0.2),
                       radius: 12,
-                      child: isCurrent ? Icon(Icons.check, size: 14, color: color) : null,
+                      child: isCurrent
+                          ? Icon(Icons.check, size: 14, color: color)
+                          : null,
                     ),
                     title: Text(
                       item['label'] as String,
                       style: TextStyle(
-                        fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                            isCurrent ? FontWeight.bold : FontWeight.normal,
                         color: isCurrent ? color : null,
                       ),
                     ),
                     trailing: isCurrent
-                        ? const Text('الحالية', style: TextStyle(fontSize: 12, color: Colors.grey))
+                        ? const Text('الحالية',
+                            style: TextStyle(fontSize: 12, color: Colors.grey))
                         : null,
                     onTap: () async {
                       Navigator.of(ctx).pop();
@@ -160,17 +187,22 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final filter = _statusFilters[index];
-                  final isSelected = ownerNotifier.selectedStatus == filter['key'];
+                  final isSelected =
+                      ownerNotifier.selectedStatus == filter['key'];
 
                   return ChoiceChip(
                     label: Text(filter['label']!),
                     selected: isSelected,
-                    selectedColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                    selectedColor:
+                        themeFlag ? Colors.white : AppColors.rawSienna,
                     labelStyle: TextStyle(
                       color: isSelected
                           ? (themeFlag ? AppColors.mirage : Colors.white)
-                          : (themeFlag ? AppColors.creamColor : AppColors.mirage),
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          : (themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage),
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 13,
                     ),
                     backgroundColor: themeFlag ? Colors.white10 : Colors.white,
@@ -241,7 +273,8 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -249,7 +282,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                       dateStr,
                       style: TextStyle(
                         fontSize: 12,
-                        color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                        color: (themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage)
                             .withValues(alpha: 0.6),
                       ),
                     ),
@@ -273,9 +308,12 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                 AppInfoRow(
                   icon: Icons.person_outline,
                   label: 'العميل',
-                  value: order.customerName != null && order.customerName!.isNotEmpty
+                  value: order.customerName != null &&
+                          order.customerName!.isNotEmpty
                       ? '${order.customerName!} (${order.phone})'
-                      : (order.phone.isNotEmpty ? '${order.city} - ${order.phone}' : order.city),
+                      : (order.phone.isNotEmpty
+                          ? '${order.city} - ${order.phone}'
+                          : order.city),
                 ),
                 const SizedBox(height: 6),
                 AppInfoRow(
@@ -299,7 +337,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                       '${order.items.length} منتجات في الطلب',
                       style: TextStyle(
                         fontSize: 13,
-                        color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                        color: (themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage)
                             .withValues(alpha: 0.7),
                       ),
                     ),
@@ -320,7 +360,8 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
 
           // أزرار التحكم بالطلب
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
             child: Row(
               children: [
                 Expanded(

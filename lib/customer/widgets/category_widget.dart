@@ -7,8 +7,6 @@ import 'package:scarvs/customer/widgets/product_card.dart';
 Widget showDataInGrid({
   required dynamic snapshot,
   required bool themeFlag,
-  required BuildContext context,
-  required double height,
 }) {
   final List<ProductItem> list = List<ProductItem>.from(snapshot);
 

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/providers/theme_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
-import 'package:scarvs/core/widgets/custom_text_style.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -22,25 +21,11 @@ class SettingsScreen extends StatelessWidget {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.profileRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'إعدادات التطبيق',
-                    style: CustomTextWidget.bodyTextB2(
-                      color: textColor,
-                    ),
-                  ),
-                ],
-              ),
+            const AppPageHeader(
+              title: 'إعدادات التطبيق',
+              fallbackRoute: AppRouter.profileRoute,
             ),
-            vSizedBox1,
+            AppSpacing.gapH8,
             Consumer<ThemeNotifier>(
               builder: (context, notifier, _) {
                 return SwitchListTile.adaptive(
@@ -67,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             const Divider(height: 16),
-            vSizedBox2,
+            AppSpacing.gapH16,
             Text(
               'إصدار التطبيق',
               style: TextStyle(

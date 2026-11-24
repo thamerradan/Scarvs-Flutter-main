@@ -30,12 +30,7 @@ class OrderNotifier with ChangeNotifier {
       return _orders;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
+        SnackUtil.showNetworkError(context);
       }
       return [];
     } catch (_) {
@@ -57,12 +52,7 @@ class OrderNotifier with ChangeNotifier {
       return _currentOrder;
     } on SocketException catch (_) {
       if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
+        SnackUtil.showNetworkError(context);
       }
       return null;
     } catch (_) {
@@ -95,24 +85,10 @@ class OrderNotifier with ChangeNotifier {
       await fetchUserOrders();
       return res;
     } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.showNetworkError(context);
       return null;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return null;
     } finally {
       _setLoading(false);
@@ -128,14 +104,7 @@ class OrderNotifier with ChangeNotifier {
     try {
       final success = await _orderService.cancelOrder(orderId);
       if (success) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(
-              text: 'تم إلغاء الطلب بنجاح',
-              context: context,
-            ),
-          );
-        }
+        if (context.mounted) SnackUtil.show(context, 'تم إلغاء الطلب بنجاح');
         await Future.wait([
           fetchUserOrders(),
           if (_currentOrder?.id == orderId)
@@ -144,14 +113,7 @@ class OrderNotifier with ChangeNotifier {
       }
       return success;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString(),
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     } finally {
       _setLoading(false);

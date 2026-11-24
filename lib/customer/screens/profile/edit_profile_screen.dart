@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_text_field.dart';
-import 'package:scarvs/core/widgets/custom_text_style.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -61,26 +60,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  children: [
-                    AppBackButton(
-                      themeFlag: themeFlag,
-                      fallbackRoute: AppRouter.profileRoute,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'تعديل البيانات الشخصية',
-                      style: CustomTextWidget.bodyTextB2(
-                        color: themeFlag
-                            ? AppColors.creamColor
-                            : AppColors.mirage,
-                      ),
-                    ),
-                  ],
-                ),
+              const AppPageHeader(
+                title: 'تعديل البيانات الشخصية',
+                fallbackRoute: AppRouter.profileRoute,
               ),
               Form(
                 key: _formKey,
@@ -96,7 +78,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ? 'يرجى إدخال الاسم'
                             : null,
                       ),
-                      vSizedBox2,
+                      AppSpacing.gapH16,
                       AppTextField(
                         textEditingController: emailController,
                         hintText: 'البريد الإلكتروني (اختياري)',
@@ -113,13 +95,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           return null;
                         },
                       ),
-                      vSizedBox2,
+                      AppSpacing.gapH16,
                       AppTextField(
                         textEditingController: cityController,
                         hintText: 'المدينة',
                         prefixIcon: const Icon(Icons.location_city_outlined),
                       ),
-                      vSizedBox2,
+                      AppSpacing.gapH16,
                       AppTextField(
                         textEditingController: addressController,
                         hintText: 'العنوان بالتفصيل',
@@ -128,7 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ? 'يرجى إدخال العنوان'
                             : null,
                       ),
-                      vSizedBox3,
+                      AppSpacing.gapH32,
                       AppPrimaryButton(
                         text: 'حفظ التعديلات',
                         isLoading: userNotifier.isLoading,

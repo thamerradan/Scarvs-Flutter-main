@@ -62,14 +62,7 @@ class UserProvider with ChangeNotifier {
       AuthGuard.setRole(_profile?.role);
       notifyListeners();
     } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.showNetworkError(context);
     } catch (e) {
       // Ignore or log error
     } finally {
@@ -99,34 +92,13 @@ class UserProvider with ChangeNotifier {
         city: city,
       );
       notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم تحديث البيانات بنجاح',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تم تحديث البيانات بنجاح');
       return true;
     } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.showNetworkError(context);
       return false;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'فشل التحديث: $e',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'فشل التحديث: $e');
       return false;
     } finally {
       _isLoading = false;

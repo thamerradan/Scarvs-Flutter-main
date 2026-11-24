@@ -4,6 +4,31 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 
 class SnackUtil {
+  static void show(
+    BuildContext? context,
+    String text, {
+    Color? backgroundColor,
+    Duration duration = const Duration(seconds: 3),
+    Widget? icon,
+  }) {
+    if (context == null || !context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        stylishSnackBar(
+          text: text,
+          context: context,
+          backgroundColor: backgroundColor,
+          duration: duration,
+          icon: icon,
+        ),
+      );
+  }
+
+  static void showNetworkError(BuildContext? context) {
+    show(context, 'يرجى التحقق من اتصالك بالإنترنت');
+  }
+
   static SnackBar stylishSnackBar({
     required String text,
     required BuildContext context,

@@ -10,7 +10,6 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -65,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                vSizedBox1,
+                AppSpacing.gapH8,
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -76,16 +75,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         userNotifier: userNotifier,
                       ),
                       const Divider(height: 32),
-                      _buildMenuItem(
-                        context: context,
-                        title: 'طلباتي',
-                        icon: Icons.local_shipping_outlined,
-                        themeFlag: themeFlag,
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(AppRouter.ordersRoute);
-                        },
-                      ),
+                      if (!userNotifier.isOwner && !AuthGuard.isOwner)
+                        _buildMenuItem(
+                          context: context,
+                          title: 'طلباتي',
+                          icon: Icons.local_shipping_outlined,
+                          themeFlag: themeFlag,
+                          onTap: () {
+                            Navigator.of(context)
+                                .pushNamed(AppRouter.ordersRoute);
+                          },
+                        ),
                       _buildMenuItem(
                         context: context,
                         title: 'تعديل البيانات',

@@ -12,16 +12,12 @@ import 'package:scarvs/core/widgets/app_card.dart';
 class EcommerceProductCard extends StatelessWidget {
   final ProductItem product;
   final bool themeFlag;
-  final VoidCallback? onFavoriteToggle;
-  final bool isLiked;
   final String? heroTag;
 
   const EcommerceProductCard({
     super.key,
     required this.product,
     required this.themeFlag,
-    this.onFavoriteToggle,
-    this.isLiked = false,
     this.heroTag,
   });
 
@@ -45,31 +41,7 @@ class EcommerceProductCard extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // زر الإعجاب في الركن العلوي
-            PositionedDirectional(
-              start: 0,
-              top: 0,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: onFavoriteToggle ?? () {},
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: themeFlag
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : Colors.grey.shade100,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_border,
-                    size: 18,
-                    color: isLiked ? Colors.redAccent : Colors.grey.shade500,
-                  ),
-                ),
-              ),
-            ),
-
-            // شارة الخصم إن وجدت في الركن المقابل
+            // شارة الخصم إن وجدت في الركن العلوي
             if (product.hasDiscount && product.discountPercentage != null)
               PositionedDirectional(
                 end: 0,

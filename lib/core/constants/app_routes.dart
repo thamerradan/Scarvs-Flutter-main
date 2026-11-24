@@ -69,8 +69,11 @@ class AppRouter {
       );
     }
 
-    // 2. حماية مسارات السلة وإتمام الطلب من المالك (المالك في وضع معاينة المتجر فقط):
-    if (userRole == 'owner' && (route == cartRoute || route == checkoutRoute)) {
+    // 2. حماية مسارات السلة وإتمام الطلب وطلبات العميل من المالك (المالك في وضع معاينة المتجر فقط):
+    if (userRole == 'owner' &&
+        (route == cartRoute ||
+            route == checkoutRoute ||
+            route == ordersRoute)) {
       return MaterialPageRoute(
         builder: (_) => const HomeScreen(initialIndex: 2),
         settings: settings,

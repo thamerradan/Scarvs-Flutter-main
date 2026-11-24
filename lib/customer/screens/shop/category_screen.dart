@@ -4,14 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/customer/widgets/category_widget.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
-import 'package:scarvs/core/widgets/custom_text_style.dart';
-import 'package:scarvs/core/widgets/dimensions_widget.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -52,26 +51,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.customerHomeRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.categoryScreenArgs.categoryName.toString(),
-                    style: CustomTextWidget.bodyTextB2(
-                      color:
-                          themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                ],
-              ),
+            AppPageHeader(
+              title: widget.categoryScreenArgs.categoryName.toString(),
+              fallbackRoute: AppRouter.customerHomeRoute,
             ),
-            vSizedBox1,
+            AppSpacing.gapH8,
             Expanded(
               child: FutureBuilder<List<ProductItem>>(
                 future: _productsFuture,
@@ -83,10 +67,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   } else {
                     final list = snapshot.data!;
                     return showDataInGrid(
-                      height: 120,
                       snapshot: list,
                       themeFlag: themeFlag,
-                      context: context,
                     );
                   }
                 },

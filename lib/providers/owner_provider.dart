@@ -22,7 +22,6 @@ class OwnerNotifier with ChangeNotifier {
   final OwnerCategoriesService _categoriesService = OwnerCategoriesService();
   final OwnerSettingsService _settingsService = OwnerSettingsService();
 
-  bool _isLoading = false;
   bool _isDashboardLoading = false;
   bool get isDashboardLoading => _isDashboardLoading;
 
@@ -42,7 +41,6 @@ class OwnerNotifier with ChangeNotifier {
   bool get isSettingsLoading => _isSettingsLoading;
 
   bool get isLoading =>
-      _isLoading ||
       _isDashboardLoading ||
       _isOrdersLoading ||
       _isProductsLoading ||
@@ -88,54 +86,56 @@ class OwnerNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  /// دالة مساعدة موحدة لتنفيذ عمليات الجلب ومنع الطلبات المتكررة وإدارة حالة التحميل
+  Future<void> _runFetch({
+    required bool Function() isLoadingGetter,
+    required void Function(bool) isLoadingSetter,
+    required Future<void> Function() task,
+    BuildContext? context,
+  }) async {
+    if (isLoadingGetter()) return;
+    isLoadingSetter(true);
+    notifyListeners();
+    try {
+      await task();
+    } catch (e) {
+      if (context != null && context.mounted) {
+        SnackUtil.show(context, e.toString());
+      }
+    } finally {
+      isLoadingSetter(false);
+      notifyListeners();
+    }
+  }
+
   // ===========================================================================
   // 1. Dashboard
   // ===========================================================================
 
-  Future<void> fetchDashboard({BuildContext? context}) async {
-    if (_isDashboardLoading) return;
-    _isDashboardLoading = true;
-    notifyListeners();
-    try {
-      _stats = await _dashboardService.fetchDashboardStats();
-    } catch (e) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
-    } finally {
-      _isDashboardLoading = false;
-      notifyListeners();
-    }
-  }
+  Future<void> fetchDashboard({BuildContext? context}) => _runFetch(
+        isLoadingGetter: () => _isDashboardLoading,
+        isLoadingSetter: (v) => _isDashboardLoading = v,
+        task: () async => _stats = await _dashboardService.fetchDashboardStats(),
+        context: context,
+      );
 
   // ===========================================================================
   // 2. Orders
   // ===========================================================================
 
-  Future<void> fetchOrders(
-      {String? statusFilter, BuildContext? context}) async {
-    if (_isOrdersLoading) return;
-    _isOrdersLoading = true;
-    notifyListeners();
-    if (statusFilter != null) {
-      _selectedStatus = statusFilter;
-    }
-    try {
-      _orders =
-          await _ordersService.fetchAllOrders(statusFilter: _selectedStatus);
-    } catch (e) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
-    } finally {
-      _isOrdersLoading = false;
-      notifyListeners();
-    }
-  }
+  Future<void> fetchOrders({String? statusFilter, BuildContext? context}) =>
+      _runFetch(
+        isLoadingGetter: () => _isOrdersLoading,
+        isLoadingSetter: (v) => _isOrdersLoading = v,
+        task: () async {
+          if (statusFilter != null) {
+            _selectedStatus = statusFilter;
+          }
+          _orders =
+              await _ordersService.fetchAllOrders(statusFilter: _selectedStatus);
+        },
+        context: context,
+      );
 
   Future<bool> updateOrderStatus(
     String orderId,
@@ -172,21 +172,10 @@ class OwnerNotifier with ChangeNotifier {
         notifyListeners();
       }
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم تحديث حالة الطلب بنجاح ✅',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تم تحديث حالة الطلب بنجاح ✅');
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     }
   }
@@ -195,23 +184,13 @@ class OwnerNotifier with ChangeNotifier {
   // 3. Products
   // ===========================================================================
 
-  Future<void> fetchProducts({BuildContext? context}) async {
-    if (_isProductsLoading) return;
-    _isProductsLoading = true;
-    notifyListeners();
-    try {
-      _products = await _productsService.fetchAllOwnerProducts();
-    } catch (e) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
-    } finally {
-      _isProductsLoading = false;
-      notifyListeners();
-    }
-  }
+  Future<void> fetchProducts({BuildContext? context}) => _runFetch(
+        isLoadingGetter: () => _isProductsLoading,
+        isLoadingSetter: (v) => _isProductsLoading = v,
+        task: () async =>
+            _products = await _productsService.fetchAllOwnerProducts(),
+        context: context,
+      );
 
   Future<bool> saveProduct({
     String? id,
@@ -250,22 +229,14 @@ class OwnerNotifier with ChangeNotifier {
       await fetchProducts();
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: id == null
-                ? 'تمت إضافة المنتج بنجاح 🎉'
-                : 'تم تعديل المنتج بنجاح ✅',
-            context: context,
-          ),
+        SnackUtil.show(
+          context,
+          id == null ? 'تمت إضافة المنتج بنجاح 🎉' : 'تم تعديل المنتج بنجاح ✅',
         );
       }
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -298,36 +269,23 @@ class OwnerNotifier with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
     }
   }
 
-  Future<bool> deleteProduct(String productId,
-      {required BuildContext context}) async {
+  Future<bool> deleteProduct(
+    String productId, {
+    required BuildContext context,
+  }) async {
     try {
       await _productsService.deleteProduct(productId);
       _products.removeWhere((p) => p.id == productId);
       notifyListeners();
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم حذف المنتج بنجاح 🗑️',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تم حذف المنتج بنجاح 🗑️');
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     }
   }
@@ -336,23 +294,13 @@ class OwnerNotifier with ChangeNotifier {
   // 4. Inventory
   // ===========================================================================
 
-  Future<void> fetchInventory({BuildContext? context}) async {
-    if (_isInventoryLoading) return;
-    _isInventoryLoading = true;
-    notifyListeners();
-    try {
-      _inventory = await _inventoryService.fetchInventoryList();
-    } catch (e) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
-    } finally {
-      _isInventoryLoading = false;
-      notifyListeners();
-    }
-  }
+  Future<void> fetchInventory({BuildContext? context}) => _runFetch(
+        isLoadingGetter: () => _isInventoryLoading,
+        isLoadingSetter: (v) => _isInventoryLoading = v,
+        task: () async =>
+            _inventory = await _inventoryService.fetchInventoryList(),
+        context: context,
+      );
 
   Future<void> updateStock(
     String variantId,
@@ -369,22 +317,12 @@ class OwnerNotifier with ChangeNotifier {
       if (idx != -1) {
         _inventory[idx]['stock_quantity'] = newStock;
         _inventory[idx]['is_available'] = newStock > 0;
-        notifyListeners();
       }
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم تحديث المخزون إلى $newStock قطعة ✅',
-            context: context,
-          ),
-        );
+        SnackUtil.show(context, 'تم تحديث المخزون إلى $newStock قطعة ✅');
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
     } finally {
       _updatingVariantIds.remove(variantId);
       notifyListeners();
@@ -395,23 +333,13 @@ class OwnerNotifier with ChangeNotifier {
   // 5. Categories
   // ===========================================================================
 
-  Future<void> fetchCategories({BuildContext? context}) async {
-    if (_isCategoriesLoading) return;
-    _isCategoriesLoading = true;
-    notifyListeners();
-    try {
-      _categories = await _categoriesService.fetchAllCategories();
-    } catch (e) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
-    } finally {
-      _isCategoriesLoading = false;
-      notifyListeners();
-    }
-  }
+  Future<void> fetchCategories({BuildContext? context}) => _runFetch(
+        isLoadingGetter: () => _isCategoriesLoading,
+        isLoadingSetter: (v) => _isCategoriesLoading = v,
+        task: () async =>
+            _categories = await _categoriesService.fetchAllCategories(),
+        context: context,
+      );
 
   Future<bool> addCategory({
     required String name,
@@ -429,21 +357,10 @@ class OwnerNotifier with ChangeNotifier {
         sortOrder: sortOrder,
       );
       await fetchCategories();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تمت إضافة التصنيف بنجاح ✅',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تمت إضافة التصنيف بنجاح ✅');
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -470,21 +387,10 @@ class OwnerNotifier with ChangeNotifier {
         isActive: isActive,
       );
       await fetchCategories();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم تعديل التصنيف بنجاح ✅',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تم تعديل التصنيف بنجاح ✅');
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -499,21 +405,10 @@ class OwnerNotifier with ChangeNotifier {
       await _categoriesService.deleteCategory(categoryId);
       _categories.removeWhere((c) => c.id == categoryId);
       notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم حذف التصنيف 🗑️',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تم حذف التصنيف 🗑️');
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     }
   }
@@ -522,23 +417,13 @@ class OwnerNotifier with ChangeNotifier {
   // 6. Settings
   // ===========================================================================
 
-  Future<void> fetchStoreSettings({BuildContext? context}) async {
-    if (_isSettingsLoading) return;
-    _isSettingsLoading = true;
-    notifyListeners();
-    try {
-      _storeSettings = await _settingsService.fetchStoreSettings();
-    } catch (e) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
-    } finally {
-      _isSettingsLoading = false;
-      notifyListeners();
-    }
-  }
+  Future<void> fetchStoreSettings({BuildContext? context}) => _runFetch(
+        isLoadingGetter: () => _isSettingsLoading,
+        isLoadingSetter: (v) => _isSettingsLoading = v,
+        task: () async =>
+            _storeSettings = await _settingsService.fetchStoreSettings(),
+        context: context,
+      );
 
   Future<bool> saveStoreSettings(
     StoreSettingsModel settings, {
@@ -549,21 +434,10 @@ class OwnerNotifier with ChangeNotifier {
       await _settingsService.updateStoreSettings(settings);
       _storeSettings = settings;
       notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'تم حفظ إعدادات المتجر بنجاح ✅',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'تم حفظ إعدادات المتجر بنجاح ✅');
       return true;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(text: e.toString(), context: context),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -579,7 +453,6 @@ class OwnerNotifier with ChangeNotifier {
     _inventory = [];
     _categories = [];
     _storeSettings = null;
-    _isLoading = false;
     _isDashboardLoading = false;
     _isOrdersLoading = false;
     _isProductsLoading = false;

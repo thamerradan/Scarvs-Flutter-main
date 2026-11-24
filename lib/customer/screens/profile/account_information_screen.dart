@@ -6,8 +6,7 @@ import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/providers/user_provider.dart';
-import 'package:scarvs/core/widgets/app_back_button.dart';
-import 'package:scarvs/core/widgets/custom_text_style.dart';
+import 'package:scarvs/core/widgets/app_page_header.dart';
 
 class AccountInformationScreen extends StatefulWidget {
   const AccountInformationScreen({super.key});
@@ -42,21 +41,9 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  AppBackButton(
-                    themeFlag: themeFlag,
-                    fallbackRoute: AppRouter.profileRoute,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'معلومات الحساب',
-                    style: CustomTextWidget.bodyTextB2(
-                      color:
-                          themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                ],
+              const AppPageHeader(
+                title: 'معلومات الحساب',
+                fallbackRoute: AppRouter.profileRoute,
               ),
               const SizedBox(height: 25),
               Center(

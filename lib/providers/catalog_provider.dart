@@ -126,13 +126,8 @@ class CatalogProvider with ChangeNotifier {
       // حفظ أحدث نسخة محلية مجمعة
       _saveToCache();
     } on SocketException catch (_) {
-      if (context != null && context.mounted && _products.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
+      if (_products.isEmpty && context != null && context.mounted) {
+        SnackUtil.showNetworkError(context);
       }
     } catch (e) {
       debugPrint('Error loading initial product data: $e');
@@ -142,115 +137,34 @@ class CatalogProvider with ChangeNotifier {
     }
   }
 
-  /// تحديث قائمة المنتجات تلقائياً (صامتاً أو مع مؤشر)
-  Future<List<ProductItem>> refreshProducts({
-    bool silent = true,
-    BuildContext? context,
-  }) async {
-    if (_isLoading) return _products;
-
-    if (!silent) {
-      _isLoading = true;
-      notifyListeners();
-    }
-    try {
-      final list = await _productService.fetchProducts();
-      _products = list;
-      _hasLoaded = true;
-      _saveToCache();
-      notifyListeners();
-      return list;
-    } catch (e) {
-      debugPrint('Error refreshing products: $e');
-      return _products;
-    } finally {
-      if (!silent) {
-        _isLoading = false;
-        notifyListeners();
-      }
-    }
-  }
-
-  /// تحديث قائمة الأصناف تلقائياً
-  Future<List<CategoryModel>> refreshCategories({
-    bool silent = true,
-    BuildContext? context,
-  }) async {
-    try {
-      final list = await _productService.fetchCategories();
-      _categories = list;
-      notifyListeners();
-      return list;
-    } catch (e) {
-      debugPrint('Error refreshing categories: $e');
-      return _categories;
-    }
-  }
-
-  /// تحديث كامل للمنتجات والأصناف
-  Future<void> refreshAll({bool silent = true, BuildContext? context}) async {
-    await Future.wait([
-      refreshProducts(silent: silent, context: context),
-      refreshCategories(silent: silent, context: context),
-    ]);
-  }
-
-  /// جلب التصنيفات
-  Future<List<CategoryModel>> fetchCategories({BuildContext? context}) async {
-    if (_categories.isNotEmpty) return _categories;
-    try {
-      _categories = await _productService.fetchCategories();
-      notifyListeners();
-      return _categories;
-    } catch (_) {
-      return [];
-    }
-  }
-
-  /// جلب كافة المنتجات
-  Future<List<ProductItem>> fetchProducts({
-    BuildContext? context,
-    bool? featuredOnly,
-    String? categoryId,
-    String? categoryName,
-  }) async {
-    try {
-      final list = await _productService.fetchProducts(
-        featuredOnly: featuredOnly,
-        categoryId: categoryId,
-        categoryName: categoryName,
-      );
-      if (categoryId == null && categoryName == null && featuredOnly == null) {
-        _products = list;
-        notifyListeners();
-      }
-      return list;
-    } catch (_) {
-      return [];
-    }
-  }
-
   /// جلب تفاصيل المنتج بالـ ID
   Future<ProductItem?> fetchProductDetail({
     BuildContext? context,
     required dynamic id,
   }) async {
     try {
-      final item = await _productService.fetchProductDetail(id.toString());
-      return item;
+      return await _productService.fetchProductDetail(id.toString());
     } on SocketException catch (_) {
-      if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      SnackUtil.showNetworkError(context);
       return null;
     } catch (e) {
       debugPrint('Error fetchProductDetail: $e');
       return null;
+    }
+  }
+
+  /// تنفيذ استعلام منتجات مع معالجة أخطاء الشبكة بشكل موحد
+  Future<List<ProductItem>> _runProductQuery(
+    BuildContext context,
+    Future<List<ProductItem>> Function() query,
+  ) async {
+    try {
+      return await query();
+    } on SocketException catch (_) {
+      if (context.mounted) SnackUtil.showNetworkError(context);
+      return [];
+    } catch (_) {
+      return [];
     }
   }
 
@@ -259,50 +173,26 @@ class CatalogProvider with ChangeNotifier {
     required BuildContext context,
     dynamic categoryName,
     String? categoryId,
-  }) async {
-    try {
-      final list = await _productService.fetchProducts(
+  }) {
+    return _runProductQuery(
+      context,
+      () => _productService.fetchProducts(
         categoryId: categoryId,
         categoryName: categoryName?.toString(),
-      );
-      return list;
-    } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
-      return [];
-    } catch (e) {
-      return [];
-    }
+      ),
+    );
   }
 
   /// البحث عن منتج بالاسم
   Future<List<ProductItem>> searchProduct({
     required BuildContext context,
     required dynamic productName,
-  }) async {
-    try {
-      final list = await _productService.fetchProducts(
+  }) {
+    return _runProductQuery(
+      context,
+      () => _productService.fetchProducts(
         searchQuery: productName?.toString(),
-      );
-      return list;
-    } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
-      return [];
-    } catch (e) {
-      return [];
-    }
+      ),
+    );
   }
 }

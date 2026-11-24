@@ -80,23 +80,11 @@ class AuthenticationNotifier with ChangeNotifier {
     
       return true;
     } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.showNetworkError(context);
       return false;
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString().replaceAll('Exception: ', ''),
-            context: context,
-          ),
-        );
+        SnackUtil.show(context, e.toString().replaceAll('Exception: ', ''));
       }
       return false;
     } finally {
@@ -147,13 +135,11 @@ class AuthenticationNotifier with ChangeNotifier {
         await fetchCurrentUserProfile();
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(
-              text: fullName != null
-                  ? 'تم إنشاء حسابك بنجاح! مرحباً بك 🎉'
-                  : 'تم تسجيل الدخول بنجاح 👋',
-              context: context,
-            ),
+          SnackUtil.show(
+            context,
+            fullName != null
+                ? 'تم إنشاء حسابك بنجاح! مرحباً بك 🎉'
+                : 'تم تسجيل الدخول بنجاح 👋',
           );
           final userRole = _currentProfile?.role ?? 'customer';
           if (userRole == 'owner') {
@@ -172,23 +158,11 @@ class AuthenticationNotifier with ChangeNotifier {
       }
       return false;
     } on SocketException catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'يرجى التحقق من اتصالك بالإنترنت',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.showNetworkError(context);
       return false;
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: e.toString().replaceAll('Exception: ', ''),
-            context: context,
-          ),
-        );
+        SnackUtil.show(context, e.toString().replaceAll('Exception: ', ''));
       }
       return false;
     } finally {
@@ -243,14 +217,7 @@ class AuthenticationNotifier with ChangeNotifier {
         );
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(
-            text: 'حدث خطأ أثناء تسجيل الخروج: $e',
-            context: context,
-          ),
-        );
-      }
+      if (context.mounted) SnackUtil.show(context, 'حدث خطأ أثناء تسجيل الخروج: $e');
     } finally {
       _setLoading(false);
     }
