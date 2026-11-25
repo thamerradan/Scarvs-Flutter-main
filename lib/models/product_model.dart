@@ -72,7 +72,7 @@ class ProductItem {
           .toList();
     }
 
-    // قراءة اسم التصنيف
+    // قراءة اسم الصنف
     String? catName;
     if (json['categories'] != null && json['categories'] is Map) {
       catName = json['categories']['name']?.toString();

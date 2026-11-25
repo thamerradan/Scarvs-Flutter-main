@@ -1,4 +1,4 @@
-// يدير بيانات المنتجات والتصنيفات وعمليات تحميلها وتخزينها المؤقت محلياً.
+// يدير بيانات المنتجات والأصناف وعمليات تحميلها وتخزينها المؤقت محلياً.
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -88,8 +88,9 @@ class CatalogProvider with ChangeNotifier {
     }
   }
 
-  /// تحميل البيانات الأولية للرئيسية (التصنيفات والمنتجات) مع التخزين المؤقت والعرض اللحظي
-  Future<void> loadInitialData({bool refresh = false, BuildContext? context}) async {
+  /// تحميل البيانات الأولية للرئيسية (الأصناف والمنتجات) مع التخزين المؤقت والعرض اللحظي
+  Future<void> loadInitialData(
+      {bool refresh = false, BuildContext? context}) async {
     if (_isLoading) return;
 
     // 1. عرض البيانات من الكاش المحلي فوراً إن وجدت
@@ -103,7 +104,10 @@ class CatalogProvider with ChangeNotifier {
       return;
     }
 
-    if (_hasLoaded && !refresh && _products.isNotEmpty && _categories.isNotEmpty) {
+    if (_hasLoaded &&
+        !refresh &&
+        _products.isNotEmpty &&
+        _categories.isNotEmpty) {
       return;
     }
 

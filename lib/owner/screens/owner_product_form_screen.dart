@@ -12,6 +12,7 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
+import 'package:scarvs/core/widgets/app_text_field.dart';
 
 class _ProductImageEntry {
   final File? file;
@@ -57,7 +58,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
 
     _nameController = TextEditingController(text: p?.name ?? '');
     _descController = TextEditingController(text: p?.description ?? '');
-    _priceController = TextEditingController(text: p != null ? p.price.toStringAsFixed(0) : '');
+    _priceController = TextEditingController(
+        text: p != null ? p.price.toStringAsFixed(0) : '');
     _oldPriceController = TextEditingController(
       text: p?.oldPrice != null ? p!.oldPrice!.toStringAsFixed(0) : '',
     );
@@ -89,7 +91,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<OwnerNotifier>(context, listen: false).fetchCategories(context: context);
+      Provider.of<OwnerNotifier>(context, listen: false)
+          .fetchCategories(context: context);
     });
   }
 
@@ -114,7 +117,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF222831) : Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: SingleChildScrollView(
@@ -131,7 +135,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   ),
                   const SizedBox(height: 14),
                   const Text(
-                    'إضافة صور للمنتج 📸',
+                    'إضافة صور للمنتج',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 6),
@@ -171,22 +175,6 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     onTap: () {
                       Navigator.of(ctx).pop();
                       _pickCameraImage();
-                    },
-                  ),
-                  ListTile(
-                    dense: true,
-                    leading: CircleAvatar(
-                      backgroundColor: isDark
-                          ? Colors.white.withValues(alpha: 0.12)
-                          : AppColors.rawSienna.withValues(alpha: 0.12),
-                      child: Icon(Icons.link,
-                          color: isDark ? Colors.white : AppColors.rawSienna),
-                    ),
-                    title: const Text('إضافة رابط صورة مباشر (URL)'),
-                    subtitle: const Text('لصق رابط صورة على الإنترنت'),
-                    onTap: () {
-                      Navigator.of(ctx).pop();
-                      _addViaUrlDialog();
                     },
                   ),
                   const SizedBox(height: 8),
@@ -244,50 +232,6 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     }
   }
 
-  void _addViaUrlDialog() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final urlCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('إضافة رابط صورة', textAlign: TextAlign.right),
-        content: TextField(
-          controller: urlCtrl,
-          textAlign: TextAlign.left,
-          decoration: const InputDecoration(
-            hintText: 'https://example.com/product.jpg',
-            prefixIcon: Icon(Icons.link),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
-              foregroundColor: isDark ? AppColors.mirage : Colors.white,
-            ),
-            onPressed: () {
-              final u = urlCtrl.text.trim();
-              if (u.isNotEmpty && u.startsWith('http')) {
-                setState(() {
-                  _images.add(_ProductImageEntry(url: u));
-                });
-                Navigator.of(ctx).pop();
-              }
-            },
-            child: Text('إضافة',
-                style: TextStyle(
-                    color: isDark ? AppColors.mirage : Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _makeMainImage(int index) {
     if (index > 0 && index < _images.length) {
       setState(() {
@@ -296,7 +240,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('تم تعيين الصورة كغلاف رئيسي للمنتج ⭐'),
+          content: Text('تم تعيين الصورة كغلاف رئيسي للمنتج'),
           duration: Duration(seconds: 1),
         ),
       );
@@ -310,7 +254,6 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
   }
 
   void _addVariantRow() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) {
@@ -318,35 +261,37 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         final stockCtrl = TextEditingController(text: '5');
 
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text('إضافة مقاس جديد', textAlign: TextAlign.right),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: sizeCtrl,
+              AppTextField(
+                textEditingController: sizeCtrl,
+                labelText: 'المقاس',
+                hintText: 'L أو 40',
                 textAlign: TextAlign.right,
-                decoration: const InputDecoration(labelText: 'المقاس (مثال: L أو 40)'),
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: stockCtrl,
+              AppTextField(
+                textEditingController: stockCtrl,
+                labelText: 'الكمية المتوفرة',
+                hintText: '5',
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.right,
-                decoration: const InputDecoration(labelText: 'الكمية المتوفرة'),
               ),
             ],
           ),
           actions: [
-            TextButton(
+            AppTextButton(
+              text: 'إلغاء',
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('إلغاء'),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? Colors.white : AppColors.rawSienna,
-                foregroundColor: isDark ? AppColors.mirage : Colors.white,
-              ),
+            AppPrimaryButton(
+              text: 'إضافة',
+              height: 40,
+              width: 90,
               onPressed: () {
                 final s = sizeCtrl.text.trim();
                 final qty = int.tryParse(stockCtrl.text.trim()) ?? 0;
@@ -357,9 +302,6 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   Navigator.of(ctx).pop();
                 }
               },
-              child: Text('إضافة',
-                  style: TextStyle(
-                      color: isDark ? AppColors.mirage : Colors.white)),
             ),
           ],
         );
@@ -388,9 +330,12 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       return;
     }
 
-    final newFiles = _images.where((i) => i.isFile).map((i) => i.file!).toList();
-    final existingUrls =
-        _images.where((i) => !i.isFile && i.url != null).map((i) => i.url!).toList();
+    final newFiles =
+        _images.where((i) => i.isFile).map((i) => i.file!).toList();
+    final existingUrls = _images
+        .where((i) => !i.isFile && i.url != null)
+        .map((i) => i.url!)
+        .toList();
 
     final ownerNotifier = Provider.of<OwnerNotifier>(context, listen: false);
 
@@ -448,29 +393,27 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     const SizedBox(height: 20),
 
                     // اسم المنتج
-                    TextFormField(
-                      controller: _nameController,
-                      validator: (val) =>
-                          val == null || val.trim().isEmpty ? 'يرجى كتابة اسم المنتج' : null,
-                      decoration: _inputDecoration(
-                        label: 'اسم المنتج *',
-                        icon: Icons.shopping_bag_outlined,
-                        themeFlag: themeFlag,
-                      ),
+                    AppTextField(
+                      textEditingController: _nameController,
+                      labelText: 'اسم المنتج',
+                      hintText: 'أدخل اسم المنتج',
+                      prefixIcon: const Icon(Icons.shopping_bag_outlined),
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'يرجى كتابة اسم المنتج'
+                          : null,
                     ),
                     const SizedBox(height: 14),
 
                     // الوصف
-                    TextFormField(
-                      controller: _descController,
+                    AppTextField(
+                      textEditingController: _descController,
+                      labelText: 'وصف المنتج وتفاصيله',
+                      hintText: 'أدخل وصف المنتج وتفاصيله',
                       maxLines: 3,
-                      validator: (val) =>
-                          val == null || val.trim().isEmpty ? 'يرجى كتابة وصف المنتج' : null,
-                      decoration: _inputDecoration(
-                        label: 'وصف المنتج وتفاصيله *',
-                        icon: Icons.description_outlined,
-                        themeFlag: themeFlag,
-                      ),
+                      prefixIcon: const Icon(Icons.description_outlined),
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'يرجى كتابة وصف المنتج'
+                          : null,
                     ),
                     const SizedBox(height: 14),
 
@@ -478,43 +421,44 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: TextFormField(
-                            controller: _priceController,
+                          child: AppTextField(
+                            textEditingController: _priceController,
+                            labelText: 'السعر الحالي',
+                            hintText: '0',
                             keyboardType: TextInputType.number,
+                            prefixIcon: const Icon(Icons.attach_money),
                             validator: (val) {
-                              if (val == null || val.trim().isEmpty) return 'مطلوب';
-                              if (double.tryParse(val.trim()) == null) return 'غير صالح';
+                              if (val == null || val.trim().isEmpty) {
+                                return 'مطلوب';
+                              }
+                              if (double.tryParse(val.trim()) == null) {
+                                return 'غير صالح';
+                              }
                               return null;
                             },
-                            decoration: _inputDecoration(
-                              label: 'السعر الحالي (ر.س) *',
-                              icon: Icons.attach_money,
-                              themeFlag: themeFlag,
-                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: TextFormField(
-                            controller: _oldPriceController,
+                          child: AppTextField(
+                            textEditingController: _oldPriceController,
+                            labelText: 'السعر قبل الخصم',
+                            hintText: 'اختياري',
                             keyboardType: TextInputType.number,
-                            decoration: _inputDecoration(
-                              label: 'السعر قبل الخصم',
-                              icon: Icons.money_off,
-                              themeFlag: themeFlag,
-                            ),
+                            prefixIcon: const Icon(Icons.money_off),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 14),
 
-                    // التصنيف (الماركة)
+                    // الصنف (الماركة)
                     DropdownButtonFormField<String>(
                       initialValue: _selectedCategoryId,
-                      dropdownColor: themeFlag ? AppColors.mirage : Colors.white,
+                      dropdownColor:
+                          themeFlag ? AppColors.mirage : Colors.white,
                       decoration: _inputDecoration(
-                        label: 'التصنيف / الماركة',
+                        label: 'الصنف',
                         icon: Icons.category_outlined,
                         themeFlag: themeFlag,
                       ),
@@ -524,176 +468,185 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                           child: Text(
                             c.name,
                             style: TextStyle(
-                              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                              color: themeFlag
+                                  ? AppColors.creamColor
+                                  : AppColors.mirage,
                             ),
                           ),
                         );
                       }).toList(),
-                      onChanged: (val) => setState(() => _selectedCategoryId = val),
+                      onChanged: (val) =>
+                          setState(() => _selectedCategoryId = val),
                     ),
                     const SizedBox(height: 14),
 
                     // خيارات التفعيل والظهور
                     SwitchListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
                       title: const Text('المنتج نشط ومتاح للبيع'),
                       value: _isActive,
-                      activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                      activeThumbColor:
+                          themeFlag ? Colors.white : AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isActive = val),
                     ),
                     const SizedBox(height: 8),
                     SwitchListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
-                      title: const Text('منتج مميز (يظهر في الرئيسية) ⭐'),
+                      title: const Text('منتج مميز (يظهر في الرئيسية)'),
                       value: _isFeatured,
-                      activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                      activeThumbColor:
+                          themeFlag ? Colors.white : AppColors.rawSienna,
                       onChanged: (val) => setState(() => _isFeatured = val),
                     ),
                     const SizedBox(height: 8),
 
                     // خيار تحديد مقاسات للمنتج
                     SwitchListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       tileColor: themeFlag ? Colors.white10 : Colors.white,
                       title: const Text('تحديد مقاسات للمنتج'),
                       subtitle: Text(
                         _hasSizes
-                            ? 'المنتج يتطلب مقاسات متعددة (مثل الملابس والأزياء)'
-                            : 'المنتج بدون مقاس (مثل الإكسسوارات أو الحقائب)',
+                            ? 'المنتج يتطلب مقاسات متعددة'
+                            : 'المنتج بدون مقاس',
                         style: TextStyle(
                           fontSize: 12,
-                          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                          color: (themeFlag
+                                  ? AppColors.creamColor
+                                  : AppColors.mirage)
                               .withValues(alpha: 0.6),
                         ),
                       ),
                       value: _hasSizes,
-                      activeThumbColor: themeFlag ? Colors.white : AppColors.rawSienna,
+                      activeThumbColor:
+                          themeFlag ? Colors.white : AppColors.rawSienna,
                       onChanged: (val) => setState(() => _hasSizes = val),
                     ),
                     if (_hasSizes) ...[
                       const SizedBox(height: 20),
 
                       // قسم إدارة المقاسات والمخزون
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'المقاسات والمخزون (${_variants.length})',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'المقاسات والمخزون (${_variants.length})',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: themeFlag
+                                  ? AppColors.creamColor
+                                  : AppColors.mirage,
+                            ),
+                          ),
+                          AppTextButton(
+                            icon: Icons.add,
+                            text: 'إضافة مقاس',
+                            textColor:
+                                themeFlag ? Colors.white : AppColors.rawSienna,
+                            onPressed: _addVariantRow,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+
+                      // جدول المقاسات
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: themeFlag ? Colors.white10 : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: (themeFlag
+                                    ? AppColors.creamColor
+                                    : AppColors.mirage)
+                                .withValues(alpha: 0.1),
                           ),
                         ),
-                        TextButton.icon(
-                          icon: const Icon(Icons.add, size: 18),
-                          label: const Text('إضافة مقاس'),
-                          onPressed: _addVariantRow,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-
-                    // جدول المقاسات
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: themeFlag ? Colors.white10 : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-                              .withValues(alpha: 0.1),
-                        ),
-                      ),
-                      child: _variants.isEmpty
-                          ? Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 24, horizontal: 16),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.straighten_outlined,
-                                    size: 38,
-                                    color: (themeFlag
-                                            ? AppColors.creamColor
-                                            : AppColors.mirage)
-                                        .withValues(alpha: 0.3),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'لم تتم إضافة أي مقاسات بعد',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                        child: _variants.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 24, horizontal: 16),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.straighten_outlined,
+                                      size: 38,
                                       color: (themeFlag
                                               ? AppColors.creamColor
                                               : AppColors.mirage)
-                                          .withValues(alpha: 0.7),
+                                          .withValues(alpha: 0.3),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'اضغط على "إضافة مقاس" أعلاه لتحديد المقاسات المتوفرة والكميات',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: (themeFlag
-                                              ? AppColors.creamColor
-                                              : AppColors.mirage)
-                                          .withValues(alpha: 0.45),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Column(
-                              children: _variants.asMap().entries.map((entry) {
-                                final idx = entry.key;
-                                final item = entry.value;
-
-                                return ListTile(
-                                  dense: true,
-                                  leading: CircleAvatar(
-                                    backgroundColor: themeFlag
-                                        ? Colors.white.withValues(alpha: 0.2)
-                                        : AppColors.rawSienna.withValues(alpha: 0.2),
-                                    radius: 16,
-                                    child: Text(
-                                      '${item['size']}',
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'لم تتم إضافة أي مقاسات بعد',
                                       style: TextStyle(
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
-                                        color: themeFlag
-                                            ? Colors.white
-                                            : AppColors.rawSienna,
-                                        fontSize: 12,
+                                        color: (themeFlag
+                                                ? AppColors.creamColor
+                                                : AppColors.mirage)
+                                            .withValues(alpha: 0.7),
                                       ),
                                     ),
-                                  ),
-                                  title: Text('المقاس: ${item['size']}'),
-                                  subtitle: Text(
-                                      'الكمية: ${item['stock_quantity']} قطعة'),
-                                  trailing: IconButton(
-                                    icon: const Icon(
-                                        Icons.remove_circle_outline,
-                                        color: Colors.red),
-                                    onPressed: () {
-                                      setState(() {
-                                        _variants.removeAt(idx);
-                                      });
-                                    },
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                    ),
+                                  ],
+                                ),
+                              )
+                            : Column(
+                                children:
+                                    _variants.asMap().entries.map((entry) {
+                                  final idx = entry.key;
+                                  final item = entry.value;
+
+                                  return ListTile(
+                                    dense: true,
+                                    leading: CircleAvatar(
+                                      backgroundColor: themeFlag
+                                          ? Colors.white.withValues(alpha: 0.2)
+                                          : AppColors.rawSienna
+                                              .withValues(alpha: 0.2),
+                                      radius: 16,
+                                      child: Text(
+                                        '${item['size']}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: themeFlag
+                                              ? Colors.white
+                                              : AppColors.rawSienna,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                    title: Text('المقاس: ${item['size']}'),
+                                    subtitle: Text(
+                                        'الكمية: ${item['stock_quantity']} قطعة'),
+                                    trailing: IconButton(
+                                      icon: const Icon(
+                                          Icons.remove_circle_outline,
+                                          color: Colors.red),
+                                      onPressed: () {
+                                        setState(() {
+                                          _variants.removeAt(idx);
+                                        });
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                      ),
                     ],
                     const SizedBox(height: 30),
 
                     // زر الحفظ
                     AppPrimaryButton(
-                      text: isEditing ? 'حفظ التعديلات ✅' : 'إضافة المنتج للمتجر 🚀',
+                      text: isEditing
+                          ? 'حفظ التعديلات ✅'
+                          : 'إضافة المنتج للمتجر 🚀',
                       isLoading: ownerNotifier.isSaving,
                       onPressed: _submitForm,
                     ),
@@ -716,7 +669,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         color: themeFlag ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.12),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+              .withValues(alpha: 0.12),
         ),
       ),
       child: Column(
@@ -736,20 +690,20 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
                     ),
                   ),
                 ],
               ),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: themeFlag ? Colors.white : AppColors.rawSienna,
-                  foregroundColor: themeFlag ? AppColors.mirage : Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                icon: const Icon(Icons.add_a_photo, size: 16),
-                label: const Text('إضافة صور', style: TextStyle(fontSize: 13)),
+              AppPrimaryButton(
+                text: 'إضافة صور',
+                icon: Icons.add_a_photo,
+                height: 38,
+                width: 125,
+                fontSize: 13,
+                borderRadius: 10,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 onPressed: _showImageSourcePicker,
               ),
             ],
@@ -759,11 +713,11 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
             'الصورة الأولى ستكون هي الغلاف الرئيسي للمنتج، ويمكنك تعيين أي صورة كغلاف بالنقر عليها',
             style: TextStyle(
               fontSize: 11,
-              color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.6),
+              color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                  .withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 14),
-
           if (_images.isEmpty)
             InkWell(
               borderRadius: BorderRadius.circular(12),
@@ -791,7 +745,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     const SizedBox(height: 8),
                     const Text(
                       'انقر هنا لإضافة صور للمنتج 📸 (يمكنك اختيار عدة صور)',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -825,8 +780,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircleAvatar(
-                              backgroundColor:
-                                  themeFlag ? Colors.white : AppColors.rawSienna,
+                              backgroundColor: themeFlag
+                                  ? Colors.white
+                                  : AppColors.rawSienna,
                               radius: 18,
                               child: Icon(Icons.add,
                                   color: themeFlag
@@ -882,14 +838,16 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                             top: 6,
                             right: 6,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 3),
                               decoration: BoxDecoration(
-                                color:
-                                    themeFlag ? Colors.white : AppColors.rawSienna,
+                                color: themeFlag
+                                    ? Colors.white
+                                    : AppColors.rawSienna,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                'الغلاف ⭐',
+                                'الغلاف',
                                 style: TextStyle(
                                     color: themeFlag
                                         ? AppColors.mirage
@@ -907,7 +865,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                             child: InkWell(
                               onTap: () => _makeMainImage(index),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withValues(alpha: 0.75),
                                   borderRadius: BorderRadius.circular(8),
@@ -915,7 +874,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                 child: const Text(
                                   'تعيين كغلاف',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -933,7 +895,8 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                 color: Colors.redAccent,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.close, size: 14, color: Colors.white),
+                              child: const Icon(Icons.close,
+                                  size: 14, color: Colors.white),
                             ),
                           ),
                         ),
@@ -962,13 +925,15 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+              .withValues(alpha: 0.15),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage).withValues(alpha: 0.15),
+          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+              .withValues(alpha: 0.15),
         ),
       ),
     );

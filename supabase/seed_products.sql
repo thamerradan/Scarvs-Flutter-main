@@ -18,7 +18,7 @@ declare
   v_p5 uuid;
   v_p6 uuid;
 begin
-  -- 1. إضافة التصنيفات الأساسية
+  -- 1. إضافة الأصناف الأساسية
   insert into public.categories (name, image_url, is_active, sort_order)
   values ('جوردان', 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=500', true, 1)
   returning id into v_cat_jordan;

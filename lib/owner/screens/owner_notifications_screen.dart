@@ -50,12 +50,11 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                   : null,
               actions: [
                 if (notifNotifier.notifications.isNotEmpty)
-                  TextButton(
+                  AppTextButton(
+                    text: 'تحديد الكل كمقروء',
+                    fontSize: 12,
+                    textColor: Theme.of(context).colorScheme.primary,
                     onPressed: () => notifNotifier.markAllAsRead(),
-                    child: const Text(
-                      'تحديد الكل كمقروء',
-                      style: TextStyle(fontSize: 12),
-                    ),
                   ),
                 AppRefreshButton(
                   onPressed: () =>

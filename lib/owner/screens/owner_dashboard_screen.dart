@@ -47,9 +47,9 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           textAlign: TextAlign.right,
         ),
         actions: [
-          TextButton(
+          AppTextButton(
+            text: 'إلغاء',
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('إلغاء'),
           ),
           AppDangerButton(
             text: 'تسجيل خروج',
@@ -222,7 +222,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
-          title: 'إدارة التصنيفات',
+          title: 'إدارة الأصناف',
           subtitle: 'إضافة وتعديل أقسام وتصنيفات الملابس',
           icon: Icons.category_outlined,
           color: AppColors.rawSienna,

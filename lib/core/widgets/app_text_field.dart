@@ -26,6 +26,7 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final FocusNode? focusNode;
   final bool enabled;
+  final TextStyle? style;
 
   const AppTextField({
     super.key,
@@ -48,6 +49,7 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.focusNode,
     this.enabled = true,
+    this.style,
   });
 
   @override
@@ -93,11 +95,12 @@ class AppTextField extends StatelessWidget {
       cursorWidth: 2.0,
       cursorRadius: const Radius.circular(2),
       // عدم تحديد height هنا هو الحل الجذري لمشكلة عدم استجابة زر الحذف (Backspace) في النصوص العربية
-      style: GoogleFonts.cairo(
-        color: textColor,
-        fontSize: 15,
-        fontWeight: FontWeight.w500,
-      ),
+      style: style ??
+          GoogleFonts.cairo(
+            color: textColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
       onChanged: onChanged,
       validator: validator,
       decoration: InputDecoration(

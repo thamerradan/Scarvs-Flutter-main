@@ -8,6 +8,7 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_text_field.dart';
 
 class OwnerSettingsScreen extends StatefulWidget {
   const OwnerSettingsScreen({super.key});
@@ -123,65 +124,58 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                         children: [
                           _buildSectionTitle('البيانات العامة', themeFlag),
                           const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _nameController,
+                          AppTextField(
+                            textEditingController: _nameController,
+                            labelText: 'اسم المتجر',
+                            hintText: 'أدخل اسم المتجر',
+                            prefixIcon: const Icon(Icons.store),
                             validator: (v) =>
                                 v == null || v.isEmpty ? 'مطلوب' : null,
-                            decoration: _inputDecoration(
-                              label: 'اسم المتجر',
-                              icon: Icons.store,
-                              themeFlag: themeFlag,
-                            ),
                           ),
                           const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _phoneController,
-                            decoration: _inputDecoration(
-                              label: 'رقم هاتف المتجر',
-                              icon: Icons.phone,
-                              themeFlag: themeFlag,
-                            ),
+                          AppTextField(
+                            textEditingController: _phoneController,
+                            labelText: 'رقم هاتف المتجر',
+                            hintText: '05xxxxxxxx',
+                            keyboardType: TextInputType.phone,
+                            prefixIcon: const Icon(Icons.phone),
                           ),
                           const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _whatsappController,
-                            decoration: _inputDecoration(
-                              label: 'رقم الواتساب لخدمة العملاء',
-                              icon: Icons.chat,
-                              themeFlag: themeFlag,
-                            ),
+                          AppTextField(
+                            textEditingController: _whatsappController,
+                            labelText: 'رقم الواتساب',
+                            hintText: '9665xxxxxxxx',
+                            keyboardType: TextInputType.phone,
+                            prefixIcon: const Icon(Icons.chat),
                           ),
                           const SizedBox(height: 24),
 
-                          _buildSectionTitle('سياسة الشحن والتوصيل', themeFlag),
+                          _buildSectionTitle('الشحن والتوصيل', themeFlag),
                           const SizedBox(height: 8),
                           Row(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  controller: _shippingFeeController,
+                                child: AppTextField(
+                                  textEditingController: _shippingFeeController,
+                                  labelText: 'رسوم الشحن الافتراضية',
+                                  hintText: '25',
                                   keyboardType: TextInputType.number,
+                                  prefixIcon: const Icon(Icons.local_shipping),
                                   validator: (v) =>
                                       v == null || v.isEmpty ? 'مطلوب' : null,
-                                  decoration: _inputDecoration(
-                                    label: 'رسوم الشحن الافتراضية (ر.س)',
-                                    icon: Icons.local_shipping,
-                                    themeFlag: themeFlag,
-                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: TextFormField(
-                                  controller: _freeShippingController,
+                                child: AppTextField(
+                                  textEditingController:
+                                      _freeShippingController,
+                                  labelText: 'الحد الأدنى للشحن المجاني',
+                                  hintText: '300',
                                   keyboardType: TextInputType.number,
+                                  prefixIcon: const Icon(Icons.card_giftcard),
                                   validator: (v) =>
                                       v == null || v.isEmpty ? 'مطلوب' : null,
-                                  decoration: _inputDecoration(
-                                    label: 'الحد الأدنى للشحن المجاني (ر.س)',
-                                    icon: Icons.card_giftcard,
-                                    themeFlag: themeFlag,
-                                  ),
                                 ),
                               ),
                             ],
@@ -215,7 +209,8 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                             subtitle:
                                 const Text('إيقاف استقبال طلبات جديدة مؤقتاً'),
                             value: _maintenanceMode,
-                            activeThumbColor: Colors.red,
+                            activeThumbColor:
+                                themeFlag ? Colors.white : AppColors.rawSienna,
                             onChanged: (val) =>
                                 setState(() => _maintenanceMode = val),
                           ),
@@ -223,7 +218,7 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
 
                           // زر الحفظ
                           AppPrimaryButton(
-                            text: 'حفظ التغييرات ✅',
+                            text: 'حفظ التغييرات',
                             isLoading: ownerNotifier.isSaving,
                             onPressed: _saveSettings,
                           ),
@@ -246,33 +241,6 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
         fontWeight: FontWeight.bold,
         color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
             .withValues(alpha: 0.8),
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration({
-    required String label,
-    required IconData icon,
-    required bool themeFlag,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon, size: 20),
-      filled: true,
-      fillColor: themeFlag ? Colors.white10 : Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-              .withValues(alpha: 0.15),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
-              .withValues(alpha: 0.15),
-        ),
       ),
     );
   }

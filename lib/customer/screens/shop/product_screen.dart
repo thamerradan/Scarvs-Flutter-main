@@ -34,7 +34,6 @@ class _ProductScreenState extends State<ProductScreen> {
     });
   }
 
-
   Widget _buildAppBar(BuildContext context, bool themeFlag) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -136,7 +135,8 @@ class _ProductScreenState extends State<ProductScreen> {
                     children: [
                       Icon(
                         Icons.search_rounded,
-                        color: themeFlag ? Colors.white60 : Colors.grey.shade600,
+                        color:
+                            themeFlag ? Colors.white60 : Colors.grey.shade600,
                         size: 20,
                       ),
                       const SizedBox(width: 10),
@@ -226,7 +226,6 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -250,8 +249,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor:
-            themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
+        backgroundColor: themeFlag ? AppColors.mirage : const Color(0xfffbfbfb),
         body: RefreshIndicator(
           color: themeFlag ? Colors.white : AppColors.rawSienna,
           onRefresh: () => catalogNotifier.loadInitialData(
@@ -261,7 +259,7 @@ class _ProductScreenState extends State<ProductScreen> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              // 1. الأجزاء العلوية (الشريط العلوي، البحث، وشرائح التصنيفات)
+              // 1. الأجزاء العلوية (الشريط العلوي، البحث، وشرائح الأصناف)
               SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,7 +293,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 SliverPadding(
                   padding: AppSpacing.paddingScreen,
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.68,
                       crossAxisSpacing: 14,

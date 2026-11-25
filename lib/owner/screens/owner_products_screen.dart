@@ -13,6 +13,7 @@ import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
+import 'package:scarvs/core/widgets/app_text_field.dart';
 
 class OwnerProductsScreen extends StatefulWidget {
   const OwnerProductsScreen({super.key});
@@ -53,9 +54,9 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
           textAlign: TextAlign.right,
         ),
         actions: [
-          TextButton(
+          AppTextButton(
+            text: 'إلغاء',
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء'),
           ),
           AppDangerButton(
             text: 'حذف نهائي',
@@ -112,29 +113,20 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
             // شريط البحث
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-              child: TextField(
-                controller: _searchController,
+              child: AppTextField(
+                textEditingController: _searchController,
+                hintText: 'بحث باسم المنتج أو الماركة...',
+                prefixIcon: const Icon(Icons.search),
                 onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                decoration: InputDecoration(
-                  hintText: 'بحث باسم المنتج أو الماركة...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() => _searchQuery = '');
-                          },
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: themeFlag ? Colors.white10 : Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                    : null,
               ),
             ),
             AppSpacing.gapH8,

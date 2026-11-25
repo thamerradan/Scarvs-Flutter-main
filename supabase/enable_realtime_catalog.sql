@@ -5,7 +5,7 @@
 -- تفعيل Realtime لجدول المنتجات (products)
 alter publication supabase_realtime add table public.products;
 
--- تفعيل Realtime لجدول التصنيفات (categories)
+-- تفعيل Realtime لجدول الأصناف (categories)
 alter publication supabase_realtime add table public.categories;
 
 -- تفعيل Realtime لجدول مقاسات المنتجات والمخزون (product_variants)

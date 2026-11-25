@@ -1,4 +1,4 @@
-// يعرض منتجات تصنيف محدد ويستقبل بيانات التصنيف.
+// يعرض منتجات تصنيف محدد ويستقبل بيانات الصنف.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_assets.dart';
@@ -61,9 +61,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 future: _productsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return ShimmerEffects.buildCategoryShimmer(context: context);
-                  } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-                    return AppLoader(themeFlag: themeFlag, text: 'لا توجد منتجات متوفرة حالياً في هذا التصنيف', lottieAsset: AppAssets.error);
+                    return ShimmerEffects.buildCategoryShimmer(
+                        context: context);
+                  } else if (!snapshot.hasData ||
+                      (snapshot.data as List).isEmpty) {
+                    return AppLoader(
+                        themeFlag: themeFlag,
+                        text: 'لا توجد منتجات متوفرة حالياً في هذا الصنف',
+                        lottieAsset: AppAssets.error);
                   } else {
                     final list = snapshot.data!;
                     return showDataInGrid(

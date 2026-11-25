@@ -9,6 +9,7 @@ import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
 import 'package:scarvs/core/widgets/app_status_badge.dart';
+import 'package:scarvs/core/widgets/app_text_field.dart';
 import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 
@@ -40,17 +41,18 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('تحديد كمية المخزون', textAlign: TextAlign.right),
-        content: TextField(
-          controller: ctrl,
+        content: AppTextField(
+          textEditingController: ctrl,
+          labelText: 'الكمية الجديدة',
+          hintText: '0',
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          decoration: const InputDecoration(labelText: 'الكمية الجديدة'),
         ),
         actions: [
-          TextButton(
+          AppTextButton(
+            text: 'إلغاء',
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء'),
           ),
           AppPrimaryButton(
             text: 'تحديث',
@@ -106,9 +108,9 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                 children: [
                   _buildFilterChip('الكل', 'all', themeFlag),
                   AppSpacing.gapW8,
-                  _buildFilterChip('قريب من النفاد ⚠️', 'low', themeFlag),
+                  _buildFilterChip('قريب من النفاد', 'low', themeFlag),
                   AppSpacing.gapW8,
-                  _buildFilterChip('نفذ تماماً ❌', 'out', themeFlag),
+                  _buildFilterChip('نفذ تماماً', 'out', themeFlag),
                 ],
               ),
             ),

@@ -333,4 +333,55 @@ class AppFloatingAddButton extends StatelessWidget {
   }
 }
 
+/// زر نصي موحد للإجراءات الثانوية وأزرار الإلغاء في الحوارات
+class AppTextButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final double fontSize;
+  final Color? textColor;
+
+  const AppTextButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.icon,
+    this.fontSize = 14.0,
+    this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fg = textColor ?? (isDark ? AppColors.creamColor : AppColors.mirage);
+
+    return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: fg,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 18, color: fg),
+            AppSpacing.gapW8,
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              color: fg,
+              fontSize: fontSize,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 

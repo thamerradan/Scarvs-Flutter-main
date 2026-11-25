@@ -55,8 +55,6 @@ class OwnerProductsService {
     required double price,
     double? oldPrice,
     String? categoryId,
-    String? mainImageUrl,
-    File? imageFile,
     List<File> newImageFiles = const [],
     List<String> existingImageUrls = const [],
     bool isActive = true,
@@ -66,33 +64,14 @@ class OwnerProductsService {
       final tempId = id ?? DateTime.now().millisecondsSinceEpoch.toString();
       final List<String> allFinalUrls = [];
 
-      // 1. إضافة الروابط الحالية المعتمدة مسبقاً
+      // 1. الإبقاء على الصور المحفوظة مسبقاً عند التعديل
       for (final u in existingImageUrls) {
         if (u.trim().isNotEmpty && !allFinalUrls.contains(u.trim())) {
           allFinalUrls.add(u.trim());
         }
       }
 
-      // 2. إذا وُجد رابط مباشر منفرد ولم يكن مضافاً
-      if (mainImageUrl != null && mainImageUrl.trim().isNotEmpty) {
-        if (!allFinalUrls.contains(mainImageUrl.trim())) {
-          allFinalUrls.insert(0, mainImageUrl.trim());
-        }
-      }
-
-      // 3. رفع ملف الصورة الفردية (للتوافق القديم)
-      if (imageFile != null) {
-        final uploaded = await _storageService.uploadProductImage(
-          file: imageFile,
-          productId: tempId,
-          fileName: 'main_${DateTime.now().millisecondsSinceEpoch}',
-        );
-        if (!allFinalUrls.contains(uploaded)) {
-          allFinalUrls.insert(0, uploaded);
-        }
-      }
-
-      // 4. رفع قائمة الصور المتعددة الجديدة
+      // 2. رفع قائمة الصور الجديدة إلى التخزين السحابي
       for (int i = 0; i < newImageFiles.length; i++) {
         final f = newImageFiles[i];
         final uploaded = await _storageService.uploadProductImage(
@@ -106,9 +85,8 @@ class OwnerProductsService {
       }
 
       // تحديد الصورة الرئيسية كأول صورة
-      final String? finalMainImage = allFinalUrls.isNotEmpty
-          ? allFinalUrls.first
-          : (mainImageUrl?.isNotEmpty == true ? mainImageUrl : null);
+      final String? finalMainImage =
+          allFinalUrls.isNotEmpty ? allFinalUrls.first : null;
 
       final payload = {
         'name': name,

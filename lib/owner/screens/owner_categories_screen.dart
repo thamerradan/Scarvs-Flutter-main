@@ -15,6 +15,7 @@ import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
+import 'package:scarvs/core/widgets/app_text_field.dart';
 
 class OwnerCategoriesScreen extends StatefulWidget {
   const OwnerCategoriesScreen({super.key});
@@ -39,7 +40,6 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
     final isEditing = category != null;
 
     final nameCtrl = TextEditingController(text: category?.name ?? '');
-    final urlCtrl = TextEditingController(text: category?.imageUrl ?? '');
     File? localImageFile;
 
     showDialog(
@@ -49,10 +49,11 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
           final isDark = Theme.of(context).brightness == Brightness.dark;
 
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             backgroundColor: isDark ? const Color(0xFF222831) : Colors.white,
             title: Text(
-              isEditing ? 'تعديل التصنيف' : 'إضافة تصنيف جديد',
+              isEditing ? 'تعديل الصنف' : 'إضافة تصنيف جديد',
               textAlign: TextAlign.right,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
@@ -61,7 +62,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // معاينة صورة التصنيف
+                  // معاينة صورة الصنف
                   Center(
                     child: Container(
                       width: 80,
@@ -78,117 +79,95 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                         borderRadius: BorderRadius.circular(16),
                         child: localImageFile != null
                             ? Image.file(localImageFile!, fit: BoxFit.cover)
-                            : AppNetworkImage(
-                                url: urlCtrl.text.trim(),
-                                fit: BoxFit.cover,
-                                cacheWidth: 200,
-                                errorWidget: const Icon(Icons.broken_image, size: 36, color: Colors.grey),
-                              ),
+                            : (isEditing &&
+                                    (category.imageUrl?.isNotEmpty ?? false))
+                                ? AppNetworkImage(
+                                    url: category.imageUrl!,
+                                    fit: BoxFit.cover,
+                                    cacheWidth: 200,
+                                    errorWidget: const Icon(Icons.broken_image,
+                                        size: 36, color: Colors.grey),
+                                  )
+                                : const Icon(Icons.image_outlined,
+                                    size: 36, color: Colors.grey),
                       ),
                     ),
                   ),
                   AppSpacing.gapH16,
 
-                  // حقل اسم التصنيف
-                  TextField(
-                    controller: nameCtrl,
+                  // حقل اسم الصنف
+                  AppTextField(
+                    textEditingController: nameCtrl,
+                    labelText: 'اسم الصنف',
+                    hintText: '',
                     textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      labelText: 'اسم التصنيف / الماركة *',
-                      hintText: 'مثال: رسمي، كاجوال، شتوي',
-                      prefixIcon: const Icon(Icons.label_outline),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  AppSpacing.gapH12,
-
-                  // حقل رابط الصورة المباشر
-                  TextField(
-                    controller: urlCtrl,
-                    onChanged: (_) => setDialogState(() {}),
-                    textAlign: TextAlign.left,
-                    decoration: InputDecoration(
-                      labelText: 'رابط صورة الشعار (URL اختياري)',
-                      prefixIcon: const Icon(Icons.link),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
+                    prefixIcon: const Icon(Icons.label_outline),
                   ),
                   AppSpacing.gapH12,
 
                   // زر اختيار صورة من معرض الجهاز
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      icon: const Icon(Icons.photo_library_outlined),
-                      label: Text(
-                        localImageFile != null
-                            ? 'تم اختيار صورة جديدة'
-                            : isEditing && (category.imageUrl?.isNotEmpty ?? false)
-                                ? 'تغيير صورة الشعار'
-                                : 'اختيار صورة من الجهاز',
-                      ),
-                      onPressed: () async {
-                        final picker = ImagePicker();
-                        final picked = await picker.pickImage(
-                          source: ImageSource.gallery,
-                          imageQuality: 75,
-                          maxWidth: 1200,
-                          maxHeight: 1200,
-                        );
-                        if (picked != null) {
-                          setDialogState(() {
-                            localImageFile = File(picked.path);
-                          });
-                        }
-                      },
-                    ),
+                  AppOutlinedButton(
+                    height: 46,
+                    icon: Icons.photo_library_outlined,
+                    text: localImageFile != null
+                        ? 'تم اختيار صورة جديدة'
+                        : isEditing && (category.imageUrl?.isNotEmpty ?? false)
+                            ? 'تغيير صورة الشعار'
+                            : 'اختيار صورة من الجهاز',
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      final picked = await picker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 75,
+                        maxWidth: 1200,
+                        maxHeight: 1200,
+                      );
+                      if (picked != null) {
+                        setDialogState(() {
+                          localImageFile = File(picked.path);
+                        });
+                      }
+                    },
                   ),
                 ],
               ),
             ),
             actions: [
-              TextButton(
+              AppTextButton(
+                text: 'إلغاء',
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('إلغاء'),
               ),
               AppPrimaryButton(
-                text: isEditing ? 'حفظ التعديلات' : 'إضافة التصنيف',
+                text: isEditing ? 'حفظ التعديلات' : 'إضافة الصنف',
                 height: 42,
                 width: 130,
                 onPressed: () async {
                   final name = nameCtrl.text.trim();
                   if (name.isEmpty) {
-                    AppMessage.error(context, 'يرجى كتابة اسم التصنيف');
+                    AppMessage.error(context, 'يرجى كتابة اسم الصنف');
                     return;
                   }
 
                   Navigator.of(ctx).pop();
 
-                  final finalUrl = urlCtrl.text.trim().isNotEmpty ? urlCtrl.text.trim() : null;
-
                   if (isEditing) {
                     await ownerNotifier.updateCategory(
                       id: category.id,
                       name: name,
-                      imageUrl: finalUrl,
                       imageFile: localImageFile,
                       context: context,
                     );
                   } else {
                     await ownerNotifier.addCategory(
                       name: name,
-                      imageUrl: finalUrl,
                       imageFile: localImageFile,
                       context: context,
                     );
                   }
                   if (context.mounted) {
                     // إبطال كاش الكتالوج دون إطلاق طلب شبكة فوري أثناء وجود المالك هنا
-                    Provider.of<CatalogProvider>(context, listen: false).invalidate();
+                    Provider.of<CatalogProvider>(context, listen: false)
+                        .invalidate();
                   }
                 },
               ),
@@ -206,15 +185,15 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('حذف التصنيف', textAlign: TextAlign.right),
+        title: const Text('حذف الصنف', textAlign: TextAlign.right),
         content: Text(
           'هل أنت متأكد من حذف تصنيف "${category.name}"؟\n(ملاحظة: المنتجات التابعة له لن تُحذف وستبقى بدون تصنيف).',
           textAlign: TextAlign.right,
         ),
         actions: [
-          TextButton(
+          AppTextButton(
+            text: 'إلغاء',
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء'),
           ),
           AppDangerButton(
             text: 'حذف',
@@ -222,9 +201,11 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             width: 80,
             onPressed: () async {
               Navigator.of(ctx).pop();
-              final ok = await ownerNotifier.deleteCategory(category.id, context: context);
+              final ok = await ownerNotifier.deleteCategory(category.id,
+                  context: context);
               if (ok && context.mounted) {
-                Provider.of<CatalogProvider>(context, listen: false).invalidate();
+                Provider.of<CatalogProvider>(context, listen: false)
+                    .invalidate();
               }
             },
           ),
@@ -250,16 +231,17 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
           children: [
             // شريط العنوان الموحد
             AppPageHeader(
-              title: 'إدارة التصنيفات',
+              title: 'إدارة الأصناف',
               actions: [
                 AppRefreshButton(
-                  onPressed: () => ownerNotifier.fetchCategories(context: context),
+                  onPressed: () =>
+                      ownerNotifier.fetchCategories(context: context),
                   isLoading: ownerNotifier.isCategoriesLoading,
                 ),
               ],
             ),
 
-            // قائمة التصنيفات بحالات التحميل والفراغ الموحدة
+            // قائمة الأصناف بحالات التحميل والفراغ الموحدة
             Expanded(
               child: AppStateView(
                 isLoading: ownerNotifier.isCategoriesLoading,
@@ -283,13 +265,16 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                           width: 48,
                           height: 48,
                           borderRadius: AppSpacing.radiusSm,
-                          errorWidget: const Icon(Icons.category, color: Colors.grey),
+                          errorWidget:
+                              const Icon(Icons.category, color: Colors.grey),
                         ),
                         title: Text(
                           cat.name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
                           ),
                         ),
                         subtitle: Text(
@@ -298,7 +283,9 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                               : 'بدون شعار',
                           style: TextStyle(
                             fontSize: 12,
-                            color: (themeFlag ? AppColors.creamColor : AppColors.mirage)
+                            color: (themeFlag
+                                    ? AppColors.creamColor
+                                    : AppColors.mirage)
                                 .withValues(alpha: 0.5),
                           ),
                         ),
@@ -307,13 +294,17 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                           children: [
                             IconButton(
                               icon: Icon(Icons.edit_outlined,
-                                  color: themeFlag ? Colors.white : AppColors.rawSienna),
-                              tooltip: 'تعديل التصنيف',
-                              onPressed: () => _showCategoryDialog(context, category: cat),
+                                  color: themeFlag
+                                      ? Colors.white
+                                      : AppColors.rawSienna),
+                              tooltip: 'تعديل الصنف',
+                              onPressed: () =>
+                                  _showCategoryDialog(context, category: cat),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                              tooltip: 'حذف التصنيف',
+                              icon: const Icon(Icons.delete_outline,
+                                  color: Colors.redAccent),
+                              tooltip: 'حذف الصنف',
                               onPressed: () => _confirmDelete(context, cat),
                             ),
                           ],

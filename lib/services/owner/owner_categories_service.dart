@@ -19,18 +19,17 @@ class OwnerCategoriesService {
 
       return (data as List).map((e) => CategoryModel.fromJson(e)).toList();
     } catch (e) {
-      throw 'فشل جلب التصنيفات: $e';
+      throw 'فشل جلب الأصناف: $e';
     }
   }
 
   Future<void> addCategory({
     required String name,
-    String? imageUrl,
     File? imageFile,
     int sortOrder = 0,
   }) async {
     try {
-      var finalUrl = imageUrl ?? '';
+      String? finalUrl;
       if (imageFile != null) {
         final tempId = DateTime.now().millisecondsSinceEpoch.toString();
         finalUrl = await _storageService.uploadCategoryImage(
@@ -41,39 +40,33 @@ class OwnerCategoriesService {
 
       await _client.from(SupabaseTables.categories).insert({
         'name': name,
-        'image_url': finalUrl.isNotEmpty ? finalUrl : null,
+        'image_url': finalUrl,
         'sort_order': sortOrder,
         'is_active': true,
       });
     } catch (e) {
-      throw 'فشل إضافة التصنيف: $e';
+      throw 'فشل إضافة الصنف: $e';
     }
   }
 
   Future<void> updateCategory({
     required String id,
     required String name,
-    String? imageUrl,
     File? imageFile,
     int? sortOrder,
     bool? isActive,
   }) async {
     try {
-      var finalUrl = imageUrl;
-      if (imageFile != null) {
-        final tempId = id;
-        finalUrl = await _storageService.uploadCategoryImage(
-          file: imageFile,
-          categoryId: tempId,
-        );
-      }
-
       final Map<String, dynamic> updates = {
         'name': name,
       };
 
-      if (finalUrl != null) {
-        updates['image_url'] = finalUrl.isNotEmpty ? finalUrl : null;
+      if (imageFile != null) {
+        final uploadedUrl = await _storageService.uploadCategoryImage(
+          file: imageFile,
+          categoryId: id,
+        );
+        updates['image_url'] = uploadedUrl;
       }
       if (sortOrder != null) {
         updates['sort_order'] = sortOrder;
@@ -87,7 +80,7 @@ class OwnerCategoriesService {
           .update(updates)
           .eq('id', id);
     } catch (e) {
-      throw 'فشل تعديل التصنيف: $e';
+      throw 'فشل تعديل الصنف: $e';
     }
   }
 
@@ -98,7 +91,7 @@ class OwnerCategoriesService {
           .delete()
           .eq('id', categoryId);
     } catch (e) {
-      throw 'فشل حذف التصنيف: $e';
+      throw 'فشل حذف الصنف: $e';
     }
   }
 }

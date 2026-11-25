@@ -47,7 +47,8 @@ class EcommerceProductCard extends StatelessWidget {
                 end: 0,
                 top: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.redAccent,
                     borderRadius: BorderRadius.circular(10),
@@ -104,7 +105,7 @@ class EcommerceProductCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
 
-                // التصنيف
+                // الصنف
                 if (product.categoryName != null &&
                     product.categoryName!.isNotEmpty) ...[
                   AppSpacing.gapH4,
@@ -112,9 +113,8 @@ class EcommerceProductCard extends StatelessWidget {
                     text: product.categoryName!,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: themeFlag
-                        ? AppColors.creamColor
-                        : AppColors.rawSienna,
+                    color:
+                        themeFlag ? AppColors.creamColor : AppColors.rawSienna,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -130,9 +130,8 @@ class EcommerceProductCard extends StatelessWidget {
                       text: '${product.price.toStringAsFixed(0)} ر.س',
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: themeFlag
-                          ? AppColors.creamColor
-                          : AppColors.mirage,
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
                     ),
                     if (product.hasDiscount && product.oldPrice != null) ...[
                       const SizedBox(width: 6),

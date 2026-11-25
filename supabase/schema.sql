@@ -24,7 +24,7 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 
--- 2.2 جدول التصنيفات (categories)
+-- 2.2 جدول الأصناف (categories)
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
   name text not null,

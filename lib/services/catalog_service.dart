@@ -1,4 +1,4 @@
-// ينفذ عمليات جلب المنتجات والتصنيفات والبحث في الكتالوج.
+// ينفذ عمليات جلب المنتجات والأصناف والبحث في الكتالوج.
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:scarvs/models/category_model.dart';
 import 'package:scarvs/models/product_model.dart';
@@ -8,8 +8,7 @@ import 'package:scarvs/core/supabase/supabase_tables.dart';
 class ProductService {
   final SupabaseClient _client = AppSupabase.client;
 
-
-  /// جلب كافة التصنيفات النشطة
+  /// جلب كافة الأصناف النشطة
   Future<List<CategoryModel>> fetchCategories() async {
     try {
       final data = await _client
@@ -20,11 +19,11 @@ class ProductService {
 
       return (data as List).map((e) => CategoryModel.fromJson(e)).toList();
     } catch (e) {
-      throw 'فشل جلب التصنيفات: $e';
+      throw 'فشل جلب الأصناف: $e';
     }
   }
 
-  /// جلب المنتجات مع الفلترة والتصنيف والبحث
+  /// جلب المنتجات مع الفلترة والصنف والبحث
   Future<List<ProductItem>> fetchProducts({
     String? categoryId,
     String? categoryName,
@@ -68,7 +67,7 @@ class ProductService {
       List<ProductItem> list =
           (data as List).map((e) => ProductItem.fromJson(e)).toList();
 
-      // فلترة باسم التصنيف إذا تم تمريره
+      // فلترة باسم الصنف إذا تم تمريره
       if (categoryName != null && categoryName.isNotEmpty) {
         list = list.where((p) {
           final cName = p.categoryName?.toLowerCase() ?? '';
@@ -122,7 +121,7 @@ class ProductService {
     }
   }
 
-  /// الاشتراك في التحديثات اللحظية (Supabase Realtime) لجدولي المنتجات والتصنيفات
+  /// الاشتراك في التحديثات اللحظية (Supabase Realtime) لجدولي المنتجات والأصناف
   RealtimeChannel subscribeToCatalogChanges({
     required void Function() onProductsChanged,
     required void Function() onCategoriesChanged,
@@ -158,5 +157,4 @@ class ProductService {
       await _client.removeChannel(channel);
     } catch (_) {}
   }
-
 }

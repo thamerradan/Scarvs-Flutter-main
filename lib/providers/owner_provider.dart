@@ -73,7 +73,7 @@ class OwnerNotifier with ChangeNotifier {
   List<Map<String, dynamic>> _inventory = [];
   List<Map<String, dynamic>> get inventory => _inventory;
 
-  // 5. التصنيفات
+  // 5. الأصناف
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
 
@@ -115,7 +115,8 @@ class OwnerNotifier with ChangeNotifier {
   Future<void> fetchDashboard({BuildContext? context}) => _runFetch(
         isLoadingGetter: () => _isDashboardLoading,
         isLoadingSetter: (v) => _isDashboardLoading = v,
-        task: () async => _stats = await _dashboardService.fetchDashboardStats(),
+        task: () async =>
+            _stats = await _dashboardService.fetchDashboardStats(),
         context: context,
       );
 
@@ -131,8 +132,8 @@ class OwnerNotifier with ChangeNotifier {
           if (statusFilter != null) {
             _selectedStatus = statusFilter;
           }
-          _orders =
-              await _ordersService.fetchAllOrders(statusFilter: _selectedStatus);
+          _orders = await _ordersService.fetchAllOrders(
+              statusFilter: _selectedStatus);
         },
         context: context,
       );
@@ -172,7 +173,9 @@ class OwnerNotifier with ChangeNotifier {
         notifyListeners();
       }
 
-      if (context.mounted) SnackUtil.show(context, 'تم تحديث حالة الطلب بنجاح ✅');
+      if (context.mounted) {
+        SnackUtil.show(context, 'تم تحديث حالة الطلب بنجاح ✅');
+      }
       return true;
     } catch (e) {
       if (context.mounted) SnackUtil.show(context, e.toString());
@@ -199,8 +202,6 @@ class OwnerNotifier with ChangeNotifier {
     required double price,
     double? oldPrice,
     String? categoryId,
-    String? mainImageUrl,
-    File? imageFile,
     List<File> newImageFiles = const [],
     List<String> existingImageUrls = const [],
     bool isActive = true,
@@ -217,8 +218,6 @@ class OwnerNotifier with ChangeNotifier {
         price: price,
         oldPrice: oldPrice,
         categoryId: categoryId,
-        mainImageUrl: mainImageUrl,
-        imageFile: imageFile,
         newImageFiles: newImageFiles,
         existingImageUrls: existingImageUrls,
         isActive: isActive,
@@ -343,7 +342,6 @@ class OwnerNotifier with ChangeNotifier {
 
   Future<bool> addCategory({
     required String name,
-    String? imageUrl,
     File? imageFile,
     int sortOrder = 0,
     required BuildContext context,
@@ -352,12 +350,11 @@ class OwnerNotifier with ChangeNotifier {
     try {
       await _categoriesService.addCategory(
         name: name,
-        imageUrl: imageUrl,
         imageFile: imageFile,
         sortOrder: sortOrder,
       );
       await fetchCategories();
-      if (context.mounted) SnackUtil.show(context, 'تمت إضافة التصنيف بنجاح ✅');
+      if (context.mounted) SnackUtil.show(context, 'تمت إضافة الصنف بنجاح ✅');
       return true;
     } catch (e) {
       if (context.mounted) SnackUtil.show(context, e.toString());
@@ -370,7 +367,6 @@ class OwnerNotifier with ChangeNotifier {
   Future<bool> updateCategory({
     required String id,
     required String name,
-    String? imageUrl,
     File? imageFile,
     int? sortOrder,
     bool? isActive,
@@ -381,13 +377,12 @@ class OwnerNotifier with ChangeNotifier {
       await _categoriesService.updateCategory(
         id: id,
         name: name,
-        imageUrl: imageUrl,
         imageFile: imageFile,
         sortOrder: sortOrder,
         isActive: isActive,
       );
       await fetchCategories();
-      if (context.mounted) SnackUtil.show(context, 'تم تعديل التصنيف بنجاح ✅');
+      if (context.mounted) SnackUtil.show(context, 'تم تعديل الصنف بنجاح ✅');
       return true;
     } catch (e) {
       if (context.mounted) SnackUtil.show(context, e.toString());
@@ -405,7 +400,7 @@ class OwnerNotifier with ChangeNotifier {
       await _categoriesService.deleteCategory(categoryId);
       _categories.removeWhere((c) => c.id == categoryId);
       notifyListeners();
-      if (context.mounted) SnackUtil.show(context, 'تم حذف التصنيف 🗑️');
+      if (context.mounted) SnackUtil.show(context, 'تم حذف الصنف 🗑️');
       return true;
     } catch (e) {
       if (context.mounted) SnackUtil.show(context, e.toString());
@@ -434,7 +429,9 @@ class OwnerNotifier with ChangeNotifier {
       await _settingsService.updateStoreSettings(settings);
       _storeSettings = settings;
       notifyListeners();
-      if (context.mounted) SnackUtil.show(context, 'تم حفظ إعدادات المتجر بنجاح ✅');
+      if (context.mounted) {
+        SnackUtil.show(context, 'تم حفظ إعدادات المتجر بنجاح ✅');
+      }
       return true;
     } catch (e) {
       if (context.mounted) SnackUtil.show(context, e.toString());
