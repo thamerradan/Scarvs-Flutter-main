@@ -43,7 +43,6 @@ class UserProvider with ChangeNotifier {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  bool get hasLoaded => _profile != null;
 
   /// جلب بيانات المستخدم فقط إذا لم تكن محملة مسبقاً
   Future<void> loadIfNeeded({required BuildContext context}) async {

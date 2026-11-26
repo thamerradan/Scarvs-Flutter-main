@@ -68,7 +68,7 @@ class EcommerceProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                AppSpacing.gapH16,
+                AppSpacing.gapH32,
                 // صورة المنتج مع الهالة الدائرية خلفه
                 Expanded(
                   child: Stack(
@@ -94,7 +94,6 @@ class EcommerceProductCard extends StatelessWidget {
                   ),
                 ),
                 AppSpacing.gapH8,
-
                 // اسم المنتج
                 TitleText(
                   text: product.name,
@@ -104,7 +103,6 @@ class EcommerceProductCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                 ),
-
                 // الصنف
                 if (product.categoryName != null &&
                     product.categoryName!.isNotEmpty) ...[

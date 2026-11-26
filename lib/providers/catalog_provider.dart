@@ -1,4 +1,4 @@
-// يدير بيانات المنتجات والأصناف وعمليات تحميلها وتخزينها المؤقت محلياً.
+// يدير بيانات المنتجات والتصنيفات وعمليات تحميلها وتخزينها المؤقت محلياً.
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -22,15 +22,25 @@ class CatalogProvider with ChangeNotifier {
   List<ProductItem> _products = [];
   List<ProductItem> get products => _products;
 
+  final Map<String, ProductItem> _productDetailCache = {};
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   bool _hasLoaded = false;
-  bool get hasLoaded => _hasLoaded;
+  bool _isInvalidated = false;
 
-  /// إبطال كاش الكتالوج حتى يعاد جلبه عند فتح متجر العميل
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
+  /// إبطال كاش الكتالوج وتفاصيل المنتجات حتى يعاد جلبها عند فتح متجر العميل
   void invalidate() {
     _hasLoaded = false;
+    _isInvalidated = true;
+    _productDetailCache.clear();
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.remove(_cachedCatalogTimeKey))
+        .catchError((_) => false);
   }
 
   /// استرجاع البيانات المخزنة محلياً للعرض الفوري وفحص عمر الكاش
@@ -89,23 +99,30 @@ class CatalogProvider with ChangeNotifier {
   }
 
   /// تحميل البيانات الأولية للرئيسية (الأصناف والمنتجات) مع التخزين المؤقت والعرض اللحظي
-  Future<void> loadInitialData(
-      {bool refresh = false, BuildContext? context}) async {
+  Future<void> loadInitialData({
+    bool refresh = false,
+    BuildContext? context,
+  }) async {
     if (_isLoading) return;
+    _errorMessage = null;
 
-    // 1. عرض البيانات من الكاش المحلي فوراً إن وجدت
+    // 1. عرض البيانات من الكاش المحلي فوراً إن وجدت (ما لم يُبطل الكاش)
     bool cacheIsFresh = false;
-    if (_products.isEmpty || _categories.isEmpty) {
+    if ((_products.isEmpty || _categories.isEmpty) &&
+        !_isInvalidated &&
+        !refresh) {
       cacheIsFresh = await _loadFromCache();
     }
 
-    // إذا كان الكاش حديثاً ولم يُطلب تحديث صريح، نكتفي به لتوفير الاستعلامات
-    if (cacheIsFresh && !refresh && _hasLoaded) {
+    // إذا كان الكاش حديثاً ولم يُطلب تحديث صريح ولم يُبطل، نكتفي به دون طلب شبكة
+    if (cacheIsFresh && !refresh && !_isInvalidated) {
+      _hasLoaded = true;
       return;
     }
 
     if (_hasLoaded &&
         !refresh &&
+        !_isInvalidated &&
         _products.isNotEmpty &&
         _categories.isNotEmpty) {
       return;
@@ -126,38 +143,60 @@ class CatalogProvider with ChangeNotifier {
       _categories = results[0] as List<CategoryModel>;
       _products = results[1] as List<ProductItem>;
       _hasLoaded = true;
+      _isInvalidated = false;
+      _errorMessage = null;
 
       // حفظ أحدث نسخة محلية مجمعة
       _saveToCache();
     } on SocketException catch (_) {
+      _errorMessage = 'يرجى التحقق من اتصالك بالإنترنت';
       if (_products.isEmpty && context != null && context.mounted) {
         SnackUtil.showNetworkError(context);
       }
     } catch (e) {
+      _errorMessage = 'تعذر تحميل المنتجات، يرجى المحاولة لاحقاً';
       debugPrint('Error loading initial product data: $e');
+      if (_products.isEmpty && context != null && context.mounted) {
+        SnackUtil.show(context, _errorMessage!);
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// جلب تفاصيل المنتج بالـ ID
+  /// جلب تفاصيل المنتج بالـ ID مع التخزين المؤقت بالذاكرة
   Future<ProductItem?> fetchProductDetail({
     BuildContext? context,
     required dynamic id,
+    bool forceRefresh = false,
   }) async {
+    final key = id.toString();
+    if (!forceRefresh && _productDetailCache.containsKey(key)) {
+      return _productDetailCache[key];
+    }
+
     try {
-      return await _productService.fetchProductDetail(id.toString());
+      final item = await _productService.fetchProductDetail(key);
+      if (item != null) {
+        _productDetailCache[key] = item;
+      }
+      return item;
     } on SocketException catch (_) {
-      SnackUtil.showNetworkError(context);
+      if (context != null && context.mounted) {
+        SnackUtil.showNetworkError(context);
+      }
       return null;
     } catch (e) {
       debugPrint('Error fetchProductDetail: $e');
+      if (context != null && context.mounted) {
+        SnackUtil.show(context, 'تعذر تحميل تفاصيل المنتج');
+      }
       return null;
     }
   }
 
-  /// تنفيذ استعلام منتجات مع معالجة أخطاء الشبكة بشكل موحد
+  /// تنفيذ استعلام منتجات مع إبراز الأخطاء للمستخدم بدل إخفائها
   Future<List<ProductItem>> _runProductQuery(
     BuildContext context,
     Future<List<ProductItem>> Function() query,
@@ -166,9 +205,10 @@ class CatalogProvider with ChangeNotifier {
       return await query();
     } on SocketException catch (_) {
       if (context.mounted) SnackUtil.showNetworkError(context);
-      return [];
-    } catch (_) {
-      return [];
+      throw 'يرجى التحقق من اتصالك بالإنترنت';
+    } catch (e) {
+      debugPrint('Error running product query: $e');
+      throw e.toString();
     }
   }
 

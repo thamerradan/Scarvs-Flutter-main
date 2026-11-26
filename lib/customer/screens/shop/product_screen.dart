@@ -280,13 +280,20 @@ class _ProductScreenState extends State<ProductScreen> {
                   ),
                 )
               else if (filteredProducts.isEmpty)
-                const SliverToBoxAdapter(
+                SliverToBoxAdapter(
                   child: AppStateView(
                     isLoading: false,
+                    hasError: catalogNotifier.errorMessage != null &&
+                        allProducts.isEmpty,
+                    errorMessage: catalogNotifier.errorMessage,
+                    onRetry: () => catalogNotifier.loadInitialData(
+                      refresh: true,
+                      context: context,
+                    ),
                     isEmpty: true,
                     emptyMessage: 'لا توجد منتجات في هذا القسم حالياً',
                     emptyIcon: Icons.checkroom_outlined,
-                    child: SizedBox.shrink(),
+                    child: const SizedBox.shrink(),
                   ),
                 )
               else

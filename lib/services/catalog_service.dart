@@ -120,41 +120,4 @@ class ProductService {
       throw 'فشل جلب تفاصيل المنتج: $e';
     }
   }
-
-  /// الاشتراك في التحديثات اللحظية (Supabase Realtime) لجدولي المنتجات والأصناف
-  RealtimeChannel subscribeToCatalogChanges({
-    required void Function() onProductsChanged,
-    required void Function() onCategoriesChanged,
-  }) {
-    final channel = _client.channel('public_catalog_sync');
-    channel
-        .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
-          table: SupabaseTables.products,
-          callback: (_) => onProductsChanged(),
-        )
-        .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
-          table: SupabaseTables.categories,
-          callback: (_) => onCategoriesChanged(),
-        )
-        .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
-          table: SupabaseTables.productVariants,
-          callback: (_) => onProductsChanged(),
-        )
-        .subscribe();
-
-    return channel;
-  }
-
-  /// إلغاء الاشتراك في قناة Realtime
-  Future<void> unsubscribeChannel(RealtimeChannel channel) async {
-    try {
-      await _client.removeChannel(channel);
-    } catch (_) {}
-  }
 }

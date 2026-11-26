@@ -15,7 +15,6 @@ class CartNotifier with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   bool _hasLoaded = false;
-  bool get hasLoaded => _hasLoaded;
 
   /// تحميل السلة فقط إذا لم يتم تحميلها بعد
   Future<void> loadIfNeeded({BuildContext? context}) async {

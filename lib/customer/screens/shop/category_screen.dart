@@ -11,6 +11,7 @@ import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/customer/widgets/category_widget.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -63,6 +64,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ShimmerEffects.buildCategoryShimmer(
                         context: context);
+                  } else if (snapshot.hasError) {
+                    return AppStateView(
+                      isLoading: false,
+                      hasError: true,
+                      errorMessage: snapshot.error.toString(),
+                      onRetry: () {
+                        setState(() {
+                          _productsFuture = _loadCategoryProducts();
+                        });
+                      },
+                      child: const SizedBox.shrink(),
+                    );
                   } else if (!snapshot.hasData ||
                       (snapshot.data as List).isEmpty) {
                     return AppLoader(

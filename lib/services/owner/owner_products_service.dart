@@ -48,6 +48,35 @@ class OwnerProductsService {
     }
   }
 
+  Future<List<String>> _fetchStoredProductImageUrls(String productId) async {
+    try {
+      final data = await _client
+          .from(SupabaseTables.products)
+          .select('main_image_url, product_images(image_url)')
+          .eq('id', productId)
+          .maybeSingle();
+      if (data == null) return const [];
+
+      final urls = <String>{};
+      final main = data['main_image_url'] as String?;
+      if (main != null && main.trim().isNotEmpty) {
+        urls.add(main.trim());
+      }
+      final imagesList = data['product_images'] as List?;
+      if (imagesList != null) {
+        for (final item in imagesList) {
+          final url = (item as Map<String, dynamic>)['image_url'] as String?;
+          if (url != null && url.trim().isNotEmpty) {
+            urls.add(url.trim());
+          }
+        }
+      }
+      return urls.toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<String> saveProduct({
     String? id,
     required String name,
@@ -61,6 +90,11 @@ class OwnerProductsService {
     bool isFeatured = false,
   }) async {
     try {
+      final isEditing = id != null && id.isNotEmpty;
+      final oldStoredUrls = isEditing
+          ? await _fetchStoredProductImageUrls(id)
+          : const <String>[];
+
       final tempId = id ?? DateTime.now().millisecondsSinceEpoch.toString();
       final List<String> allFinalUrls = [];
 
@@ -71,16 +105,22 @@ class OwnerProductsService {
         }
       }
 
-      // 2. رفع قائمة الصور الجديدة إلى التخزين السحابي
-      for (int i = 0; i < newImageFiles.length; i++) {
-        final f = newImageFiles[i];
-        final uploaded = await _storageService.uploadProductImage(
-          file: f,
-          productId: tempId,
-          fileName: 'extra_${i}_${DateTime.now().millisecondsSinceEpoch}',
+      // 2. رفع قائمة الصور الجديدة بالتوازي مع الحفاظ على الترتيب
+      if (newImageFiles.isNotEmpty) {
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final uploadedUrls = await Future.wait(
+          List.generate(newImageFiles.length, (i) {
+            return _storageService.uploadProductImage(
+              file: newImageFiles[i],
+              productId: tempId,
+              fileName: 'extra_${i}_$timestamp',
+            );
+          }),
         );
-        if (!allFinalUrls.contains(uploaded)) {
-          allFinalUrls.add(uploaded);
+        for (final uploaded in uploadedUrls) {
+          if (!allFinalUrls.contains(uploaded)) {
+            allFinalUrls.add(uploaded);
+          }
         }
       }
 
@@ -133,6 +173,18 @@ class OwnerProductsService {
         await _client.from(SupabaseTables.productImages).insert(toInsert);
       }
 
+      // 6. حذف صور المنتج القديمة التي أُزيلت من Storage
+      if (oldStoredUrls.isNotEmpty) {
+        final removedUrls =
+            oldStoredUrls.where((u) => !allFinalUrls.contains(u)).toList();
+        if (removedUrls.isNotEmpty) {
+          await _storageService.deleteFilesByUrls(
+            removedUrls,
+            bucket: SupabaseTables.productImagesBucket,
+          );
+        }
+      }
+
       return productId;
     } catch (e) {
       throw 'فشل حفظ بيانات المنتج وصوره: $e';
@@ -179,10 +231,17 @@ class OwnerProductsService {
 
   Future<void> deleteProduct(String productId) async {
     try {
+      final storedUrls = await _fetchStoredProductImageUrls(productId);
       await _client
           .from(SupabaseTables.products)
           .delete()
           .eq('id', productId);
+      if (storedUrls.isNotEmpty) {
+        await _storageService.deleteFilesByUrls(
+          storedUrls,
+          bucket: SupabaseTables.productImagesBucket,
+        );
+      }
     } catch (e) {
       throw 'فشل حذف المنتج: $e';
     }

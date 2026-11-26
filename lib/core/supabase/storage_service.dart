@@ -64,4 +64,33 @@ class StorageService {
       path: path,
     );
   }
+
+  /// استخراج مسارات الملفات داخل الحاوية من روابط Supabase العامة وحذفها بأمان
+  Future<void> deleteFilesByUrls(
+    Iterable<String> urls, {
+    required String bucket,
+  }) async {
+    final marker = '/storage/v1/object/public/$bucket/';
+    final paths = <String>[];
+
+    for (final rawUrl in urls) {
+      final idx = rawUrl.indexOf(marker);
+      if (idx == -1) continue;
+      var path = rawUrl.substring(idx + marker.length);
+      final qIdx = path.indexOf('?');
+      if (qIdx != -1) {
+        path = path.substring(0, qIdx);
+      }
+      if (path.isNotEmpty) {
+        paths.add(Uri.decodeComponent(path));
+      }
+    }
+
+    if (paths.isEmpty) return;
+    try {
+      await _client.storage.from(bucket).remove(paths);
+    } catch (_) {
+      // تجاهل أخطاء التنظيف غير الحرجة حتى لا تتعطل عمليات الحفظ أو الحذف
+    }
+  }
 }

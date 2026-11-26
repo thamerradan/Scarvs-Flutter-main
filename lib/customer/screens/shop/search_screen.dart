@@ -9,6 +9,7 @@ import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/customer/widgets/category_widget.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 import 'package:scarvs/core/widgets/shimmer_effects.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -176,6 +177,15 @@ class _SearchScreenState extends State<SearchScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return ShimmerEffects.buildCategoryShimmer(context: context);
+        }
+        if (snapshot.hasError) {
+          return AppStateView(
+            isLoading: false,
+            hasError: true,
+            errorMessage: snapshot.error.toString(),
+            onRetry: _executeSearch,
+            child: const SizedBox.shrink(),
+          );
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return AppLoader(

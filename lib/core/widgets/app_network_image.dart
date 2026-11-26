@@ -1,4 +1,5 @@
-// يوفر عنصراً موحداً لعرض الصور الشبكية مع التحجيم التلقائي وإدارة التخزين المؤقت وحالات الأخطاء.
+// يوفر عنصراً موحداً لعرض الصور الشبكية مع التخزين المؤقت الدائم على القرص وإدارة التحجيم والأخطاء.
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AppNetworkImage extends StatelessWidget {
@@ -73,16 +74,15 @@ class AppNetworkImage extends StatelessWidget {
       return _buildError();
     }
 
-    Widget image = Image.network(
-      url.trim(),
+    Widget image = CachedNetworkImage(
+      imageUrl: url.trim(),
       width: width,
       height: height,
       fit: fit,
-      cacheWidth: cacheWidth > 0 ? cacheWidth : null,
-      cacheHeight: cacheHeight,
+      memCacheWidth: cacheWidth > 0 ? cacheWidth : null,
+      memCacheHeight: cacheHeight,
       filterQuality: FilterQuality.low,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+      placeholder: (context, _) {
         return placeholder ??
             Container(
               width: width,
@@ -99,9 +99,7 @@ class AppNetworkImage extends StatelessWidget {
               ),
             );
       },
-      errorBuilder: (context, error, stackTrace) {
-        return _buildError();
-      },
+      errorWidget: (context, _, __) => _buildError(),
     );
 
     if (borderRadius > 0) {

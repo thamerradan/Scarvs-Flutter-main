@@ -49,6 +49,19 @@ class OwnerCategoriesService {
     }
   }
 
+  Future<String?> _fetchCategoryImageUrl(String categoryId) async {
+    try {
+      final data = await _client
+          .from(SupabaseTables.categories)
+          .select('image_url')
+          .eq('id', categoryId)
+          .maybeSingle();
+      return data?['image_url'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> updateCategory({
     required String id,
     required String name,
@@ -57,11 +70,13 @@ class OwnerCategoriesService {
     bool? isActive,
   }) async {
     try {
+      String? oldImageUrl;
       final Map<String, dynamic> updates = {
         'name': name,
       };
 
       if (imageFile != null) {
+        oldImageUrl = await _fetchCategoryImageUrl(id);
         final uploadedUrl = await _storageService.uploadCategoryImage(
           file: imageFile,
           categoryId: id,
@@ -79,6 +94,15 @@ class OwnerCategoriesService {
           .from(SupabaseTables.categories)
           .update(updates)
           .eq('id', id);
+
+      if (oldImageUrl != null &&
+          oldImageUrl.isNotEmpty &&
+          oldImageUrl != updates['image_url']) {
+        await _storageService.deleteFilesByUrls(
+          [oldImageUrl],
+          bucket: SupabaseTables.categoryImagesBucket,
+        );
+      }
     } catch (e) {
       throw 'فشل تعديل الصنف: $e';
     }
@@ -86,10 +110,17 @@ class OwnerCategoriesService {
 
   Future<void> deleteCategory(String categoryId) async {
     try {
+      final oldImageUrl = await _fetchCategoryImageUrl(categoryId);
       await _client
           .from(SupabaseTables.categories)
           .delete()
           .eq('id', categoryId);
+      if (oldImageUrl != null && oldImageUrl.isNotEmpty) {
+        await _storageService.deleteFilesByUrls(
+          [oldImageUrl],
+          bucket: SupabaseTables.categoryImagesBucket,
+        );
+      }
     } catch (e) {
       throw 'فشل حذف الصنف: $e';
     }
