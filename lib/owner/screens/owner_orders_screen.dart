@@ -9,6 +9,7 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
+import 'package:scarvs/core/widgets/app_filter_chip.dart';
 import 'package:scarvs/core/widgets/app_info_row.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
@@ -74,7 +75,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapH16,
               ...[
                 {
                   'key': 'pending',
@@ -186,28 +187,15 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: _statusFilters.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, __) => AppSpacing.gapW8,
                 itemBuilder: (context, index) {
                   final filter = _statusFilters[index];
                   final isSelected =
                       ownerNotifier.selectedStatus == filter['key'];
 
-                  return ChoiceChip(
-                    label: Text(filter['label']!),
+                  return AppFilterChip(
+                    label: filter['label']!,
                     selected: isSelected,
-                    selectedColor:
-                        themeFlag ? Colors.white : AppColors.rawSienna,
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? (themeFlag ? AppColors.mirage : Colors.white)
-                          : (themeFlag
-                              ? AppColors.creamColor
-                              : AppColors.mirage),
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
-                      fontSize: 13,
-                    ),
-                    backgroundColor: themeFlag ? Colors.white10 : Colors.white,
                     onSelected: (selected) {
                       if (selected) {
                         ownerNotifier.fetchOrders(
@@ -236,7 +224,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
                     padding: const EdgeInsets.all(16),
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: ownerNotifier.orders.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 14),
+                    separatorBuilder: (_, __) => AppSpacing.gapH12,
                     itemBuilder: (context, index) {
                       final order = ownerNotifier.orders[index];
                       return _buildOwnerOrderCard(order, themeFlag);
@@ -258,6 +246,7 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
     return AppCard(
       borderRadius: AppSpacing.radiusLg,
       padding: EdgeInsets.zero,
+      hasShadow: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

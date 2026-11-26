@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/theme/app_spacing.dart';
+import 'package:scarvs/core/utils/snackbar_util.dart';
 import 'package:scarvs/models/product_model.dart';
 import 'package:scarvs/providers/catalog_provider.dart';
 import 'package:scarvs/providers/owner_provider.dart';
@@ -204,9 +206,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذر اختيار الصور: $e')),
-      );
+      SnackUtil.show(context, 'تعذر اختيار الصور: $e');
     }
   }
 
@@ -226,9 +226,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذر التقاط الصورة: $e')),
-      );
+      SnackUtil.show(context, 'تعذر التقاط الصورة: $e');
     }
   }
 
@@ -238,11 +236,10 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         final item = _images.removeAt(index);
         _images.insert(0, item);
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم تعيين الصورة كغلاف رئيسي للمنتج'),
-          duration: Duration(seconds: 1),
-        ),
+      SnackUtil.show(
+        context,
+        'تم تعيين الصورة كغلاف رئيسي للمنتج',
+        duration: const Duration(seconds: 1),
       );
     }
   }
@@ -273,7 +270,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                 hintText: 'L أو 40',
                 textAlign: TextAlign.right,
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapH12,
               AppTextField(
                 textEditingController: stockCtrl,
                 labelText: 'الكمية المتوفرة',
@@ -313,19 +310,14 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى إضافة صورة واحدة على الأقل للمنتج')),
-      );
+      SnackUtil.show(context, 'يرجى إضافة صورة واحدة على الأقل للمنتج');
       return;
     }
 
     if (_hasSizes && _variants.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'لقد قمت بتفعيل المقاسات، يرجى إضافة مقاس واحد على الأقل أو إيقاف الخيار',
-          ),
-        ),
+      SnackUtil.show(
+        context,
+        'لقد قمت بتفعيل المقاسات، يرجى إضافة مقاس واحد على الأقل أو إيقاف الخيار',
       );
       return;
     }
@@ -438,7 +430,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        AppSpacing.gapW12,
                         Expanded(
                           child: AppTextField(
                             textEditingController: _oldPriceController,
@@ -450,15 +442,15 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    AppSpacing.gapH12,
 
-                    // الصنف (الماركة)
+                    // التصنيف (الماركة)
                     DropdownButtonFormField<String>(
                       initialValue: _selectedCategoryId,
                       dropdownColor:
                           themeFlag ? AppColors.mirage : Colors.white,
                       decoration: _inputDecoration(
-                        label: 'الصنف',
+                        label: 'التصنيف',
                         icon: Icons.category_outlined,
                         themeFlag: themeFlag,
                       ),
@@ -553,7 +545,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      AppSpacing.gapH8,
 
                       // جدول المقاسات
                       Container(
@@ -582,7 +574,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                               : AppColors.mirage)
                                           .withValues(alpha: 0.3),
                                     ),
-                                    const SizedBox(height: 8),
+                                    AppSpacing.gapH8,
                                     Text(
                                       'لم تتم إضافة أي مقاسات بعد',
                                       style: TextStyle(
@@ -684,7 +676,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                   Icon(Icons.photo_library_outlined,
                       color: themeFlag ? Colors.white : AppColors.rawSienna,
                       size: 20),
-                  const SizedBox(width: 8),
+                  AppSpacing.gapW8,
                   Text(
                     'صور المنتج (${_images.length})',
                     style: TextStyle(
@@ -742,7 +734,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                     Icon(Icons.add_photo_alternate_outlined,
                         size: 40,
                         color: themeFlag ? Colors.white : AppColors.rawSienna),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapH8,
                     const Text(
                       'انقر هنا لإضافة صور للمنتج 📸 (يمكنك اختيار عدة صور)',
                       style:
@@ -759,7 +751,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _images.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, __) => AppSpacing.gapW12,
                 itemBuilder: (context, index) {
                   // بطاقة إضافة صورة جديدة في نهاية القائمة
                   if (index == _images.length) {
@@ -790,7 +782,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
                                       : Colors.white,
                                   size: 20),
                             ),
-                            const SizedBox(height: 8),
+                            AppSpacing.gapH8,
                             const Text('إضافة المزيد',
                                 style: TextStyle(
                                     fontSize: 11, fontWeight: FontWeight.bold)),

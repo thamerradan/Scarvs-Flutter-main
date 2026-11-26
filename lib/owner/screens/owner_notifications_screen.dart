@@ -114,6 +114,7 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
     return AppCard(
       padding: const EdgeInsets.all(14),
       borderRadius: AppSpacing.radiusLg,
+      hasShadow: false,
       color: notif.isRead
           ? (themeFlag ? AppColors.mirage : Colors.white)
           : (themeFlag
@@ -158,7 +159,7 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                 size: 22,
               ),
             ),
-            const SizedBox(width: 12),
+            AppSpacing.gapW12,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +191,7 @@ class _OwnerNotificationsScreenState extends State<OwnerNotificationsScreen> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapH4,
                   Text(
                     notif.message,
                     style: TextStyle(

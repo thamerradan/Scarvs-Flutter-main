@@ -45,7 +45,7 @@ class OwnerCategoriesService {
         'is_active': true,
       });
     } catch (e) {
-      throw 'فشل إضافة الصنف: $e';
+      throw 'فشل إضافة التصنيف: $e';
     }
   }
 
@@ -104,7 +104,7 @@ class OwnerCategoriesService {
         );
       }
     } catch (e) {
-      throw 'فشل تعديل الصنف: $e';
+      throw 'فشل تعديل التصنيف: $e';
     }
   }
 
@@ -122,7 +122,7 @@ class OwnerCategoriesService {
         );
       }
     } catch (e) {
-      throw 'فشل حذف الصنف: $e';
+      throw 'فشل حذف التصنيف: $e';
     }
   }
 }

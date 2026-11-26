@@ -13,6 +13,7 @@ import 'package:scarvs/core/widgets/app_card.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
+import 'package:scarvs/core/widgets/app_status_badge.dart';
 import 'package:scarvs/core/widgets/app_text_field.dart';
 
 class OwnerProductsScreen extends StatefulWidget {
@@ -147,7 +148,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: filteredProducts.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, __) => AppSpacing.gapH12,
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
                       return _buildProductCard(
@@ -182,6 +183,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
     return AppCard(
       padding: AppSpacing.paddingCard,
       borderRadius: AppSpacing.radiusLg,
+      hasShadow: false,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -265,86 +267,49 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                       ),
                     ],
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: product.variants.isEmpty || totalStock > 0
-                            ? Colors.green.withValues(alpha: 0.12)
-                            : Colors.red.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        product.variants.isEmpty
-                            ? 'متاح'
-                            : (totalStock > 0 ? '$totalStock قطعة' : 'نفذ المخزون'),
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: product.variants.isEmpty || totalStock > 0
-                              ? Colors.green
-                              : Colors.red,
-                        ),
-                      ),
+                    AppStatusBadge(
+                      text: product.variants.isEmpty
+                          ? 'متاح'
+                          : (totalStock > 0 ? '$totalStock قطعة' : 'نفذ المخزون'),
+                      color: product.variants.isEmpty || totalStock > 0
+                          ? Colors.green
+                          : Colors.red,
+                      fontSize: 11,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      borderRadius: 8,
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapH8,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // زر التعديل
-                    InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () {
+                    AppOutlinedButton(
+                      text: 'تعديل',
+                      icon: Icons.edit_outlined,
+                      height: 34,
+                      width: 90,
+                      fontSize: 12,
+                      borderRadius: AppSpacing.radiusSm,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      onPressed: () {
                         Navigator.of(context).pushNamed(
                           AppRouter.ownerProductFormRoute,
                           arguments: product,
                         );
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: themeFlag
-                              ? Colors.white.withValues(alpha: 0.12)
-                              : AppColors.rawSienna.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.edit_outlined,
-                                size: 14,
-                                color: themeFlag ? Colors.white : AppColors.rawSienna),
-                            const SizedBox(width: 4),
-                            Text('تعديل',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: themeFlag ? Colors.white : AppColors.rawSienna,
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
                     ),
-                    const SizedBox(width: 8),
-                    // زر الحذف
-                    InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () => _confirmDelete(context, product),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.delete_outline, size: 14, color: Colors.red),
-                            SizedBox(width: 4),
-                            Text('حذف', style: TextStyle(fontSize: 12, color: Colors.red)),
-                          ],
-                        ),
-                      ),
+                    AppSpacing.gapW8,
+                    AppDangerButton(
+                      text: 'حذف',
+                      icon: Icons.delete_outline,
+                      height: 34,
+                      width: 85,
+                      fontSize: 12,
+                      borderRadius: AppSpacing.radiusSm,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      onPressed: () => _confirmDelete(context, product),
                     ),
                   ],
                 ),

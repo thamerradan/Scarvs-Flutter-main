@@ -10,8 +10,8 @@ import 'package:scarvs/providers/owner_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
-import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
+import 'package:scarvs/core/widgets/app_state_view.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
   final VoidCallback? onSwitchToStore;
@@ -92,6 +92,14 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                 title: 'لوحة التحكم',
                 showBackButton: false,
                 actions: [
+                  if (widget.onSwitchToStore != null)
+                    IconButton(
+                      icon: const Icon(Icons.storefront_outlined),
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      tooltip: 'عرض المتجر',
+                      onPressed: widget.onSwitchToStore,
+                    ),
                   Consumer<NotificationNotifier>(
                     builder: (context, notifNotifier, _) {
                       return Stack(
@@ -159,20 +167,21 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
 
               // المحتوى الرئيسي
               Expanded(
-                child: ownerNotifier.isDashboardLoading
-                    ? AppLoader(themeFlag: themeFlag)
-                    : SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildManagementGrid(context, stats, themeFlag),
-                            const SizedBox(height: 80),
-                          ],
-                        ),
-                      ),
+                child: AppStateView(
+                  isLoading: ownerNotifier.isDashboardLoading,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildManagementGrid(context, stats, themeFlag),
+                        const SizedBox(height: 80),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -187,8 +196,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         _buildMenuActionTile(
           context: context,
           title: 'إدارة الطلبات',
-          subtitle:
-              '${stats.totalOrders} إجمالي الطلبات (${stats.pendingOrders} جديدة)',
+          subtitle: 'متابعة طلبات العملاء',
           icon: Icons.local_shipping_outlined,
           badgeCount: stats.pendingOrders,
           color: AppColors.rawSienna,
@@ -200,7 +208,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         _buildMenuActionTile(
           context: context,
           title: 'إدارة المنتجات',
-          subtitle: '${stats.totalProducts} منتج مسجل في المتجر',
+          subtitle: 'إضافة وتعديل منتجات المتجر',
           icon: Icons.inventory_2_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
@@ -210,8 +218,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
-          title: 'إدارة المخزون والكميات',
-          subtitle: 'مراقبة وتعديل مقاسات الملابس والمنتجات فورياً',
+          title: 'إدارة المخزون',
+          subtitle: 'تعديل الكميات والمقاسات',
           icon: Icons.analytics_outlined,
           badgeCount: stats.outOfStockCount > 0 ? stats.outOfStockCount : null,
           color: AppColors.rawSienna,
@@ -222,8 +230,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
-          title: 'إدارة الأصناف',
-          subtitle: 'إضافة وتعديل أقسام وتصنيفات الملابس',
+          title: 'التصنيفات',
+          subtitle: 'تنظيم أقسام المتجر',
           icon: Icons.category_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
@@ -233,8 +241,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
         AppSpacing.gapH12,
         _buildMenuActionTile(
           context: context,
-          title: 'إعدادات المتجر والشحن',
-          subtitle: 'الاسم، رسوم التوصيل، الشحن المجاني، التواصل',
+          title: 'إعدادات المتجر',
+          subtitle: 'الشحن والتواصل والدفع',
           icon: Icons.storefront_outlined,
           color: AppColors.rawSienna,
           themeFlag: themeFlag,
@@ -258,6 +266,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     return AppCard(
       borderRadius: AppSpacing.radiusLg,
       padding: EdgeInsets.zero,
+      hasShadow: false,
       onTap: onTap,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -287,7 +296,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               ),
             ),
             if (badgeCount != null && badgeCount > 0) ...[
-              const SizedBox(width: 8),
+              AppSpacing.gapW8,
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(

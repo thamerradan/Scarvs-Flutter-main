@@ -1,4 +1,4 @@
-// نقطة تشغيل التطبيق وتهيئة البيئة واتصال Supabase قبل عرض الواجهة.
+﻿// نقطة تشغيل التطبيق وتهيئة البيئة واتصال Supabase قبل عرض الواجهة.
 import 'package:flutter/material.dart';
 import 'package:scarvs/app.dart';
 import 'package:scarvs/core/supabase/supabase_client.dart';

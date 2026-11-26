@@ -5,6 +5,7 @@ import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/widgets/app_buttons.dart';
 import 'package:scarvs/core/widgets/app_card.dart';
+import 'package:scarvs/core/widgets/app_filter_chip.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_page_header.dart';
 import 'package:scarvs/core/widgets/app_state_view.dart';
@@ -106,11 +107,29 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
               child: Row(
                 children: [
-                  _buildFilterChip('الكل', 'all', themeFlag),
+                  AppFilterChip(
+                    label: 'الكل',
+                    selected: _filter == 'all',
+                    onSelected: (selected) {
+                      if (selected) setState(() => _filter = 'all');
+                    },
+                  ),
                   AppSpacing.gapW8,
-                  _buildFilterChip('قريب من النفاد', 'low', themeFlag),
+                  AppFilterChip(
+                    label: 'قريب من النفاد',
+                    selected: _filter == 'low',
+                    onSelected: (selected) {
+                      if (selected) setState(() => _filter = 'low');
+                    },
+                  ),
                   AppSpacing.gapW8,
-                  _buildFilterChip('نفذ تماماً', 'out', themeFlag),
+                  AppFilterChip(
+                    label: 'نفذ تماماً',
+                    selected: _filter == 'out',
+                    onSelected: (selected) {
+                      if (selected) setState(() => _filter = 'out');
+                    },
+                  ),
                 ],
               ),
             ),
@@ -130,7 +149,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                     padding: const EdgeInsets.all(16),
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: filteredList.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, __) => AppSpacing.gapH8,
                     itemBuilder: (context, index) {
                       final item = filteredList[index];
                       return _buildInventoryCard(
@@ -147,26 +166,6 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFilterChip(String label, String key, bool themeFlag) {
-    final isSelected = _filter == key;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      selectedColor: themeFlag ? Colors.white : AppColors.rawSienna,
-      labelStyle: TextStyle(
-        color: isSelected
-            ? (themeFlag ? AppColors.mirage : Colors.white)
-            : (themeFlag ? AppColors.creamColor : AppColors.mirage),
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        fontSize: 12,
-      ),
-      backgroundColor: themeFlag ? Colors.white10 : Colors.white,
-      onSelected: (selected) {
-        if (selected) setState(() => _filter = key);
-      },
     );
   }
 
@@ -197,6 +196,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
     return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       borderRadius: AppSpacing.radiusLg,
+      hasShadow: false,
       child: Row(
         children: [
           // صورة مصغرة
@@ -224,7 +224,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                     color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                   ),
                 ),
-                const SizedBox(height: 4),
+                AppSpacing.gapH4,
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
@@ -258,7 +258,7 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          AppSpacing.gapW8,
 
           // وحدة التحكم بالكمية (+ / -) مع حماية ضد السباق والضغط المتكرر
           Row(
