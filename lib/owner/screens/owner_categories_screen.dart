@@ -144,7 +144,7 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
                 onPressed: () async {
                   final name = nameCtrl.text.trim();
                   if (name.isEmpty) {
-                    SnackUtil.show(context, 'يرجى كتابة اسم التصنيف');
+                    SnackUtil.error(context, 'يرجى كتابة اسم التصنيف');
                     return;
                   }
 
@@ -245,6 +245,9 @@ class _OwnerCategoriesScreenState extends State<OwnerCategoriesScreen> {
             Expanded(
               child: AppStateView(
                 isLoading: ownerNotifier.isCategoriesLoading,
+                hasError: ownerNotifier.categoriesError != null &&
+                    ownerNotifier.categories.isEmpty,
+                errorMessage: ownerNotifier.categoriesError,
                 isEmpty: ownerNotifier.categories.isEmpty,
                 emptyMessage: 'لا توجد تصنيفات حالياً في المتجر',
                 emptyIcon: Icons.category_outlined,

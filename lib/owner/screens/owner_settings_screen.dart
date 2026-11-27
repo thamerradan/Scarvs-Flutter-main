@@ -29,7 +29,6 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
   late final TextEditingController _freeShippingController;
 
   bool _codEnabled = true;
-  bool _onlinePaymentEnabled = false;
   bool _maintenanceMode = false;
 
   @override
@@ -53,7 +52,6 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
         _freeShippingController.text = s.freeShippingLimit.toStringAsFixed(0);
         setState(() {
           _codEnabled = s.cashOnDeliveryEnabled;
-          _onlinePaymentEnabled = s.onlinePaymentEnabled;
           _maintenanceMode = s.maintenanceMode;
         });
       }
@@ -85,7 +83,7 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
       freeShippingLimit:
           double.tryParse(_freeShippingController.text.trim()) ?? 300.0,
       cashOnDeliveryEnabled: _codEnabled,
-      onlinePaymentEnabled: _onlinePaymentEnabled,
+      onlinePaymentEnabled: current?.onlinePaymentEnabled ?? false,
       maintenanceMode: _maintenanceMode,
     );
 
@@ -119,6 +117,11 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
             Expanded(
               child: AppStateView(
                 isLoading: ownerNotifier.isSettingsLoading,
+                hasError: ownerNotifier.settingsError != null &&
+                    ownerNotifier.storeSettings == null,
+                errorMessage: ownerNotifier.settingsError,
+                onRetry: () =>
+                    ownerNotifier.fetchStoreSettings(context: context),
                 child: Form(
                   key: _formKey,
                   child: ListView(
@@ -126,60 +129,70 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                     children: [
                       _buildSectionTitle('البيانات العامة', themeFlag),
                       AppSpacing.gapH8,
-                      AppTextField(
-                        textEditingController: _nameController,
-                        labelText: 'اسم المتجر',
-                        hintText: 'أدخل اسم المتجر',
-                        prefixIcon: const Icon(Icons.store),
-                        validator: (v) =>
-                            v == null || v.isEmpty ? 'مطلوب' : null,
-                      ),
-                      AppSpacing.gapH12,
-                      AppTextField(
-                        textEditingController: _phoneController,
-                        labelText: 'رقم هاتف المتجر',
-                        hintText: '05xxxxxxxx',
-                        keyboardType: TextInputType.phone,
-                        prefixIcon: const Icon(Icons.phone),
-                      ),
-                      AppSpacing.gapH12,
-                      AppTextField(
-                        textEditingController: _whatsappController,
-                        labelText: 'رقم الواتساب',
-                        hintText: '9665xxxxxxxx',
-                        keyboardType: TextInputType.phone,
-                        prefixIcon: const Icon(Icons.chat),
+                      AppCard(
+                        hasShadow: false,
+                        child: Column(
+                          children: [
+                            AppTextField(
+                              textEditingController: _nameController,
+                              labelText: 'اسم المتجر',
+                              hintText: 'أدخل اسم المتجر',
+                              prefixIcon: const Icon(Icons.store),
+                              validator: (v) =>
+                                  v == null || v.isEmpty ? 'مطلوب' : null,
+                            ),
+                            AppSpacing.gapH12,
+                            AppTextField(
+                              textEditingController: _phoneController,
+                              labelText: 'رقم هاتف المتجر',
+                              hintText: '05xxxxxxxx',
+                              keyboardType: TextInputType.phone,
+                              prefixIcon: const Icon(Icons.phone),
+                            ),
+                            AppSpacing.gapH12,
+                            AppTextField(
+                              textEditingController: _whatsappController,
+                              labelText: 'رقم الواتساب',
+                              hintText: '9665xxxxxxxx',
+                              keyboardType: TextInputType.phone,
+                              prefixIcon: const Icon(Icons.chat),
+                            ),
+                          ],
+                        ),
                       ),
                       AppSpacing.gapH24,
 
                       _buildSectionTitle('الشحن والتوصيل', themeFlag),
                       AppSpacing.gapH8,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              textEditingController: _shippingFeeController,
-                              labelText: 'رسوم الشحن الافتراضية',
-                              hintText: '25',
-                              keyboardType: TextInputType.number,
-                              prefixIcon: const Icon(Icons.local_shipping),
-                              validator: (v) =>
-                                  v == null || v.isEmpty ? 'مطلوب' : null,
+                      AppCard(
+                        hasShadow: false,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                textEditingController: _shippingFeeController,
+                                labelText: 'رسوم الشحن الافتراضية',
+                                hintText: '25',
+                                keyboardType: TextInputType.number,
+                                prefixIcon: const Icon(Icons.local_shipping),
+                                validator: (v) =>
+                                    v == null || v.isEmpty ? 'مطلوب' : null,
+                              ),
                             ),
-                          ),
-                          AppSpacing.gapW12,
-                          Expanded(
-                            child: AppTextField(
-                              textEditingController: _freeShippingController,
-                              labelText: 'الحد الأدنى للشحن المجاني',
-                              hintText: '300',
-                              keyboardType: TextInputType.number,
-                              prefixIcon: const Icon(Icons.card_giftcard),
-                              validator: (v) =>
-                                  v == null || v.isEmpty ? 'مطلوب' : null,
+                            AppSpacing.gapW12,
+                            Expanded(
+                              child: AppTextField(
+                                textEditingController: _freeShippingController,
+                                labelText: 'الحد الأدنى للشحن المجاني',
+                                hintText: '300',
+                                keyboardType: TextInputType.number,
+                                prefixIcon: const Icon(Icons.card_giftcard),
+                                validator: (v) =>
+                                    v == null || v.isEmpty ? 'مطلوب' : null,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       AppSpacing.gapH24,
 
@@ -188,30 +201,30 @@ class _OwnerSettingsScreenState extends State<OwnerSettingsScreen> {
                       AppCard(
                         padding: EdgeInsets.zero,
                         hasShadow: false,
-                        child: SwitchListTile(
-                          title: const Text('تفعيل الدفع عند الاستلام (COD)'),
-                          subtitle:
-                              const Text('إتاحة الدفع كاش عند استلام الشحنة'),
-                          value: _codEnabled,
-                          activeThumbColor:
-                              themeFlag ? Colors.white : AppColors.rawSienna,
-                          onChanged: (val) =>
-                              setState(() => _codEnabled = val),
-                        ),
-                      ),
-                      AppSpacing.gapH8,
-                      AppCard(
-                        padding: EdgeInsets.zero,
-                        hasShadow: false,
-                        child: SwitchListTile(
-                          title: const Text('وضع الصيانة المؤقت'),
-                          subtitle:
-                              const Text('إيقاف استقبال طلبات جديدة مؤقتاً'),
-                          value: _maintenanceMode,
-                          activeThumbColor:
-                              themeFlag ? Colors.white : AppColors.rawSienna,
-                          onChanged: (val) =>
-                              setState(() => _maintenanceMode = val),
+                        child: Column(
+                          children: [
+                            SwitchListTile(
+                              title: const Text('تفعيل الدفع عند الاستلام (COD)'),
+                              subtitle: const Text(
+                                  'إتاحة الدفع كاش عند استلام الشحنة'),
+                              value: _codEnabled,
+                              activeThumbColor:
+                                  themeFlag ? Colors.white : AppColors.rawSienna,
+                              onChanged: (val) =>
+                                  setState(() => _codEnabled = val),
+                            ),
+                            const Divider(height: 1),
+                            SwitchListTile(
+                              title: const Text('وضع الصيانة المؤقت'),
+                              subtitle: const Text(
+                                  'إيقاف استقبال طلبات جديدة مؤقتاً'),
+                              value: _maintenanceMode,
+                              activeThumbColor:
+                                  themeFlag ? Colors.white : AppColors.rawSienna,
+                              onChanged: (val) =>
+                                  setState(() => _maintenanceMode = val),
+                            ),
+                          ],
                         ),
                       ),
                       AppSpacing.gapH32,

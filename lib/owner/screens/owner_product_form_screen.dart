@@ -206,7 +206,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      SnackUtil.show(context, 'تعذر اختيار الصور: $e');
+      SnackUtil.error(context, 'تعذر اختيار الصور: $e');
     }
   }
 
@@ -226,7 +226,7 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      SnackUtil.show(context, 'تعذر التقاط الصورة: $e');
+      SnackUtil.error(context, 'تعذر التقاط الصورة: $e');
     }
   }
 
@@ -236,10 +236,9 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
         final item = _images.removeAt(index);
         _images.insert(0, item);
       });
-      SnackUtil.show(
+      SnackUtil.info(
         context,
         'تم تعيين الصورة كغلاف رئيسي للمنتج',
-        duration: const Duration(seconds: 1),
       );
     }
   }
@@ -310,12 +309,12 @@ class _OwnerProductFormScreenState extends State<OwnerProductFormScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_images.isEmpty) {
-      SnackUtil.show(context, 'يرجى إضافة صورة واحدة على الأقل للمنتج');
+      SnackUtil.error(context, 'يرجى إضافة صورة واحدة على الأقل للمنتج');
       return;
     }
 
     if (_hasSizes && _variants.isEmpty) {
-      SnackUtil.show(
+      SnackUtil.error(
         context,
         'لقد قمت بتفعيل المقاسات، يرجى إضافة مقاس واحد على الأقل أو إيقاف الخيار',
       );

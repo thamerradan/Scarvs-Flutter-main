@@ -84,7 +84,7 @@ class AuthenticationNotifier with ChangeNotifier {
       return false;
     } catch (e) {
       if (context.mounted) {
-        SnackUtil.show(context, e.toString().replaceAll('Exception: ', ''));
+        SnackUtil.error(context, e.toString().replaceAll('Exception: ', ''));
       }
       return false;
     } finally {
@@ -135,7 +135,7 @@ class AuthenticationNotifier with ChangeNotifier {
         await fetchCurrentUserProfile();
 
         if (context.mounted) {
-          SnackUtil.show(
+          SnackUtil.success(
             context,
             fullName != null
                 ? 'تم إنشاء حسابك بنجاح! مرحباً بك 🎉'
@@ -162,7 +162,7 @@ class AuthenticationNotifier with ChangeNotifier {
       return false;
     } catch (e) {
       if (context.mounted) {
-        SnackUtil.show(context, e.toString().replaceAll('Exception: ', ''));
+        SnackUtil.error(context, e.toString().replaceAll('Exception: ', ''));
       }
       return false;
     } finally {
@@ -217,7 +217,9 @@ class AuthenticationNotifier with ChangeNotifier {
         );
       }
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, 'حدث خطأ أثناء تسجيل الخروج: $e');
+      if (context.mounted) {
+        SnackUtil.error(context, 'حدث خطأ أثناء تسجيل الخروج: $e');
+      }
     } finally {
       _setLoading(false);
     }

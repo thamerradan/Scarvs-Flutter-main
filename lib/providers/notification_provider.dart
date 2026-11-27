@@ -60,7 +60,7 @@ class NotificationNotifier with ChangeNotifier {
       _unreadCount = _notifications.where((n) => !n.isRead).length;
     } catch (e) {
       if (context != null && context.mounted) {
-        SnackUtil.show(context, e.toString());
+        SnackUtil.error(context, e.toString());
       }
     } finally {
       _setLoading(false);

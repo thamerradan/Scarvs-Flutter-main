@@ -153,7 +153,7 @@ class CartNotifier with ChangeNotifier {
     } catch (e) {
       _cartItems = previousItems;
       notifyListeners();
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     }
   }
@@ -164,7 +164,7 @@ class CartNotifier with ChangeNotifier {
     BuildContext? context,
   }) async {
     if (item.quantity >= item.stockQuantity) {
-      SnackUtil.show(
+      SnackUtil.info(
         context,
         'عذراً، وصلت إلى الحد الأقصى المتوفر بالمخزون (${item.stockQuantity})',
       );
@@ -231,7 +231,7 @@ class CartNotifier with ChangeNotifier {
     try {
       final success = await _cartService.deleteFromCart(cartItemId);
       if (context != null && context.mounted) {
-        SnackUtil.show(context, 'تم حذف المنتج من السلة');
+        SnackUtil.success(context, 'تم حذف المنتج من السلة');
       }
       await loadCart(silent: true);
       return success;

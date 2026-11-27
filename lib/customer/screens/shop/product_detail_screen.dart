@@ -234,7 +234,10 @@ class _ProductDetailState extends State<ProductDetail>
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: (themeFlag ? Colors.white : AppColors.rawSienna).withValues(alpha: 0.2),
+                                color: (themeFlag
+                                        ? Colors.white
+                                        : AppColors.rawSienna)
+                                    .withValues(alpha: 0.2),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),
@@ -290,7 +293,8 @@ class _ProductDetailState extends State<ProductDetail>
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: (themeFlag ? Colors.white : AppColors.rawSienna).withValues(alpha: 0.3),
+                      color: (themeFlag ? Colors.white : AppColors.rawSienna)
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -390,7 +394,9 @@ class _ProductDetailState extends State<ProductDetail>
                               text: product.categoryName!,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: themeFlag ? AppColors.creamColor : AppColors.rawSienna,
+                              color: themeFlag
+                                  ? AppColors.creamColor
+                                  : AppColors.rawSienna,
                             ),
                           ],
                         ],
@@ -408,13 +414,17 @@ class _ProductDetailState extends State<ProductDetail>
                               text: '${product.price.toStringAsFixed(0)} ',
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: themeFlag ? Colors.white : AppColors.rawSienna,
+                              color: themeFlag
+                                  ? Colors.white
+                                  : AppColors.rawSienna,
                             ),
                             TitleText(
                               text: 'ر.س',
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: themeFlag ? Colors.white70 : AppColors.rawSienna,
+                              color: themeFlag
+                                  ? Colors.white70
+                                  : AppColors.rawSienna,
                             ),
                           ],
                         ),
@@ -515,7 +525,8 @@ class _ProductDetailState extends State<ProductDetail>
                       children: [
                         Icon(Icons.visibility_outlined,
                             size: 18,
-                            color: themeFlag ? Colors.white : AppColors.rawSienna),
+                            color:
+                                themeFlag ? Colors.white : AppColors.rawSienna),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -523,7 +534,9 @@ class _ProductDetailState extends State<ProductDetail>
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: themeFlag ? Colors.white : AppColors.rawSienna,
+                              color: themeFlag
+                                  ? Colors.white
+                                  : AppColors.rawSienna,
                             ),
                           ),
                         ),
@@ -567,7 +580,7 @@ class _ProductDetailState extends State<ProductDetail>
         );
         if (!context.mounted) return;
         if (value) {
-          SnackUtil.success(context, 'تمت إضافة المنتج إلى السلة بنجاح 🛍️');
+          SnackUtil.success(context, 'تمت إضافة المنتج إلى السلة بنجاح ');
         } else {
           SnackUtil.error(context, 'حدث خطأ أثناء الإضافة إلى السلة');
         }
@@ -651,8 +664,6 @@ class _ProductDetailState extends State<ProductDetail>
                     ? (themeFlag ? Colors.white : AppColors.rawSienna)
                     : Colors.grey,
                 elevation: 6,
-                icon: Icon(Icons.shopping_basket_rounded,
-                    color: themeFlag ? AppColors.mirage : Colors.white),
                 label: Text(
                   product.inStock ? 'إضافة إلى السلة' : 'نفد من المخزون',
                   style: TextStyle(
@@ -661,6 +672,8 @@ class _ProductDetailState extends State<ProductDetail>
                     fontSize: 14,
                   ),
                 ),
+                icon: Icon(Icons.shopping_basket_rounded,
+                    color: themeFlag ? AppColors.mirage : Colors.white),
               )
             : null,
         body: FadeTransition(

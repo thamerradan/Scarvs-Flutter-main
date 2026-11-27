@@ -136,6 +136,9 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
             Expanded(
               child: AppStateView(
                 isLoading: ownerNotifier.isProductsLoading,
+                hasError: ownerNotifier.productsError != null &&
+                    ownerNotifier.products.isEmpty,
+                errorMessage: ownerNotifier.productsError,
                 isEmpty: filteredProducts.isEmpty,
                 emptyMessage: _searchQuery.isNotEmpty
                     ? 'لا توجد منتجات تطابق البحث'
@@ -236,15 +239,7 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                     ),
                   ],
                 ),
-                Text(
-                  product.categoryName ?? 'بدون تصنيف',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: themeFlag ? AppColors.creamColor : AppColors.rawSienna,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
+                AppSpacing.gapH8,
                 Row(
                   children: [
                     Text(
@@ -255,17 +250,6 @@ class _OwnerProductsScreenState extends State<OwnerProductsScreen> {
                         color: themeFlag ? Colors.white : AppColors.rawSienna,
                       ),
                     ),
-                    if (product.oldPrice != null && product.oldPrice! > product.price) ...[
-                      const SizedBox(width: 6),
-                      Text(
-                        '${product.oldPrice!.toStringAsFixed(0)} ر.س',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ],
                     const Spacer(),
                     AppStatusBadge(
                       text: product.variants.isEmpty

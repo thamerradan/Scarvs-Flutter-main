@@ -214,6 +214,9 @@ class _OwnerOrdersScreenState extends State<OwnerOrdersScreen> {
             Expanded(
               child: AppStateView(
                 isLoading: ownerNotifier.isOrdersLoading,
+                hasError: ownerNotifier.ordersError != null &&
+                    ownerNotifier.orders.isEmpty,
+                errorMessage: ownerNotifier.ordersError,
                 isEmpty: ownerNotifier.orders.isEmpty,
                 emptyMessage: 'لا توجد طلبات في هذا القسم حالياً',
                 emptyIcon: Icons.inbox_outlined,

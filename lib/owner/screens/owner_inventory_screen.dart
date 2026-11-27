@@ -139,6 +139,9 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
             Expanded(
               child: AppStateView(
                 isLoading: ownerNotifier.isInventoryLoading,
+                hasError: ownerNotifier.inventoryError != null &&
+                    ownerNotifier.inventory.isEmpty,
+                errorMessage: ownerNotifier.inventoryError,
                 isEmpty: filteredList.isEmpty,
                 emptyMessage: 'لا توجد منتجات ضمن هذا الفلتر',
                 emptyIcon: Icons.check_circle_outline,
@@ -229,28 +232,20 @@ class _OwnerInventoryScreenState extends State<OwnerInventoryScreen> {
                   spacing: 6,
                   runSpacing: 4,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: themeFlag
-                            ? Colors.white.withValues(alpha: 0.15)
-                            : AppColors.rawSienna.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'مقاس: $size',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: themeFlag ? Colors.white : AppColors.rawSienna,
-                        ),
-                      ),
+                    AppStatusBadge(
+                      text: 'مقاس: $size',
+                      color: themeFlag ? Colors.white : AppColors.rawSienna,
+                      fontSize: 10,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      borderRadius: 6,
                     ),
                     AppStatusBadge(
                       text: tagText,
                       color: tagColor,
                       fontSize: 10,
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       borderRadius: 6,
                     ),
                   ],

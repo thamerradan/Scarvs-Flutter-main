@@ -157,7 +157,7 @@ class CatalogProvider with ChangeNotifier {
       _errorMessage = 'تعذر تحميل المنتجات، يرجى المحاولة لاحقاً';
       debugPrint('Error loading initial product data: $e');
       if (_products.isEmpty && context != null && context.mounted) {
-        SnackUtil.show(context, _errorMessage!);
+        SnackUtil.error(context, _errorMessage!);
       }
     } finally {
       _isLoading = false;
@@ -190,7 +190,7 @@ class CatalogProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('Error fetchProductDetail: $e');
       if (context != null && context.mounted) {
-        SnackUtil.show(context, 'تعذر تحميل تفاصيل المنتج');
+        SnackUtil.error(context, 'تعذر تحميل تفاصيل المنتج');
       }
       return null;
     }

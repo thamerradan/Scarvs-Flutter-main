@@ -169,6 +169,11 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               Expanded(
                 child: AppStateView(
                   isLoading: ownerNotifier.isDashboardLoading,
+                  hasError: ownerNotifier.dashboardError != null &&
+                      stats.totalOrders == 0 &&
+                      stats.totalProducts == 0,
+                  errorMessage: ownerNotifier.dashboardError,
+                  onRetry: () => ownerNotifier.fetchDashboard(context: context),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
@@ -191,64 +196,60 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   }
 
   Widget _buildManagementGrid(BuildContext context, stats, bool themeFlag) {
+    final items = [
+      (
+        title: 'إدارة الطلبات',
+        subtitle: 'متابعة طلبات العملاء',
+        icon: Icons.local_shipping_outlined,
+        badgeCount: stats.pendingOrders as int?,
+        route: AppRouter.ownerOrdersRoute,
+      ),
+      (
+        title: 'إدارة المنتجات',
+        subtitle: 'إضافة وتعديل منتجات المتجر',
+        icon: Icons.inventory_2_outlined,
+        badgeCount: null as int?,
+        route: AppRouter.ownerProductsRoute,
+      ),
+      (
+        title: 'إدارة المخزون',
+        subtitle: 'تعديل الكميات والمقاسات',
+        icon: Icons.analytics_outlined,
+        badgeCount:
+            (stats.outOfStockCount > 0 ? stats.outOfStockCount : null) as int?,
+        route: AppRouter.ownerInventoryRoute,
+      ),
+      (
+        title: 'التصنيفات',
+        subtitle: 'تنظيم أقسام المتجر',
+        icon: Icons.category_outlined,
+        badgeCount: null as int?,
+        route: AppRouter.ownerCategoriesRoute,
+      ),
+      (
+        title: 'إعدادات المتجر',
+        subtitle: 'الشحن والتواصل والدفع',
+        icon: Icons.storefront_outlined,
+        badgeCount: null as int?,
+        route: AppRouter.ownerSettingsRoute,
+      ),
+    ];
+
     return Column(
       children: [
-        _buildMenuActionTile(
-          context: context,
-          title: 'إدارة الطلبات',
-          subtitle: 'متابعة طلبات العملاء',
-          icon: Icons.local_shipping_outlined,
-          badgeCount: stats.pendingOrders,
-          color: AppColors.rawSienna,
-          themeFlag: themeFlag,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRouter.ownerOrdersRoute),
-        ),
-        AppSpacing.gapH12,
-        _buildMenuActionTile(
-          context: context,
-          title: 'إدارة المنتجات',
-          subtitle: 'إضافة وتعديل منتجات المتجر',
-          icon: Icons.inventory_2_outlined,
-          color: AppColors.rawSienna,
-          themeFlag: themeFlag,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRouter.ownerProductsRoute),
-        ),
-        AppSpacing.gapH12,
-        _buildMenuActionTile(
-          context: context,
-          title: 'إدارة المخزون',
-          subtitle: 'تعديل الكميات والمقاسات',
-          icon: Icons.analytics_outlined,
-          badgeCount: stats.outOfStockCount > 0 ? stats.outOfStockCount : null,
-          color: AppColors.rawSienna,
-          themeFlag: themeFlag,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRouter.ownerInventoryRoute),
-        ),
-        AppSpacing.gapH12,
-        _buildMenuActionTile(
-          context: context,
-          title: 'التصنيفات',
-          subtitle: 'تنظيم أقسام المتجر',
-          icon: Icons.category_outlined,
-          color: AppColors.rawSienna,
-          themeFlag: themeFlag,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRouter.ownerCategoriesRoute),
-        ),
-        AppSpacing.gapH12,
-        _buildMenuActionTile(
-          context: context,
-          title: 'إعدادات المتجر',
-          subtitle: 'الشحن والتواصل والدفع',
-          icon: Icons.storefront_outlined,
-          color: AppColors.rawSienna,
-          themeFlag: themeFlag,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRouter.ownerSettingsRoute),
-        ),
+        for (var i = 0; i < items.length; i++) ...[
+          if (i > 0) AppSpacing.gapH12,
+          _buildMenuActionTile(
+            context: context,
+            title: items[i].title,
+            subtitle: items[i].subtitle,
+            icon: items[i].icon,
+            badgeCount: items[i].badgeCount,
+            color: AppColors.rawSienna,
+            themeFlag: themeFlag,
+            onTap: () => Navigator.of(context).pushNamed(items[i].route),
+          ),
+        ],
       ],
     );
   }

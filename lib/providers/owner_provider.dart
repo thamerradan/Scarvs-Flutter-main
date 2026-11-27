@@ -24,29 +24,33 @@ class OwnerNotifier with ChangeNotifier {
 
   bool _isDashboardLoading = false;
   bool get isDashboardLoading => _isDashboardLoading;
+  String? _dashboardError;
+  String? get dashboardError => _dashboardError;
 
   bool _isOrdersLoading = false;
   bool get isOrdersLoading => _isOrdersLoading;
+  String? _ordersError;
+  String? get ordersError => _ordersError;
 
   bool _isProductsLoading = false;
   bool get isProductsLoading => _isProductsLoading;
+  String? _productsError;
+  String? get productsError => _productsError;
 
   bool _isInventoryLoading = false;
   bool get isInventoryLoading => _isInventoryLoading;
+  String? _inventoryError;
+  String? get inventoryError => _inventoryError;
 
   bool _isCategoriesLoading = false;
   bool get isCategoriesLoading => _isCategoriesLoading;
+  String? _categoriesError;
+  String? get categoriesError => _categoriesError;
 
   bool _isSettingsLoading = false;
   bool get isSettingsLoading => _isSettingsLoading;
-
-  bool get isLoading =>
-      _isDashboardLoading ||
-      _isOrdersLoading ||
-      _isProductsLoading ||
-      _isInventoryLoading ||
-      _isCategoriesLoading ||
-      _isSettingsLoading;
+  String? _settingsError;
+  String? get settingsError => _settingsError;
 
   bool _isSaving = false;
   bool get isSaving => _isSaving;
@@ -73,7 +77,7 @@ class OwnerNotifier with ChangeNotifier {
   List<Map<String, dynamic>> _inventory = [];
   List<Map<String, dynamic>> get inventory => _inventory;
 
-  // 5. الأصناف
+  // 5. التصنيفات
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
 
@@ -86,21 +90,25 @@ class OwnerNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  /// دالة مساعدة موحدة لتنفيذ عمليات الجلب ومنع الطلبات المتكررة وإدارة حالة التحميل
+  /// دالة مساعدة موحدة لتنفيذ عمليات الجلب ومنع الطلبات المتكررة وإدارة حالات التحميل والخطأ
   Future<void> _runFetch({
     required bool Function() isLoadingGetter,
     required void Function(bool) isLoadingSetter,
+    required void Function(String?) errorSetter,
     required Future<void> Function() task,
     BuildContext? context,
   }) async {
     if (isLoadingGetter()) return;
     isLoadingSetter(true);
+    errorSetter(null);
     notifyListeners();
     try {
       await task();
     } catch (e) {
+      final msg = e.toString();
+      errorSetter(msg);
       if (context != null && context.mounted) {
-        SnackUtil.show(context, e.toString());
+        SnackUtil.error(context, msg);
       }
     } finally {
       isLoadingSetter(false);
@@ -115,6 +123,7 @@ class OwnerNotifier with ChangeNotifier {
   Future<void> fetchDashboard({BuildContext? context}) => _runFetch(
         isLoadingGetter: () => _isDashboardLoading,
         isLoadingSetter: (v) => _isDashboardLoading = v,
+        errorSetter: (e) => _dashboardError = e,
         task: () async =>
             _stats = await _dashboardService.fetchDashboardStats(),
         context: context,
@@ -128,6 +137,7 @@ class OwnerNotifier with ChangeNotifier {
       _runFetch(
         isLoadingGetter: () => _isOrdersLoading,
         isLoadingSetter: (v) => _isOrdersLoading = v,
+        errorSetter: (e) => _ordersError = e,
         task: () async {
           if (statusFilter != null) {
             _selectedStatus = statusFilter;
@@ -174,11 +184,11 @@ class OwnerNotifier with ChangeNotifier {
       }
 
       if (context.mounted) {
-        SnackUtil.show(context, 'تم تحديث حالة الطلب بنجاح ✅');
+        SnackUtil.success(context, 'تم تحديث حالة الطلب بنجاح ✅');
       }
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     }
   }
@@ -190,6 +200,7 @@ class OwnerNotifier with ChangeNotifier {
   Future<void> fetchProducts({BuildContext? context}) => _runFetch(
         isLoadingGetter: () => _isProductsLoading,
         isLoadingSetter: (v) => _isProductsLoading = v,
+        errorSetter: (e) => _productsError = e,
         task: () async =>
             _products = await _productsService.fetchAllOwnerProducts(),
         context: context,
@@ -228,14 +239,14 @@ class OwnerNotifier with ChangeNotifier {
       await fetchProducts();
 
       if (context.mounted) {
-        SnackUtil.show(
+        SnackUtil.success(
           context,
           id == null ? 'تمت إضافة المنتج بنجاح 🎉' : 'تم تعديل المنتج بنجاح ✅',
         );
       }
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -268,7 +279,7 @@ class OwnerNotifier with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
     }
   }
 
@@ -281,10 +292,10 @@ class OwnerNotifier with ChangeNotifier {
       _products.removeWhere((p) => p.id == productId);
       notifyListeners();
 
-      if (context.mounted) SnackUtil.show(context, 'تم حذف المنتج بنجاح 🗑️');
+      if (context.mounted) SnackUtil.success(context, 'تم حذف المنتج بنجاح 🗑️');
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     }
   }
@@ -296,6 +307,7 @@ class OwnerNotifier with ChangeNotifier {
   Future<void> fetchInventory({BuildContext? context}) => _runFetch(
         isLoadingGetter: () => _isInventoryLoading,
         isLoadingSetter: (v) => _isInventoryLoading = v,
+        errorSetter: (e) => _inventoryError = e,
         task: () async =>
             _inventory = await _inventoryService.fetchInventoryList(),
         context: context,
@@ -318,10 +330,10 @@ class OwnerNotifier with ChangeNotifier {
         _inventory[idx]['is_available'] = newStock > 0;
       }
       if (context.mounted) {
-        SnackUtil.show(context, 'تم تحديث المخزون إلى $newStock قطعة ✅');
+        SnackUtil.success(context, 'تم تحديث المخزون إلى $newStock قطعة ✅');
       }
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
     } finally {
       _updatingVariantIds.remove(variantId);
       notifyListeners();
@@ -335,6 +347,7 @@ class OwnerNotifier with ChangeNotifier {
   Future<void> fetchCategories({BuildContext? context}) => _runFetch(
         isLoadingGetter: () => _isCategoriesLoading,
         isLoadingSetter: (v) => _isCategoriesLoading = v,
+        errorSetter: (e) => _categoriesError = e,
         task: () async =>
             _categories = await _categoriesService.fetchAllCategories(),
         context: context,
@@ -354,10 +367,12 @@ class OwnerNotifier with ChangeNotifier {
         sortOrder: sortOrder,
       );
       await fetchCategories();
-      if (context.mounted) SnackUtil.show(context, 'تمت إضافة الصنف بنجاح ✅');
+      if (context.mounted) {
+        SnackUtil.success(context, 'تمت إضافة التصنيف بنجاح ✅');
+      }
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -382,10 +397,12 @@ class OwnerNotifier with ChangeNotifier {
         isActive: isActive,
       );
       await fetchCategories();
-      if (context.mounted) SnackUtil.show(context, 'تم تعديل الصنف بنجاح ✅');
+      if (context.mounted) {
+        SnackUtil.success(context, 'تم تعديل التصنيف بنجاح ✅');
+      }
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -400,10 +417,10 @@ class OwnerNotifier with ChangeNotifier {
       await _categoriesService.deleteCategory(categoryId);
       _categories.removeWhere((c) => c.id == categoryId);
       notifyListeners();
-      if (context.mounted) SnackUtil.show(context, 'تم حذف الصنف 🗑️');
+      if (context.mounted) SnackUtil.success(context, 'تم حذف التصنيف 🗑️');
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     }
   }
@@ -415,6 +432,7 @@ class OwnerNotifier with ChangeNotifier {
   Future<void> fetchStoreSettings({BuildContext? context}) => _runFetch(
         isLoadingGetter: () => _isSettingsLoading,
         isLoadingSetter: (v) => _isSettingsLoading = v,
+        errorSetter: (e) => _settingsError = e,
         task: () async =>
             _storeSettings = await _settingsService.fetchStoreSettings(),
         context: context,
@@ -430,11 +448,11 @@ class OwnerNotifier with ChangeNotifier {
       _storeSettings = settings;
       notifyListeners();
       if (context.mounted) {
-        SnackUtil.show(context, 'تم حفظ إعدادات المتجر بنجاح ✅');
+        SnackUtil.success(context, 'تم حفظ إعدادات المتجر بنجاح ✅');
       }
       return true;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     } finally {
       _setSaving(false);
@@ -456,6 +474,12 @@ class OwnerNotifier with ChangeNotifier {
     _isInventoryLoading = false;
     _isCategoriesLoading = false;
     _isSettingsLoading = false;
+    _dashboardError = null;
+    _ordersError = null;
+    _productsError = null;
+    _inventoryError = null;
+    _categoriesError = null;
+    _settingsError = null;
     _isSaving = false;
     _updatingVariantIds.clear();
     notifyListeners();

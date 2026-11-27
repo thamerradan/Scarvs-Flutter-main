@@ -88,7 +88,7 @@ class OrderNotifier with ChangeNotifier {
       if (context.mounted) SnackUtil.showNetworkError(context);
       return null;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return null;
     } finally {
       _setLoading(false);
@@ -104,7 +104,9 @@ class OrderNotifier with ChangeNotifier {
     try {
       final success = await _orderService.cancelOrder(orderId);
       if (success) {
-        if (context.mounted) SnackUtil.show(context, 'تم إلغاء الطلب بنجاح');
+        if (context.mounted) {
+          SnackUtil.success(context, 'تم إلغاء الطلب بنجاح');
+        }
         await Future.wait([
           fetchUserOrders(),
           if (_currentOrder?.id == orderId)
@@ -113,7 +115,7 @@ class OrderNotifier with ChangeNotifier {
       }
       return success;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, e.toString());
+      if (context.mounted) SnackUtil.error(context, e.toString());
       return false;
     } finally {
       _setLoading(false);

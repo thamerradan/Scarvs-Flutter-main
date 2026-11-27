@@ -91,13 +91,15 @@ class UserProvider with ChangeNotifier {
         city: city,
       );
       notifyListeners();
-      if (context.mounted) SnackUtil.show(context, 'تم تحديث البيانات بنجاح');
+      if (context.mounted) {
+        SnackUtil.success(context, 'تم تحديث البيانات بنجاح');
+      }
       return true;
     } on SocketException catch (_) {
       if (context.mounted) SnackUtil.showNetworkError(context);
       return false;
     } catch (e) {
-      if (context.mounted) SnackUtil.show(context, 'فشل التحديث: $e');
+      if (context.mounted) SnackUtil.error(context, 'فشل التحديث: $e');
       return false;
     } finally {
       _isLoading = false;
