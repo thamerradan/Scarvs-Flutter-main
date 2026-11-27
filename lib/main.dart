@@ -6,7 +6,6 @@ import 'package:scarvs/core/supabase/supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   // تحميل ملف البيئة .env
   await SupabaseConfig.loadEnv();
 

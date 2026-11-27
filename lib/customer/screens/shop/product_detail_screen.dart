@@ -15,7 +15,7 @@ import 'package:scarvs/customer/widgets/title_text.dart';
 import 'package:scarvs/core/widgets/app_loader.dart';
 import 'package:scarvs/core/widgets/app_network_image.dart';
 import 'package:scarvs/core/widgets/app_squircle_button.dart';
-import 'package:scarvs/core/utils/app_message.dart';
+import 'package:scarvs/core/utils/snackbar_util.dart';
 
 class ProductDetail extends StatefulWidget {
   final ProductDetailsArgs productDetailsArguements;
@@ -543,7 +543,7 @@ class _ProductDetailState extends State<ProductDetail>
   void _handleAddToCart(
       BuildContext context, ProductItem product, SizeNotifier sizeNotifier) {
     if (AuthGuard.isOwner) {
-      AppMessage.info(context, 'أنت في وضع معاينة المالك، لا يمكنك إنشاء طلبات');
+      SnackUtil.info(context, 'أنت في وضع معاينة المالك، لا يمكنك إنشاء طلبات');
       return;
     }
 
@@ -567,9 +567,9 @@ class _ProductDetailState extends State<ProductDetail>
         );
         if (!context.mounted) return;
         if (value) {
-          AppMessage.success(context, 'تمت إضافة المنتج إلى السلة بنجاح 🛍️');
+          SnackUtil.success(context, 'تمت إضافة المنتج إلى السلة بنجاح 🛍️');
         } else {
-          AppMessage.error(context, 'حدث خطأ أثناء الإضافة إلى السلة');
+          SnackUtil.error(context, 'حدث خطأ أثناء الإضافة إلى السلة');
         }
       },
     );

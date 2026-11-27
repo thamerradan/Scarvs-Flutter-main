@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
+import 'package:scarvs/core/utils/snackbar_util.dart';
 import 'package:scarvs/providers/auth_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
 import 'package:scarvs/core/utils/auth_guard.dart';
@@ -137,9 +138,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   // ============================================================
   Future<void> _verifyOtp() async {
     if (_otpController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى إدخال رمز التحقق')),
-      );
+      SnackUtil.error(context, 'يرجى إدخال رمز التحقق');
       return;
     }
 

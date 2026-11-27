@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/core/theme/app_colors.dart';
 import 'package:scarvs/core/theme/app_spacing.dart';
 import 'package:scarvs/core/constants/app_routes.dart';
-import 'package:scarvs/core/utils/app_message.dart';
+import 'package:scarvs/core/utils/snackbar_util.dart';
 import 'package:scarvs/providers/cart_provider.dart';
 import 'package:scarvs/providers/order_provider.dart';
 import 'package:scarvs/providers/theme_provider.dart';
@@ -61,7 +61,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     final cartNotifier = Provider.of<CartNotifier>(context, listen: false);
     if (cartNotifier.isEmpty) {
-      AppMessage.error(context, 'السلة فارغة!');
+      SnackUtil.error(context, 'السلة فارغة!');
       return;
     }
 
@@ -90,7 +90,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
 
       // إظهار إشعار فوري أنيق بنجاح استلام الطلب ورقم الطلب
-      AppMessage.success(
+      SnackUtil.success(
         context,
         orderNumber.isNotEmpty
             ? 'تم استلام طلبك بنجاح! 🎉\nرقم الطلب: #$orderNumber'
